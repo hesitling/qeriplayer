@@ -9,6 +9,9 @@
 
 #include <QTest>
 #include <QTemporaryDir>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 using namespace NeriPlayerQt;
 
@@ -34,6 +37,8 @@ private Q_SLOTS:
     void secureStorage_overwrite();
     void secureStorage_remove();
     void secureStorage_encryptedAtRest();
+    void secureStorage_malformedFileGraceful();
+    void secureStorage_corruptedSingleValueIsIsolated();
 };
 
 void TestCrypto::encrypt_decrypt_roundTrip()
@@ -178,6 +183,66 @@ void TestCrypto::secureStorage_encryptedAtRest()
     QVERIFY(file.open(QIODevice::ReadOnly));
     QByteArray rawContent = file.readAll();
     QVERIFY(!rawContent.contains("super_secret_value"));
+}
+
+void TestCrypto::secureStorage_malformedFileGraceful()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    QString filePath = tempDir.filePath("secrets.dat");
+
+    // Write non-JSON content
+    QFile file(filePath);
+    QVERIFY(file.open(QIODevice::WriteOnly | QIODevice::Truncate));
+    file.write("this is not json");
+    file.close();
+
+    // Should not crash, should return empty for any key
+    SecureStorage storage(filePath);
+    QCOMPARE(storage.get("any_key"), QString());
+}
+
+void TestCrypto::secureStorage_corruptedSingleValueIsIsolated()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    QString filePath = tempDir.filePath("secrets.dat");
+
+    // Create valid storage with two keys
+    {
+        SecureStorage storage(filePath);
+        storage.set("good_key", "good_value");
+        storage.set("bad_key", "bad_value");
+    }
+
+    // Corrupt only bad_key's value
+    {
+        QFile file(filePath);
+        QVERIFY(file.open(QIODevice::ReadOnly));
+        QByteArray raw = file.readAll();
+        file.close();
+
+        QJsonDocument doc = QJsonDocument::fromJson(raw);
+        QVERIFY(doc.isObject());
+        QJsonObject obj = doc.object();
+        QVERIFY(obj.contains("bad_key"));
+
+        // Overwrite with invalid ciphertext
+        obj["bad_key"] = QStringLiteral("%%%invalid_ciphertext%%%");
+        doc.setObject(obj);
+
+        QFile writeFile(filePath);
+        QVERIFY(writeFile.open(QIODevice::WriteOnly | QIODevice::Truncate));
+        writeFile.write(doc.toJson(QJsonDocument::Compact));
+        writeFile.close();
+    }
+
+    // Re-open: good_key should work, bad_key should return empty
+    SecureStorage storage(filePath);
+    QCOMPARE(storage.get("good_key"), QString("good_value"));
+    QCOMPARE(storage.get("bad_key"), QString());
 }
 
 QTEST_MAIN(TestCrypto)
