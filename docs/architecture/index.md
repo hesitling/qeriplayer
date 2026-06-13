@@ -1,0 +1,100 @@
+# NeriPlayer Qt Architecture Design Document
+
+## 1. Overview
+
+NeriPlayer Qt is a cross-platform desktop music player client developed using the Qt framework. It references the architectural design philosophy of the Android version of NeriPlayer, adopting a layered architecture and modular design to implement multi-source music platform integration, local playback, playlist management, and other core features.
+
+## 2. Design Principles
+
+### 2.1 Core Principles
+- **Local First**: Data is stored locally by default; synchronization is optional
+- **Modular**: High cohesion and low coupling; each module has a single responsibility
+- **Extensible**: Reserved extension interfaces for adding new music platforms and features
+- **Cross-Platform**: Support for Windows, macOS, and Linux desktop systems
+
+### 2.2 Architectural Style
+- **MVVM (Model-View-ViewModel)**: Separation of UI and business logic
+- **Layered Architecture**: Clear separation of presentation, business, and data layers
+- **Dependency Injection**: Service locator pattern for dependency management
+- **Reactive Programming**: Qt signal-slot mechanism and property binding
+
+## 3. Technology Stack
+
+| Category | Technology | Description |
+|----------|-----------|-------------|
+| **UI Framework** | Qt 6 Widgets / QML | Native desktop UI |
+| **Build System** | CMake 3.16+ | Modern C++ build |
+| **C++ Standard** | C++17 | Modern C++ features |
+| **Multimedia** | Qt Multimedia / VLC | Audio playback |
+| **Network** | Qt Network / libcurl | HTTP requests |
+| **Database** | SQLite | Local data storage |
+| **Serialization** | nlohmann/json | JSON processing |
+| **Configuration** | QSettings / TOML | Application configuration |
+| **Logging** | spdlog / Qt Logging | Logging system |
+
+## 4. Document Index
+
+- [Layered Architecture](layers.md) - Detailed layered architecture design
+- [C++20 Coroutines & QCoro](coroutines.md) - Coroutine support and asynchronous programming
+- [Core Components](components.md) - Core component design
+- [Threading Model](threading.md) - Thread division and communication
+- [Plugin Architecture](plugin.md) - Plugin system design
+- [Data Architecture](data.md) - Data storage and models
+- [Configuration & Logging](config.md) - Configuration management and logging system
+
+## 5. Overall Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  Presentation Layer                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │  Main Window │  │  Player     │  │  Settings/Dialogs   │  │
+│  │             │  │  Controls   │  │                     │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    Business Layer                            │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │  ViewModel   │  │  Service    │  │  Manager            │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                      Data Layer                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │  Repository  │  │  API Client │  │  Local Storage      │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                  Infrastructure Layer                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │  Network     │  │  Database   │  │  FileSystem         │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## 6. Module Dependencies
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         UI Module                            │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                      ViewModel Module                        │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                       Service Module                         │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                      Repository Module                       │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                       Core Module                            │
+└─────────────────────────────────────────────────────────────┘
+```
