@@ -11,7 +11,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QHostInfo>
 
 namespace NeriPlayerQt {
 
@@ -104,18 +103,34 @@ void SecureStorage::save() const
 
     QJsonDocument doc(root);
     QFile file(m_filePath);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        file.write(doc.toJson(QJsonDocument::Compact));
-        file.close();
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        return;
     }
+    file.write(doc.toJson(QJsonDocument::Compact));
+    file.close();
 }
 
 QByteArray SecureStorage::deriveMasterKey() const
 {
-    // Derive a key from machine hostname + app name
-    // This is a simple approach; production would use OS keychain/DPAPI
-    QString seed = QHostInfo::localHostName() + QStringLiteral(":NeriPlayer:SecureStorage");
-    return CryptoUtils::sha256(seed.toUtf8()).left(32);
+    // Use a per-machine random secret stored alongside the data
+    QString secretPath = m_filePath + QStringLiteral(".key");
+    QFile secretFile(secretPath);
+
+    if (secretFile.exists() && secretFile.open(QIODevice::ReadOnly)) {
+        QByteArray key = secretFile.readAll();
+        secretFile.close();
+        if (key.size() >= 32) {
+            return key.left(32);
+        }
+    }
+
+    // Generate new random key
+    QByteArray key = CryptoUtils::generateKey();
+    if (secretFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        secretFile.write(key);
+        secretFile.close();
+    }
+    return key;
 }
 
 } // namespace NeriPlayerQt
