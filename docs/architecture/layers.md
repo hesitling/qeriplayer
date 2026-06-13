@@ -281,8 +281,8 @@ public:
 class MusicRepository : public QObject {
     Q_OBJECT
 public:
-    QFuture<Song> getSong(const QString &id);
-    QFuture<Playlist> getPlaylist(const QString &id);
+    QCoro::Task<Song> getSong(const QString &id);
+    QCoro::Task<Playlist> getPlaylist(const QString &id);
     
 private:
     NeteaseClient *m_neteaseClient;

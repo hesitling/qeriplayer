@@ -11,6 +11,7 @@ docs/
 │   ├── index.md           # Architecture overview
 │   ├── layers.md          # Layered architecture
 │   ├── coroutines.md      # C++20 coroutines & QCoro
+│   ├── porting-from-android.md # Android-to-Qt architecture mapping
 │   └── ...
 └── modules/               # Module design documents
     ├── index.md           # Module overview
@@ -35,13 +36,13 @@ docs/
 
 ### Architecture Design Documents
 
-- [architecture.md](architecture.md) - Describes the overall architecture design of the project, including:
+- [architecture/index.md](architecture/index.md) - Describes the overall architecture design of the project, including:
   - Design principles
   - Technology stack
   - Layered architecture
   - Data flow
-  - Threading model
-  - Plugin architecture
+  - Module dependencies
+- [architecture/porting-from-android.md](architecture/porting-from-android.md) - Defines how to use Android NeriPlayer as a feature reference without copying Android-specific global dependencies
 
 ### Module Design Documents
 

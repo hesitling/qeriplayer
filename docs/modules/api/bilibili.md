@@ -29,102 +29,102 @@ public:
     // ==================== Authentication ====================
     
     // QR code login
-    QFuture<ApiResult<QrCodeData>> generateQrCode();
-    QFuture<ApiResult<LoginResult>> checkQrCodeStatus(const QString &key);
+    QCoro::Task<ApiResult<QrCodeData>> generateQrCode();
+    QCoro::Task<ApiResult<LoginResult>> checkQrCodeStatus(const QString &key);
     
     // Logout
-    QFuture<ApiResult<VoidResult>> logout();
+    QCoro::Task<ApiResult<VoidResult>> logout();
     
     // Check login status
     bool isAuthenticated() const;
     
     // Get user profile
-    QFuture<ApiResult<UserProfile>> getUserProfile();
+    QCoro::Task<ApiResult<UserProfile>> getUserProfile();
     
     // ==================== Search ====================
     
     // Search videos
-    QFuture<ApiResult<SearchResult>> searchVideos(const QString &keyword,
+    QCoro::Task<ApiResult<SearchResult>> searchVideos(const QString &keyword,
                                                    int page = 1,
                                                    int pageSize = 20);
     
     // Search anime
-    QFuture<ApiResult<SearchResult>> searchBangumi(const QString &keyword,
+    QCoro::Task<ApiResult<SearchResult>> searchBangumi(const QString &keyword,
                                                     int page = 1,
                                                     int pageSize = 20);
     
     // Search users
-    QFuture<ApiResult<SearchResult>> searchUsers(const QString &keyword,
+    QCoro::Task<ApiResult<SearchResult>> searchUsers(const QString &keyword,
                                                   int page = 1,
                                                   int pageSize = 20);
     
     // Hot searches
-    QFuture<ApiResult<QStringList>> getHotSearches();
+    QCoro::Task<ApiResult<QStringList>> getHotSearches();
     
     // ==================== Videos ====================
     
     // Video details
-    QFuture<ApiResult<VideoDetail>> getVideoDetail(const QString &bvid);
-    QFuture<ApiResult<VideoDetail>> getVideoDetail(int avid);
+    QCoro::Task<ApiResult<VideoDetail>> getVideoDetail(const QString &bvid);
+    QCoro::Task<ApiResult<VideoDetail>> getVideoDetail(int avid);
     
     // Video pages
-    QFuture<ApiResult<QList<VideoPage>>> getVideoPages(const QString &bvid);
+    QCoro::Task<ApiResult<QList<VideoPage>>> getVideoPages(const QString &bvid);
     
     // Video stream
-    QFuture<ApiResult<VideoStream>> getVideoStream(const QString &bvid,
+    QCoro::Task<ApiResult<VideoStream>> getVideoStream(const QString &bvid,
                                                     int cid,
                                                     VideoQuality quality = VideoQuality::Q720P);
     
     // Audio stream
-    QFuture<ApiResult<AudioStream>> getAudioStream(const QString &bvid,
+    QCoro::Task<ApiResult<AudioStream>> getAudioStream(const QString &bvid,
                                                     int cid);
     
     // Recommended videos
-    QFuture<ApiResult<QList<VideoDetail>>> getRecommendedVideos();
+    QCoro::Task<ApiResult<QList<VideoDetail>>> getRecommendedVideos();
     
     // Popular videos
-    QFuture<ApiResult<QList<VideoDetail>>> getPopularVideos(int page = 1);
+    QCoro::Task<ApiResult<QList<VideoDetail>>> getPopularVideos(int page = 1);
     
     // ==================== Favorites ====================
     
     // User favorites
-    QFuture<ApiResult<QList<FavoriteList>>> getUserFavorites(
+    QCoro::Task<ApiResult<QList<FavoriteList>>> getUserFavorites(
         const QString &userId);
     
     // Favorite details
-    QFuture<ApiResult<FavoriteDetail>> getFavoriteDetail(
+    QCoro::Task<ApiResult<FavoriteDetail>> getFavoriteDetail(
         int mediaId, int page = 1, int pageSize = 20);
     
     // Create favorite
-    QFuture<ApiResult<FavoriteList>> createFavorite(
+    QCoro::Task<ApiResult<FavoriteList>> createFavorite(
         const QString &name, const QString &description = {});
     
     // Delete favorite
-    QFuture<ApiResult<VoidResult>> deleteFavorite(int mediaId);
+    QCoro::Task<ApiResult<VoidResult>> deleteFavorite(int mediaId);
     
     // Add video to favorite
-    QFuture<ApiResult<VoidResult>> addVideoToFavorite(
+    QCoro::Task<ApiResult<VoidResult>> addVideoToFavorite(
         int mediaId, const QString &bvid);
     
     // Remove video from favorite
-    QFuture<ApiResult<VoidResult>> removeVideoFromFavorite(
+    QCoro::Task<ApiResult<VoidResult>> removeVideoFromFavorite(
         int mediaId, const QString &bvid);
     
     // ==================== User ====================
     
     // User uploads
-    QFuture<ApiResult<QList<VideoDetail>>> getUserVideos(
+    QCoro::Task<ApiResult<QList<VideoDetail>>> getUserVideos(
         const QString &userId, int page = 1, int pageSize = 30);
     
     // History
-    QFuture<ApiResult<QList<VideoDetail>>> getHistory(
+    QCoro::Task<ApiResult<QList<VideoDetail>>> getHistory(
         int page = 1, int pageSize = 20);
     
     // User stats
-    QFuture<ApiResult<UserStat>> getUserStat();
+    QCoro::Task<ApiResult<UserStat>> getUserStat();
     
     // Following list
-    QFuture<ApiResult<QList<UserProfile>>> getFollowing(
+    QCoro::Task<ApiResult<QList<UserProfile>>> getFollowing(
         const QString &userId, int page = 1, int pageSize = 20);
     
 signals:

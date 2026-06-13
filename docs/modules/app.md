@@ -339,7 +339,7 @@ public:
     
     // Execute in worker thread
     template<typename T>
-    QFuture<T> run(std::function<T()> func);
+    QCoro::Task<T> run(std::function<T()> func);
     
     // Execute in main thread
     void runOnMainThread(std::function<void()> func);

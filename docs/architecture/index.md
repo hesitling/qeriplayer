@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-NeriPlayer Qt is a cross-platform desktop music player client developed using the Qt framework. It references the architectural design philosophy of the Android version of NeriPlayer, adopting a layered architecture and modular design to implement multi-source music platform integration, local playback, playlist management, and other core features.
+NeriPlayer Qt is a cross-platform desktop music player client developed using the Qt framework. It uses the Android version of NeriPlayer as a feature and behavior reference while adopting Qt-native layered architecture, module boundaries, and asynchronous patterns for multi-source music platform integration, local playback, playlist management, and other core features.
 
 ## 2. Design Principles
 
@@ -15,7 +15,7 @@ NeriPlayer Qt is a cross-platform desktop music player client developed using th
 ### 2.2 Architectural Style
 - **MVVM (Model-View-ViewModel)**: Separation of UI and business logic
 - **Layered Architecture**: Clear separation of presentation, business, and data layers
-- **Dependency Injection**: Service locator pattern for dependency management
+- **Dependency Injection**: Application composition root registers long-lived services and injects them into consumers
 - **Reactive Programming**: Qt signal-slot mechanism and property binding
 
 ## 3. Technology Stack
@@ -24,7 +24,7 @@ NeriPlayer Qt is a cross-platform desktop music player client developed using th
 |----------|-----------|-------------|
 | **UI Framework** | Qt 6 Widgets / QML | Native desktop UI |
 | **Build System** | CMake 3.16+ | Modern C++ build |
-| **C++ Standard** | C++17 | Modern C++ features |
+| **C++ Standard** | C++20 | Coroutine support |
 | **Multimedia** | Qt Multimedia / VLC | Audio playback |
 | **Network** | Qt Network / libcurl | HTTP requests |
 | **Database** | SQLite | Local data storage |
@@ -36,6 +36,7 @@ NeriPlayer Qt is a cross-platform desktop music player client developed using th
 
 - [Layered Architecture](layers.md) - Detailed layered architecture design
 - [C++20 Coroutines & QCoro](coroutines.md) - Coroutine support and asynchronous programming
+- [Porting from Android NeriPlayer](porting-from-android.md) - Rules for using Android as a feature reference without copying global singleton dependencies
 - [Core Components](components.md) - Core component design
 - [Threading Model](threading.md) - Thread division and communication
 - [Plugin Architecture](plugin.md) - Plugin system design
@@ -56,7 +57,7 @@ NeriPlayer Qt is a cross-platform desktop music player client developed using th
 ┌─────────────────────────────────────────────────────────────┐
 │                    Business Layer                            │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │  ViewModel   │  │  Service    │  │  Manager            │  │
+│  │  ViewModel   │  │  Service    │  │  Domain Models      │  │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                               ↓

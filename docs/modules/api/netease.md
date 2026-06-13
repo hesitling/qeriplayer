@@ -30,151 +30,151 @@ public:
     // ==================== Authentication ====================
     
     // Phone number login
-    QFuture<ApiResult<LoginResult>> login(const QString &phone, 
+    QCoro::Task<ApiResult<LoginResult>> login(const QString &phone, 
                                           const QString &password);
     
     // Email login
-    QFuture<ApiResult<LoginResult>> loginByEmail(const QString &email,
+    QCoro::Task<ApiResult<LoginResult>> loginByEmail(const QString &email,
                                                   const QString &password);
     
     // QR code login
-    QFuture<ApiResult<QrCodeData>> generateQrCode();
-    QFuture<ApiResult<LoginResult>> checkQrCodeStatus(const QString &key);
+    QCoro::Task<ApiResult<QrCodeData>> generateQrCode();
+    QCoro::Task<ApiResult<LoginResult>> checkQrCodeStatus(const QString &key);
     
     // Logout
-    QFuture<ApiResult<VoidResult>> logout();
+    QCoro::Task<ApiResult<VoidResult>> logout();
     
     // Check login status
     bool isAuthenticated() const;
     
     // Get user profile
-    QFuture<ApiResult<UserProfile>> getUserProfile();
+    QCoro::Task<ApiResult<UserProfile>> getUserProfile();
     
     // ==================== Search ====================
     
     // Comprehensive search
-    QFuture<ApiResult<SearchResult>> search(const QString &keyword,
+    QCoro::Task<ApiResult<SearchResult>> search(const QString &keyword,
                                             SearchType type = SearchType::All,
                                             int limit = 30, int offset = 0);
     
     // Search songs
-    QFuture<ApiResult<SearchResult>> searchSongs(const QString &keyword,
+    QCoro::Task<ApiResult<SearchResult>> searchSongs(const QString &keyword,
                                                   int limit = 30, 
                                                   int offset = 0);
     
     // Search playlists
-    QFuture<ApiResult<SearchResult>> searchPlaylists(const QString &keyword,
+    QCoro::Task<ApiResult<SearchResult>> searchPlaylists(const QString &keyword,
                                                       int limit = 30,
                                                       int offset = 0);
     
     // Search albums
-    QFuture<ApiResult<SearchResult>> searchAlbums(const QString &keyword,
+    QCoro::Task<ApiResult<SearchResult>> searchAlbums(const QString &keyword,
                                                    int limit = 30,
                                                    int offset = 0);
     
     // Search artists
-    QFuture<ApiResult<SearchResult>> searchArtists(const QString &keyword,
+    QCoro::Task<ApiResult<SearchResult>> searchArtists(const QString &keyword,
                                                     int limit = 30,
                                                     int offset = 0);
     
     // Hot searches
-    QFuture<ApiResult<QStringList>> getHotSearches();
+    QCoro::Task<ApiResult<QStringList>> getHotSearches();
     
     // ==================== Songs ====================
     
     // Song details
-    QFuture<ApiResult<SongDetail>> getSongDetail(const QString &songId);
+    QCoro::Task<ApiResult<SongDetail>> getSongDetail(const QString &songId);
     
     // Song playback URL
-    QFuture<ApiResult<PlaybackUrl>> getSongUrl(const QString &songId,
+    QCoro::Task<ApiResult<PlaybackUrl>> getSongUrl(const QString &songId,
                                                 AudioQuality quality = AudioQuality::High);
     
     // Lyrics
-    QFuture<ApiResult<Lyrics>> getLyrics(const QString &songId);
+    QCoro::Task<ApiResult<Lyrics>> getLyrics(const QString &songId);
     
     // Similar songs
-    QFuture<ApiResult<QList<Song>>> getSimilarSongs(const QString &songId);
+    QCoro::Task<ApiResult<QList<Song>>> getSimilarSongs(const QString &songId);
     
     // ==================== Playlists ====================
     
     // Playlist details
-    QFuture<ApiResult<PlaylistDetail>> getPlaylistDetail(const QString &playlistId);
+    QCoro::Task<ApiResult<PlaylistDetail>> getPlaylistDetail(const QString &playlistId);
     
     // User playlists
-    QFuture<ApiResult<QList<Playlist>>> getUserPlaylists(const QString &userId);
+    QCoro::Task<ApiResult<QList<Playlist>>> getUserPlaylists(const QString &userId);
     
     // Recommended playlists
-    QFuture<ApiResult<QList<Playlist>>> getRecommendedPlaylists();
+    QCoro::Task<ApiResult<QList<Playlist>>> getRecommendedPlaylists();
     
     // High-quality playlists
-    QFuture<ApiResult<QList<Playlist>>> getHighQualityPlaylists(
+    QCoro::Task<ApiResult<QList<Playlist>>> getHighQualityPlaylists(
         const QString &category = {}, int limit = 30);
     
     // Create playlist
-    QFuture<ApiResult<Playlist>> createPlaylist(const QString &name,
+    QCoro::Task<ApiResult<Playlist>> createPlaylist(const QString &name,
                                                  const QString &description = {});
     
     // Delete playlist
-    QFuture<ApiResult<VoidResult>> deletePlaylist(const QString &playlistId);
+    QCoro::Task<ApiResult<VoidResult>> deletePlaylist(const QString &playlistId);
     
     // Add song to playlist
-    QFuture<ApiResult<VoidResult>> addSongToPlaylist(const QString &playlistId,
+    QCoro::Task<ApiResult<VoidResult>> addSongToPlaylist(const QString &playlistId,
                                                       const QString &songId);
     
     // Remove song from playlist
-    QFuture<ApiResult<VoidResult>> removeSongFromPlaylist(
+    QCoro::Task<ApiResult<VoidResult>> removeSongFromPlaylist(
         const QString &playlistId, const QString &songId);
     
     // ==================== Albums ====================
     
     // Album details
-    QFuture<ApiResult<AlbumDetail>> getAlbumDetail(const QString &albumId);
+    QCoro::Task<ApiResult<AlbumDetail>> getAlbumDetail(const QString &albumId);
     
     // New albums
-    QFuture<ApiResult<QList<Album>>> getNewAlbums(int limit = 30);
+    QCoro::Task<ApiResult<QList<Album>>> getNewAlbums(int limit = 30);
     
     // ==================== Artists ====================
     
     // Artist details
-    QFuture<ApiResult<ArtistDetail>> getArtistDetail(const QString &artistId);
+    QCoro::Task<ApiResult<ArtistDetail>> getArtistDetail(const QString &artistId);
     
     // Artist songs
-    QFuture<ApiResult<QList<Song>>> getArtistSongs(const QString &artistId,
+    QCoro::Task<ApiResult<QList<Song>>> getArtistSongs(const QString &artistId,
                                                     int limit = 50,
                                                     int offset = 0);
     
     // Artist albums
-    QFuture<ApiResult<QList<Album>>> getArtistAlbums(const QString &artistId,
+    QCoro::Task<ApiResult<QList<Album>>> getArtistAlbums(const QString &artistId,
                                                       int limit = 30,
                                                       int offset = 0);
     
     // Top artists
-    QFuture<ApiResult<QList<Artist>>> getTopArtists(int limit = 50);
+    QCoro::Task<ApiResult<QList<Artist>>> getTopArtists(int limit = 50);
     
     // ==================== User ====================
     
     // Liked songs
-    QFuture<ApiResult<QList<Song>>> getLikedSongs(const QString &userId);
+    QCoro::Task<ApiResult<QList<Song>>> getLikedSongs(const QString &userId);
     
     // Like song
-    QFuture<ApiResult<VoidResult>> likeSong(const QString &songId);
+    QCoro::Task<ApiResult<VoidResult>> likeSong(const QString &songId);
     
     // Unlike song
-    QFuture<ApiResult<VoidResult>> unlikeSong(const QString &songId);
+    QCoro::Task<ApiResult<VoidResult>> unlikeSong(const QString &songId);
     
     // Play history
-    QFuture<ApiResult<QList<PlayHistory>>> getPlayHistory();
+    QCoro::Task<ApiResult<QList<PlayHistory>>> getPlayHistory();
     
     // ==================== Recommendations ====================
     
     // Daily recommendations
-    QFuture<ApiResult<QList<Song>>> getDailyRecommendations();
+    QCoro::Task<ApiResult<QList<Song>>> getDailyRecommendations();
     
     // New songs
-    QFuture<ApiResult<QList<Song>>> getNewSongs();
+    QCoro::Task<ApiResult<QList<Song>>> getNewSongs();
     
     // Personal FM
-    QFuture<ApiResult<QList<Song>>> getPersonalFM();
+    QCoro::Task<ApiResult<QList<Song>>> getPersonalFM();
     
 signals:
     void loginStateChanged(bool loggedIn);
@@ -183,7 +183,7 @@ signals:
 private:
     QJsonObject encryptRequest(const QJsonObject &data);
     QJsonObject decryptResponse(const QJsonObject &data);
-    QFuture<ApiResult<QJsonObject>> makeRequest(
+    QCoro::Task<ApiResult<QJsonObject>> makeRequest(
         const QString &url, const QJsonObject &data = {},
         const HttpHeaders &headers = {});
     

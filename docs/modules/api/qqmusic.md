@@ -29,22 +29,22 @@ public:
     // ==================== Search ====================
     
     // Search songs
-    QFuture<ApiResult<SearchResult>> searchSongs(const QString &keyword,
+    QCoro::Task<ApiResult<SearchResult>> searchSongs(const QString &keyword,
                                                   int limit = 30);
     
     // ==================== Songs ====================
     
     // Song details
-    QFuture<ApiResult<SongDetail>> getSongDetail(const QString &songMid);
+    QCoro::Task<ApiResult<SongDetail>> getSongDetail(const QString &songMid);
     
     // Lyrics
-    QFuture<ApiResult<Lyrics>> getLyrics(const QString &songMid);
+    QCoro::Task<ApiResult<Lyrics>> getLyrics(const QString &songMid);
     
     // Cover art
-    QFuture<ApiResult<QString>> getCoverUrl(const QString &songMid);
+    QCoro::Task<ApiResult<QString>> getCoverUrl(const QString &songMid);
     
     // Playback URL (optional)
-    QFuture<ApiResult<PlaybackUrl>> getSongUrl(const QString &songMid,
+    QCoro::Task<ApiResult<PlaybackUrl>> getSongUrl(const QString &songMid,
                                                 AudioQuality quality = AudioQuality::High);
     
 private:
@@ -132,7 +132,7 @@ The QQ Music module is primarily used for metadata completion scenarios:
 class MetadataCompleter {
 public:
     // Complete song metadata
-    QFuture<SongMetadata> completeMetadata(const Song &song) {
+    QCoro::Task<SongMetadata> completeMetadata(const Song &song) {
         // 1. Try NetEase first
         auto neteaseResult = co_await m_neteaseClient->searchSongs(
             song.title + " " + song.artist);

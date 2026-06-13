@@ -46,7 +46,7 @@ src/api/
 ## 5. Design Principles
 
 - **Unified Interface**: All platform clients implement the same interface
-- **Async Operations**: All API calls return QFuture
+- **Async Operations**: All API calls return QCoro::Task
 - **Error Handling**: Unified ApiError error handling
 - **Extensible**: Support for adding new platform plugins
 
