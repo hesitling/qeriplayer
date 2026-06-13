@@ -4,6 +4,7 @@
 
 #include "core/filesystem/AppPaths.h"
 #include "core/filesystem/FileUtils.h"
+#include "core/filesystem/FileWatcher.h"
 
 #include <QTest>
 #include <QTemporaryDir>
@@ -34,6 +35,10 @@ private Q_SLOTS:
     void readFile_nonExistent();
     void writeFile_createsFile();
     void writeFile_atomicWrite();
+
+    // FileWatcher
+    void fileWatcher_emitsSignalOnChange();
+    void fileWatcher_stop();
 };
 
 void TestFileSystem::dataDir_returnsValidPath()
@@ -160,6 +165,51 @@ void TestFileSystem::writeFile_atomicWrite()
     QFile file(filePath);
     QVERIFY(file.open(QIODevice::ReadOnly));
     QCOMPARE(file.readAll(), QByteArray("updated"));
+}
+
+void TestFileSystem::fileWatcher_emitsSignalOnChange()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    QString filePath = tempDir.filePath("watched.txt");
+    QFile file(filePath);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    file.write("initial");
+    file.close();
+
+    FileWatcher watcher;
+    QSignalSpy spy(&watcher, &FileWatcher::fileChanged);
+    QVERIFY(spy.isValid());
+
+    watcher.watch(filePath);
+    QVERIFY(watcher.isWatching());
+
+    // Modify the file
+    QVERIFY(file.open(QIODevice::WriteOnly | QIODevice::Append));
+    file.write("more");
+    file.close();
+
+    QTRY_VERIFY_WITH_TIMEOUT(spy.count() > 0, 2000);
+}
+
+void TestFileSystem::fileWatcher_stop()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    QString filePath = tempDir.filePath("watched2.txt");
+    QFile file(filePath);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    file.write("data");
+    file.close();
+
+    FileWatcher watcher;
+    watcher.watch(filePath);
+    QVERIFY(watcher.isWatching());
+
+    watcher.stop();
+    QVERIFY(!watcher.isWatching());
 }
 
 QTEST_MAIN(TestFileSystem)

@@ -212,6 +212,7 @@ add_executable(TestFileSystem
     tests/core/TestFileSystem.cpp
     src/core/filesystem/AppPaths.cpp
     src/core/filesystem/FileUtils.cpp
+    src/core/filesystem/FileWatcher.cpp
 )
 target_include_directories(TestFileSystem PRIVATE
     ${CMAKE_SOURCE_DIR}/src
