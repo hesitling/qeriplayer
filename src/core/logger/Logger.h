@@ -46,6 +46,8 @@ class NamedLogger {
 public:
     explicit NamedLogger(std::shared_ptr<spdlog::logger> logger);
 
+    void setLevel(LogLevel level);
+
     void trace(const char *msg);
     void debug(const char *msg);
     void info(const char *msg);

@@ -19,6 +19,11 @@ NamedLogger::NamedLogger(std::shared_ptr<spdlog::logger> logger)
 {
 }
 
+void NamedLogger::setLevel(LogLevel level)
+{
+    m_logger->set_level(Logger::toSpdlogLevel(level));
+}
+
 void NamedLogger::trace(const char *msg) { m_logger->trace(msg); }
 void NamedLogger::debug(const char *msg) { m_logger->debug(msg); }
 void NamedLogger::info(const char *msg)  { m_logger->info(msg); }
@@ -117,9 +122,9 @@ void Logger::setLevel(LogLevel level)
     s_config.level = level;
     auto spdLevel = toSpdlogLevel(level);
 
+    // Update all named loggers
     for (auto &[name, namedLogger] : s_loggers) {
-        // Access internal spdlog logger through the default logger's pattern
-        // We need a different approach — let's update all registered loggers
+        namedLogger->setLevel(level);
     }
 
     // Update spdlog's global level
