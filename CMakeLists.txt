@@ -43,6 +43,9 @@ set(SOURCES
     src/main.cpp
     src/app/NeriPlayerApplication.cpp
     src/core/database/DatabaseManager.cpp
+    src/core/filesystem/AppPaths.cpp
+    src/core/filesystem/FileUtils.cpp
+    src/core/filesystem/FileWatcher.cpp
     src/core/logger/Logger.cpp
     src/core/network/HttpClient.cpp
     src/core/network/WebSocketClient.cpp
@@ -56,6 +59,9 @@ set(HEADERS
     src/app/NeriPlayerApplication.h
     src/app/ServiceLocator.h
     src/core/database/DatabaseManager.h
+    src/core/filesystem/AppPaths.h
+    src/core/filesystem/FileUtils.h
+    src/core/filesystem/FileWatcher.h
     src/core/logger/Logger.h
     src/core/network/HttpClient.h
     src/core/network/WebSocketClient.h
@@ -185,3 +191,20 @@ target_compile_definitions(TestLogger PRIVATE
     QT_NO_KEYWORDS
 )
 add_test(NAME TestLogger COMMAND TestLogger)
+
+add_executable(TestFileSystem
+    tests/core/TestFileSystem.cpp
+    src/core/filesystem/AppPaths.cpp
+    src/core/filesystem/FileUtils.cpp
+)
+target_include_directories(TestFileSystem PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(TestFileSystem PRIVATE
+    Qt6::Core
+    Qt6::Test
+)
+target_compile_definitions(TestFileSystem PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestFileSystem COMMAND TestFileSystem)

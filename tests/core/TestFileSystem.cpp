@@ -1,0 +1,166 @@
+/// @file TestFileSystem.cpp
+/// @brief Unit tests for the filesystem module
+/// @date 2024-01-15
+
+#include "core/filesystem/AppPaths.h"
+#include "core/filesystem/FileUtils.h"
+
+#include <QTest>
+#include <QTemporaryDir>
+#include <QFile>
+#include <QDir>
+#include <QSignalSpy>
+
+using namespace NeriPlayerQt;
+
+class TestFileSystem : public QObject {
+    Q_OBJECT
+
+private Q_SLOTS:
+    // AppPaths
+    void dataDir_returnsValidPath();
+    void dataDir_autoCreates();
+    void configDir_returnsValidPath();
+    void configDir_autoCreates();
+    void cacheDir_returnsValidPath();
+    void cacheDir_autoCreates();
+    void tempDir_returnsValidPath();
+    void tempDir_autoCreates();
+
+    // FileUtils
+    void ensureDir_createsNestedDirs();
+    void ensureDir_alreadyExists();
+    void readFile_existingFile();
+    void readFile_nonExistent();
+    void writeFile_createsFile();
+    void writeFile_atomicWrite();
+};
+
+void TestFileSystem::dataDir_returnsValidPath()
+{
+    QString path = AppPaths::dataDir();
+    QVERIFY(!path.isEmpty());
+    QVERIFY(QDir(path).exists());
+}
+
+void TestFileSystem::dataDir_autoCreates()
+{
+    QString path = AppPaths::dataDir();
+    QVERIFY(QDir(path).exists());
+}
+
+void TestFileSystem::configDir_returnsValidPath()
+{
+    QString path = AppPaths::configDir();
+    QVERIFY(!path.isEmpty());
+    QVERIFY(QDir(path).exists());
+}
+
+void TestFileSystem::configDir_autoCreates()
+{
+    QString path = AppPaths::configDir();
+    QVERIFY(QDir(path).exists());
+}
+
+void TestFileSystem::cacheDir_returnsValidPath()
+{
+    QString path = AppPaths::cacheDir();
+    QVERIFY(!path.isEmpty());
+    QVERIFY(QDir(path).exists());
+}
+
+void TestFileSystem::cacheDir_autoCreates()
+{
+    QString path = AppPaths::cacheDir();
+    QVERIFY(QDir(path).exists());
+}
+
+void TestFileSystem::tempDir_returnsValidPath()
+{
+    QString path = AppPaths::tempDir();
+    QVERIFY(!path.isEmpty());
+    QVERIFY(QDir(path).exists());
+}
+
+void TestFileSystem::tempDir_autoCreates()
+{
+    QString path = AppPaths::tempDir();
+    QVERIFY(QDir(path).exists());
+}
+
+void TestFileSystem::ensureDir_createsNestedDirs()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    QString nested = tempDir.filePath("a/b/c");
+    QVERIFY(!QDir(nested).exists());
+
+    QVERIFY(FileUtils::ensureDir(nested));
+    QVERIFY(QDir(nested).exists());
+}
+
+void TestFileSystem::ensureDir_alreadyExists()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    QVERIFY(FileUtils::ensureDir(tempDir.path()));
+    // Should not error
+}
+
+void TestFileSystem::readFile_existingFile()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    QString filePath = tempDir.filePath("test.txt");
+    QFile file(filePath);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    file.write("hello world");
+    file.close();
+
+    QByteArray content = FileUtils::readFile(filePath);
+    QCOMPARE(content, QByteArray("hello world"));
+}
+
+void TestFileSystem::readFile_nonExistent()
+{
+    QByteArray content = FileUtils::readFile("/nonexistent/path/file.txt");
+    QVERIFY(content.isEmpty());
+    QVERIFY(!FileUtils::lastError().isEmpty());
+}
+
+void TestFileSystem::writeFile_createsFile()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    QString filePath = tempDir.filePath("write_test.txt");
+    QVERIFY(FileUtils::writeFile(filePath, "test content"));
+
+    QFile file(filePath);
+    QVERIFY(file.open(QIODevice::ReadOnly));
+    QCOMPARE(file.readAll(), QByteArray("test content"));
+}
+
+void TestFileSystem::writeFile_atomicWrite()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    QString filePath = tempDir.filePath("atomic.txt");
+
+    // Write initial content
+    QVERIFY(FileUtils::writeFile(filePath, "original"));
+
+    // Overwrite — should be atomic
+    QVERIFY(FileUtils::writeFile(filePath, "updated"));
+
+    QFile file(filePath);
+    QVERIFY(file.open(QIODevice::ReadOnly));
+    QCOMPARE(file.readAll(), QByteArray("updated"));
+}
+
+QTEST_MAIN(TestFileSystem)
+#include "TestFileSystem.moc"

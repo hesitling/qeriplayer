@@ -40,15 +40,15 @@
 
 ## 4. FileSystem Module
 
-- [ ] 4.1 Create `src/core/filesystem/` directory structure
-- [ ] 4.2 Implement `AppPaths::dataDir()` with platform-specific paths and auto-creation
-- [ ] 4.3 Implement `AppPaths::configDir()` with platform-specific paths and auto-creation
-- [ ] 4.4 Implement `AppPaths::cacheDir()` with platform-specific paths and auto-creation
-- [ ] 4.5 Implement `AppPaths::tempDir()` with auto-creation
-- [ ] 4.6 Implement `FileUtils::ensureDir()` for recursive directory creation
-- [ ] 4.7 Implement `FileUtils::readFile()` returning QByteArray
-- [ ] 4.8 Implement `FileUtils::writeFile()` with atomic write (temp + rename)
-- [ ] 4.9 Implement `FileWatcher` class with fileChanged signal
+- [x] 4.1 Create `src/core/filesystem/` directory structure
+- [x] 4.2 Implement `AppPaths::dataDir()` with platform-specific paths and auto-creation
+- [x] 4.3 Implement `AppPaths::configDir()` with platform-specific paths and auto-creation
+- [x] 4.4 Implement `AppPaths::cacheDir()` with platform-specific paths and auto-creation
+- [x] 4.5 Implement `AppPaths::tempDir()` with auto-creation
+- [x] 4.6 Implement `FileUtils::ensureDir()` for recursive directory creation
+- [x] 4.7 Implement `FileUtils::readFile()` returning QByteArray
+- [x] 4.8 Implement `FileUtils::writeFile()` with atomic write (temp + rename)
+- [x] 4.9 Implement `FileWatcher` class with fileChanged signal
 
 ## 5. Crypto Module
 
