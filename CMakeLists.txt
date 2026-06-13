@@ -42,6 +42,7 @@ set(CMAKE_AUTORCC ON)
 set(SOURCES
     src/main.cpp
     src/app/NeriPlayerApplication.cpp
+    src/core/database/DatabaseManager.cpp
     src/core/network/HttpClient.cpp
     src/core/network/WebSocketClient.cpp
     src/core/network/NetworkManager.cpp
@@ -53,6 +54,7 @@ set(SOURCES
 set(HEADERS
     src/app/NeriPlayerApplication.h
     src/app/ServiceLocator.h
+    src/core/database/DatabaseManager.h
     src/core/network/HttpClient.h
     src/core/network/WebSocketClient.h
     src/core/network/NetworkManager.h
@@ -82,11 +84,13 @@ target_link_libraries(NeriPlayerQt PRIVATE
     Qt6::Network
     Qt6::WebSockets
     ${NERIPLAYER_QCORO_LIBRARIES}
+    ${SQLITE3_LIBRARIES}
 )
 
 # 包含目录
 target_include_directories(NeriPlayerQt PRIVATE
     ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
 )
 
 # Install target
@@ -95,6 +99,19 @@ install(TARGETS NeriPlayerQt
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+# SQLite
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+    pkg_check_modules(SQLITE3 sqlite3)
+endif()
+if(NOT SQLITE3_FOUND)
+    find_library(SQLITE3_LIBRARIES NAMES sqlite3)
+    find_path(SQLITE3_INCLUDE_DIRS sqlite3.h)
+    if(NOT SQLITE3_LIBRARIES OR NOT SQLITE3_INCLUDE_DIRS)
+        message(FATAL_ERROR "sqlite3 not found. Install libsqlite3-dev or equivalent.")
+    endif()
+endif()
 
 # Testing
 enable_testing()
@@ -114,3 +131,23 @@ target_compile_definitions(TestDomainModels PRIVATE
     QT_NO_KEYWORDS
 )
 add_test(NAME TestDomainModels COMMAND TestDomainModels)
+
+add_executable(TestDatabase
+    tests/core/TestDatabase.cpp
+    src/core/database/DatabaseManager.cpp
+)
+target_include_directories(TestDatabase PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+)
+target_link_libraries(TestDatabase PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+    dl
+    pthread
+)
+target_compile_definitions(TestDatabase PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestDatabase COMMAND TestDatabase)

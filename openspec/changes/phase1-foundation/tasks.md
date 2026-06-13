@@ -16,16 +16,16 @@
 
 ## 2. Database Module
 
-- [ ] 2.1 Create `src/core/database/` directory structure
-- [ ] 2.2 Implement `DatabaseManager` class with open/close lifecycle
-- [ ] 2.3 Implement `SchemaManager` with version table and migration registration
-- [ ] 2.4 Implement `QueryHelper` with positional and named parameter binding
-- [ ] 2.5 Implement SELECT query execution returning rows as QVector<QVariant>
-- [ ] 2.6 Implement INSERT/UPDATE/DELETE execution with affected row count
-- [ ] 2.7 Implement transaction support (begin, commit, rollback)
-- [ ] 2.8 Define `DatabaseError` exception type
-- [ ] 2.9 Write initial migration (version 1) creating songs_cache, playlists, playlist_songs, settings, play_history tables
-- [ ] 2.10 Add SQLite dependency to CMakeLists.txt (bundled or system)
+- [x] 2.1 Create `src/core/database/` directory structure
+- [x] 2.2 Implement `DatabaseManager` class with open/close lifecycle
+- [x] 2.3 Implement `SchemaManager` with version table and migration registration
+- [x] 2.4 Implement `QueryHelper` with positional and named parameter binding
+- [x] 2.5 Implement SELECT query execution returning rows as QVector<QVariant>
+- [x] 2.6 Implement INSERT/UPDATE/DELETE execution with affected row count
+- [x] 2.7 Implement transaction support (begin, commit, rollback)
+- [x] 2.8 Define `DatabaseError` exception type
+- [x] 2.9 Write initial migration (version 1) creating songs_cache, playlists, playlist_songs, settings, play_history tables
+- [x] 2.10 Add SQLite dependency to CMakeLists.txt (bundled or system)
 
 ## 3. Logger Module
 
