@@ -82,6 +82,9 @@ QByteArray Encryptor::encrypt(const QByteArray &plaintext,
 
     EVP_CIPHER_CTX_free(ctx);
 
+    // Resize to actual encrypted length
+    ciphertext.resize(outLen + finalLen);
+
     // Build output: [nonce][ciphertext][tag]
     QByteArray result;
     result.reserve(NONCE_SIZE + ciphertext.size() + TAG_SIZE);
