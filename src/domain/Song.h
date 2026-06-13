@@ -16,8 +16,13 @@ namespace NeriPlayerQt {
 
 /**
  * @brief Represents a song across all platforms
+ *
+ * Aligned with Android NeriPlayer's SongItem model.
+ * Includes customization fields (custom/original) for user overrides,
+ * lyric matching fields, local file support, and platform-specific identifiers.
  */
 struct Song {
+    // Core identity
     QString id;
     QString title;
     QString artist;
@@ -27,7 +32,39 @@ struct Song {
     QUrl coverUrl;
     QUrl playbackUrl;
     MusicPlatform platform = MusicPlatform::Unknown;
-    QVariantMap extra; ///< Platform-specific fields
+
+    // Lyric matching
+    QString matchedLyric;
+    QString matchedTranslatedLyric;
+    MusicPlatform matchedLyricSource = MusicPlatform::Unknown;
+    QString matchedSongId;
+    qint64 userLyricOffsetMs = 0;
+
+    // User customizations (overrides)
+    QString customCoverUrl;
+    QString customName;
+    QString customArtist;
+
+    // Original values (before user edits)
+    QString originalName;
+    QString originalArtist;
+    QString originalCoverUrl;
+    QString originalLyric;
+    QString originalTranslatedLyric;
+
+    // Local file support
+    QString localFileName;
+    QString localFilePath;
+
+    // Platform-specific identifiers
+    QString channelId;
+    QString audioId;
+    QString subAudioId;
+    QString playlistContextId;
+    QString streamUrl;
+
+    // Arbitrary platform-specific data
+    QVariantMap extra;
 };
 
 } // namespace NeriPlayerQt

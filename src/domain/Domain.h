@@ -9,8 +9,10 @@
 #include "domain/Artist.h"
 #include "domain/Enums.h"
 #include "domain/Lyrics.h"
+#include "domain/PersistedPlayerState.h"
 #include "domain/Playlist.h"
 #include "domain/SearchResult.h"
 #include "domain/Song.h"
+#include "domain/SongIdentity.h"
 
 #endif // NERIPLAYERQT_DOMAIN_H

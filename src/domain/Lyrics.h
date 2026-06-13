@@ -1,5 +1,5 @@
 /// @file Lyrics.h
-/// @brief Lyrics domain model
+/// @brief Lyrics domain model with word-level timing support
 /// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_LYRICS_H
@@ -12,11 +12,22 @@
 namespace NeriPlayerQt {
 
 /**
- * @brief A single timed lyric line
+ * @brief Word-level timing for synchronized lyrics display
+ */
+struct LyricWord {
+    QString text;
+    qint64 startTimeMs = 0;
+    qint64 endTimeMs = 0;
+};
+
+/**
+ * @brief A single timed lyric line with optional word-level timing
  */
 struct LyricLine {
-    qint64 timestamp = 0; ///< Milliseconds from song start
+    qint64 startTimeMs = 0; ///< Line start in milliseconds
+    qint64 endTimeMs = 0;   ///< Line end in milliseconds
     QString text;
+    QVector<LyricWord> words; ///< Word-level timing (optional, e.g. YRC format)
 };
 
 /**
@@ -24,11 +35,12 @@ struct LyricLine {
  */
 struct Lyrics {
     QString rawText;
-    QVector<LyricLine> lines; ///< Sorted by timestamp ascending
+    QVector<LyricLine> lines; ///< Sorted by startTimeMs ascending
 };
 
 } // namespace NeriPlayerQt
 
+Q_DECLARE_METATYPE(NeriPlayerQt::LyricWord)
 Q_DECLARE_METATYPE(NeriPlayerQt::LyricLine)
 Q_DECLARE_METATYPE(NeriPlayerQt::Lyrics)
 

@@ -45,6 +45,7 @@ private Q_SLOTS:
 
     // Lyrics
     void lyrics_ordering();
+    void lyrics_wordTiming();
 
     // SearchResult
     void searchResult_defaultConstruction();
@@ -173,12 +174,31 @@ void TestDomainModels::lyrics_ordering()
 {
     Lyrics lyrics;
     lyrics.rawText = QStringLiteral("[00:00.000]Hello\n[00:05.000]World");
-    lyrics.lines = { { 0, QStringLiteral("Hello") }, { 5000, QStringLiteral("World") } };
+    lyrics.lines = { { 0, 5000, QStringLiteral("Hello"), { } }, { 5000, 10000, QStringLiteral("World"), { } } };
 
-    QCOMPARE(lyrics.lines[0].timestamp, 0);
+    QCOMPARE(lyrics.lines[0].startTimeMs, 0);
+    QCOMPARE(lyrics.lines[0].endTimeMs, 5000);
     QCOMPARE(lyrics.lines[0].text, QStringLiteral("Hello"));
-    QCOMPARE(lyrics.lines[1].timestamp, 5000);
+    QCOMPARE(lyrics.lines[1].startTimeMs, 5000);
     QCOMPARE(lyrics.lines[1].text, QStringLiteral("World"));
+}
+
+void TestDomainModels::lyrics_wordTiming()
+{
+    Lyrics lyrics;
+    LyricLine line;
+    line.startTimeMs = 1000;
+    line.endTimeMs = 3000;
+    line.text = QStringLiteral("Hello World");
+    line.words = { { QStringLiteral("Hello"), 1000, 2000 }, { QStringLiteral("World"), 2000, 3000 } };
+    lyrics.lines.append(line);
+
+    QCOMPARE(lyrics.lines[0].words.size(), 2);
+    QCOMPARE(lyrics.lines[0].words[0].text, QStringLiteral("Hello"));
+    QCOMPARE(lyrics.lines[0].words[0].startTimeMs, 1000);
+    QCOMPARE(lyrics.lines[0].words[0].endTimeMs, 2000);
+    QCOMPARE(lyrics.lines[0].words[1].text, QStringLiteral("World"));
+    QCOMPARE(lyrics.lines[0].words[1].startTimeMs, 2000);
 }
 
 void TestDomainModels::searchResult_defaultConstruction()

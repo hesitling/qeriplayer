@@ -110,7 +110,9 @@ set(HEADERS
     src/domain/Artist.h
     src/domain/Playlist.h
     src/domain/Lyrics.h
+    src/domain/PersistedPlayerState.h
     src/domain/SearchResult.h
+    src/domain/SongIdentity.h
     src/mainwindow.h
 )
 
