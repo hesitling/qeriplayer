@@ -34,6 +34,34 @@ else()
     set(NERIPLAYER_QCORO_LIBRARIES QCoro::Core QCoro::Network QCoro::WebSockets)
 endif()
 
+# SQLite
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+    pkg_check_modules(SQLITE3 QUIET sqlite3)
+endif()
+if(NOT SQLITE3_FOUND)
+    find_library(SQLITE3_LIBRARIES NAMES sqlite3)
+    find_path(SQLITE3_INCLUDE_DIRS sqlite3.h)
+    if(NOT SQLITE3_LIBRARIES OR NOT SQLITE3_INCLUDE_DIRS)
+        message(FATAL_ERROR "sqlite3 not found. Install libsqlite3-dev or equivalent.")
+    endif()
+endif()
+
+# spdlog
+if(PkgConfig_FOUND)
+    pkg_check_modules(SPDLOG QUIET spdlog)
+endif()
+if(NOT SPDLOG_FOUND)
+    find_path(SPDLOG_INCLUDE_DIRS spdlog/spdlog.h)
+    find_library(SPDLOG_LIBRARIES NAMES spdlog)
+    if(NOT SPDLOG_INCLUDE_DIRS OR NOT SPDLOG_LIBRARIES)
+        message(FATAL_ERROR "spdlog not found. Install libspdlog-dev or equivalent.")
+    endif()
+endif()
+
+# OpenSSL
+find_package(OpenSSL REQUIRED)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
@@ -119,32 +147,6 @@ install(TARGETS NeriPlayerQt
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-# SQLite
-find_package(PkgConfig QUIET)
-if(PkgConfig_FOUND)
-    pkg_check_modules(SQLITE3 sqlite3)
-endif()
-if(NOT SQLITE3_FOUND)
-    find_library(SQLITE3_LIBRARIES NAMES sqlite3)
-    find_path(SQLITE3_INCLUDE_DIRS sqlite3.h)
-    if(NOT SQLITE3_LIBRARIES OR NOT SQLITE3_INCLUDE_DIRS)
-        message(FATAL_ERROR "sqlite3 not found. Install libsqlite3-dev or equivalent.")
-    endif()
-endif()
-
-# spdlog
-pkg_check_modules(SPDLOG spdlog)
-if(NOT SPDLOG_FOUND)
-    find_path(SPDLOG_INCLUDE_DIRS spdlog/spdlog.h)
-    find_library(SPDLOG_LIBRARIES NAMES spdlog)
-    if(NOT SPDLOG_INCLUDE_DIRS OR NOT SPDLOG_LIBRARIES)
-        message(FATAL_ERROR "spdlog not found. Install libspdlog-dev or equivalent.")
-    endif()
-endif()
-
-# OpenSSL
-find_package(OpenSSL REQUIRED)
-
 # Testing
 enable_testing()
 find_package(Qt6 REQUIRED COMPONENTS Test)
@@ -176,9 +178,10 @@ target_link_libraries(TestDatabase PRIVATE
     Qt6::Core
     Qt6::Test
     ${SQLITE3_LIBRARIES}
-    dl
-    pthread
 )
+if(UNIX)
+    target_link_libraries(TestDatabase PRIVATE dl pthread)
+endif()
 target_compile_definitions(TestDatabase PRIVATE
     QT_NO_KEYWORDS
 )
@@ -196,9 +199,10 @@ target_link_libraries(TestLogger PRIVATE
     Qt6::Core
     Qt6::Test
     ${SPDLOG_LIBRARIES}
-    fmt
-    pthread
 )
+if(UNIX)
+    target_link_libraries(TestLogger PRIVATE pthread)
+endif()
 target_compile_definitions(TestLogger PRIVATE
     QT_NO_KEYWORDS
 )
