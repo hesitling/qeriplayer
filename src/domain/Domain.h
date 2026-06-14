@@ -8,6 +8,7 @@
 #include "domain/Album.h"
 #include "domain/Artist.h"
 #include "domain/Enums.h"
+#include "domain/ListenTogether.h"
 #include "domain/Lyrics.h"
 #include "domain/PersistedPlayerState.h"
 #include "domain/Playlist.h"

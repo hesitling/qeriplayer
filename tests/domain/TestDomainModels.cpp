@@ -3,6 +3,7 @@
 /// @date 2024-01-15
 
 #include "domain/Domain.h"
+#include "domain/ListenTogether.h"
 
 #include <QTest>
 #include <QVariant>
@@ -71,6 +72,14 @@ private Q_SLOTS:
 
     // PersistedPlayerState
     void persistedPlayerState_defaultConstruction();
+
+    // Listen Together
+    void listenTogether_stableKey_netease();
+    void listenTogether_stableKey_bilibili();
+    void listenTogether_stableKey_youtube();
+    void listenTogether_songToTrack();
+    void listenTogether_trackToSong();
+    void listenTogether_roundTrip();
 
     // Q_DECLARE_METATYPE
     void song_metatype();
@@ -328,6 +337,108 @@ void TestDomainModels::persistedPlayerState_defaultConstruction()
     QCOMPARE(ps.shouldResumePlayback, false);
     QCOMPARE(ps.repeatMode, RepeatMode::Off);
     QCOMPARE(ps.shuffleEnabled, false);
+}
+
+// --- Listen Together tests ---
+
+void TestDomainModels::listenTogether_stableKey_netease()
+{
+    // NetEase: channelId:audioId
+    QString key = buildStableTrackKey(QStringLiteral("netease"), QStringLiteral("12345"));
+    QCOMPARE(key, QStringLiteral("netease:12345"));
+}
+
+void TestDomainModels::listenTogether_stableKey_bilibili()
+{
+    // Bilibili with subAudioId: channelId:audioId:subAudioId
+    QString key = buildStableTrackKey(
+        QStringLiteral("bilibili"), QStringLiteral("67890"), QStringLiteral("p1"));
+    QCOMPARE(key, QStringLiteral("bilibili:67890:p1"));
+
+    // Bilibili without subAudioId
+    QString key2 = buildStableTrackKey(
+        QStringLiteral("bilibili"), QStringLiteral("67890"));
+    QCOMPARE(key2, QStringLiteral("bilibili:67890"));
+}
+
+void TestDomainModels::listenTogether_stableKey_youtube()
+{
+    // YouTube with playlistContextId: channelId:audioId:playlistContextId
+    QString key = buildStableTrackKey(
+        QStringLiteral("youtubeMusic"), QStringLiteral("abc"), {}, QStringLiteral("PLxyz"));
+    QCOMPARE(key, QStringLiteral("youtubeMusic:abc:PLxyz"));
+
+    // YouTube without playlistContextId
+    QString key2 = buildStableTrackKey(
+        QStringLiteral("youtubeMusic"), QStringLiteral("abc"));
+    QCOMPARE(key2, QStringLiteral("youtubeMusic:abc"));
+}
+
+void TestDomainModels::listenTogether_songToTrack()
+{
+    Song song;
+    song.id = QStringLiteral("42");
+    song.name = QStringLiteral("Test Song");
+    song.artist = QStringLiteral("Artist");
+    song.album = QStringLiteral("Album");
+    song.durationMs = 180000;
+    song.channelId = QStringLiteral("netease");
+    song.audioId = QStringLiteral("42");
+    song.mediaUri = QUrl(QStringLiteral("http://example.com/stream"));
+
+    ListenTogetherTrack track = songToTrack(song);
+    QCOMPARE(track.name, QStringLiteral("Test Song"));
+    QCOMPARE(track.artist, QStringLiteral("Artist"));
+    QCOMPARE(track.album, QStringLiteral("Album"));
+    QCOMPARE(track.durationMs, 180000);
+    QCOMPARE(track.channelId, QStringLiteral("netease"));
+    QCOMPARE(track.audioId, QStringLiteral("42"));
+    QCOMPARE(track.stableKey, QStringLiteral("netease:42"));
+}
+
+void TestDomainModels::listenTogether_trackToSong()
+{
+    ListenTogetherTrack track;
+    track.stableKey = QStringLiteral("netease:99");
+    track.channelId = QStringLiteral("netease");
+    track.audioId = QStringLiteral("99");
+    track.name = QStringLiteral("Converted");
+    track.artist = QStringLiteral("Some Artist");
+    track.album = QStringLiteral("Some Album");
+    track.durationMs = 240000;
+    track.mediaUri = QStringLiteral("http://example.com/media");
+
+    Song song = trackToSong(track);
+    QCOMPARE(song.name, QStringLiteral("Converted"));
+    QCOMPARE(song.artist, QStringLiteral("Some Artist"));
+    QCOMPARE(song.album, QStringLiteral("Some Album"));
+    QCOMPARE(song.durationMs, 240000);
+    QCOMPARE(song.channelId, QStringLiteral("netease"));
+    QCOMPARE(song.audioId, QStringLiteral("99"));
+}
+
+void TestDomainModels::listenTogether_roundTrip()
+{
+    // Build a Song, convert to track, convert back, verify key fields match
+    Song original;
+    original.id = QStringLiteral("100");
+    original.name = QStringLiteral("Round Trip");
+    original.artist = QStringLiteral("RT Artist");
+    original.album = QStringLiteral("RT Album");
+    original.durationMs = 300000;
+    original.channelId = QStringLiteral("netease");
+    original.audioId = QStringLiteral("100");
+    original.mediaUri = QUrl(QStringLiteral("http://example.com/rt"));
+
+    ListenTogetherTrack track = songToTrack(original);
+    Song restored = trackToSong(track);
+
+    QCOMPARE(restored.name, original.name);
+    QCOMPARE(restored.artist, original.artist);
+    QCOMPARE(restored.album, original.album);
+    QCOMPARE(restored.durationMs, original.durationMs);
+    QCOMPARE(restored.channelId, original.channelId);
+    QCOMPARE(restored.audioId, original.audioId);
 }
 
 // --- Metatype ---
