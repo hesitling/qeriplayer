@@ -35,7 +35,7 @@
 - [ ] 3.10 Implement `parseSongUrl()` — JSON to `SongUrlResult` (existing domain type)
 - [ ] 3.11 Implement `parseHotSearches()` — JSON to `QStringList`
 - [ ] 3.12 Implement `parsePlayHistory()` — JSON to `QVector<PlayHistory>`
-- [ ] 3.13 Add logging for malformed JSON with `qWarning()` in each parser method
+- [ ] 3.13 Add logging for malformed JSON with `Logger::get("api")` in each parser method
 - [ ] 3.14 Create recorded JSON fixture files under `tests/fixtures/netease/` for each endpoint
 - [ ] 3.15 Write unit tests for all parser methods using fixture files
 - [ ] 3.16 Update `CMakeLists.txt` to include NeteaseParser source files and test target
