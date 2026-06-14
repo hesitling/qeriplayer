@@ -24,13 +24,13 @@ namespace NeriPlayerQt {
 struct Song {
     // Core identity
     QString id;
-    QString title;
+    QString name;
     QString artist;
     QString album;
     QString albumId;
-    qint64 duration = 0; ///< Duration in milliseconds
+    qint64 durationMs = 0; ///< Duration in milliseconds
     QUrl coverUrl;
-    QUrl playbackUrl;
+    QUrl mediaUri;
     MusicPlatform platform = MusicPlatform::Unknown;
 
     // Lyric matching

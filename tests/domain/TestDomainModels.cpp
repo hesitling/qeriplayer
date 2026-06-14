@@ -97,8 +97,8 @@ void TestDomainModels::song_defaultConstruction()
 {
     Song s;
     QVERIFY(s.id.isEmpty());
-    QVERIFY(s.title.isEmpty());
-    QCOMPARE(s.duration, 0);
+    QVERIFY(s.name.isEmpty());
+    QCOMPARE(s.durationMs, 0);
     QCOMPARE(s.platform, MusicPlatform::Unknown);
 }
 
@@ -106,16 +106,16 @@ void TestDomainModels::song_parameterizedConstruction()
 {
     Song s;
     s.id = QStringLiteral("1");
-    s.title = QStringLiteral("Test");
+    s.name = QStringLiteral("Test");
     s.artist = QStringLiteral("Artist");
     s.album = QStringLiteral("Album");
-    s.duration = 180000;
+    s.durationMs = 180000;
 
     QCOMPARE(s.id, QStringLiteral("1"));
-    QCOMPARE(s.title, QStringLiteral("Test"));
+    QCOMPARE(s.name, QStringLiteral("Test"));
     QCOMPARE(s.artist, QStringLiteral("Artist"));
     QCOMPARE(s.album, QStringLiteral("Album"));
-    QCOMPARE(s.duration, 180000);
+    QCOMPARE(s.durationMs, 180000);
     QCOMPARE(s.platform, MusicPlatform::Unknown);
 }
 
@@ -123,22 +123,22 @@ void TestDomainModels::song_copySemantics()
 {
     Song s;
     s.id = QStringLiteral("1");
-    s.title = QStringLiteral("Test");
+    s.name = QStringLiteral("Test");
     s.artist = QStringLiteral("Artist");
-    s.duration = 180000;
+    s.durationMs = 180000;
 
     Song copy = s;
     QCOMPARE(copy.id, s.id);
-    QCOMPARE(copy.title, s.title);
+    QCOMPARE(copy.name, s.name);
     QCOMPARE(copy.artist, s.artist);
-    QCOMPARE(copy.duration, s.duration);
+    QCOMPARE(copy.durationMs, s.durationMs);
     QCOMPARE(copy.platform, s.platform);
 }
 
 void TestDomainModels::album_defaultConstruction()
 {
     Album a;
-    QCOMPARE(a.songCount, 0);
+    QCOMPARE(a.size, 0);
     QCOMPARE(a.platform, MusicPlatform::Unknown);
 }
 

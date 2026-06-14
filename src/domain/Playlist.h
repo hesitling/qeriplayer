@@ -17,6 +17,8 @@ namespace NeriPlayerQt {
 
 /**
  * @brief Represents a playlist with optional embedded songs
+ *
+ * Aligned with Android NeriPlayer's LocalPlaylist model.
  */
 struct Playlist {
     QString id;
@@ -27,6 +29,8 @@ struct Playlist {
     QString owner;
     MusicPlatform platform = MusicPlatform::Unknown;
     QVector<Song> songs; ///< Optionally populated
+    qint64 modifiedAt = 0; ///< Epoch milliseconds, aligned with Android
+    QString customCoverUrl; ///< User override cover
 };
 
 } // namespace NeriPlayerQt

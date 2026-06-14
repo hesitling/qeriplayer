@@ -7,7 +7,6 @@
 
 #include "domain/Enums.h"
 
-#include <QDate>
 #include <QMetaType>
 #include <QString>
 #include <QUrl>
@@ -16,15 +15,15 @@ namespace NeriPlayerQt {
 
 /**
  * @brief Represents an album
+ *
+ * Field names aligned with Android NeriPlayer's AlbumSummary model.
  */
 struct Album {
     QString id;
-    QString title;
+    QString name;
     QString artist;
-    QString artistId;
     QUrl coverUrl;
-    int songCount = 0;
-    QDate publishDate;
+    int size = 0; ///< Track count
     MusicPlatform platform = MusicPlatform::Unknown;
 };
 

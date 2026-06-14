@@ -11,8 +11,10 @@
 #include "domain/Lyrics.h"
 #include "domain/PersistedPlayerState.h"
 #include "domain/Playlist.h"
+#include "domain/PlaylistSummary.h"
 #include "domain/SearchResult.h"
 #include "domain/Song.h"
 #include "domain/SongIdentity.h"
+#include "domain/SongUrlResult.h"
 
 #endif // NERIPLAYERQT_DOMAIN_H

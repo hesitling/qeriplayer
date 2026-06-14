@@ -36,6 +36,29 @@ enum class RepeatMode : std::uint8_t { Off = 0, One = 1, All = 2 };
  */
 enum class AudioQuality : std::uint8_t { Low = 0, Standard = 1, High = 2, Lossless = 3 };
 
+/**
+ * @brief Audio playback source
+ *
+ * Aligned with Android NeriPlayer's PlaybackAudioSource.
+ */
+enum class PlaybackAudioSource : std::uint8_t {
+    Local = 0,
+    NetEase = 1,
+    Bilibili = 2,
+    YouTube = 3
+};
+
+/**
+ * @brief Bilibili playlist kind
+ *
+ * Aligned with Android NeriPlayer's BiliPlaylistKind.
+ */
+enum class BiliPlaylistKind : std::uint8_t {
+    CreatedFavorite = 0,
+    CollectedFavorite = 1,
+    Collection = 2
+};
+
 } // namespace NeriPlayerQt
 
 Q_DECLARE_METATYPE(NeriPlayerQt::MusicPlatform)
@@ -43,5 +66,7 @@ Q_DECLARE_METATYPE(NeriPlayerQt::SearchType)
 Q_DECLARE_METATYPE(NeriPlayerQt::PlaybackState)
 Q_DECLARE_METATYPE(NeriPlayerQt::RepeatMode)
 Q_DECLARE_METATYPE(NeriPlayerQt::AudioQuality)
+Q_DECLARE_METATYPE(NeriPlayerQt::PlaybackAudioSource)
+Q_DECLARE_METATYPE(NeriPlayerQt::BiliPlaylistKind)
 
 #endif // NERIPLAYERQT_ENUMS_H
