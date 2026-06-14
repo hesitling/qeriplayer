@@ -76,8 +76,8 @@ void NeriPlayerApplication::initializeCoreServices()
         log->error("Failed to open database: {}", dbPath.toStdString());
     } else {
         log->info("Database opened: {}", dbPath.toStdString());
+        m_services.registerService<DatabaseManager>(std::move(db));
     }
-    m_services.registerService<DatabaseManager>(std::move(db));
 
     // 3. SecureStorage
     auto storage = std::make_unique<SecureStorage>(AppPaths::dataDir() + QStringLiteral("/secrets.dat"));
