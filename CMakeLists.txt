@@ -34,6 +34,34 @@ else()
     set(NERIPLAYER_QCORO_LIBRARIES QCoro::Core QCoro::Network QCoro::WebSockets)
 endif()
 
+# SQLite
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+    pkg_check_modules(SQLITE3 QUIET sqlite3)
+endif()
+if(NOT SQLITE3_FOUND)
+    find_library(SQLITE3_LIBRARIES NAMES sqlite3)
+    find_path(SQLITE3_INCLUDE_DIRS sqlite3.h)
+    if(NOT SQLITE3_LIBRARIES OR NOT SQLITE3_INCLUDE_DIRS)
+        message(FATAL_ERROR "sqlite3 not found. Install libsqlite3-dev or equivalent.")
+    endif()
+endif()
+
+# spdlog
+if(PkgConfig_FOUND)
+    pkg_check_modules(SPDLOG QUIET spdlog)
+endif()
+if(NOT SPDLOG_FOUND)
+    find_path(SPDLOG_INCLUDE_DIRS spdlog/spdlog.h)
+    find_library(SPDLOG_LIBRARIES NAMES spdlog)
+    if(NOT SPDLOG_INCLUDE_DIRS OR NOT SPDLOG_LIBRARIES)
+        message(FATAL_ERROR "spdlog not found. Install libspdlog-dev or equivalent.")
+    endif()
+endif()
+
+# OpenSSL
+find_package(OpenSSL REQUIRED)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
@@ -42,6 +70,15 @@ set(CMAKE_AUTORCC ON)
 set(SOURCES
     src/main.cpp
     src/app/NeriPlayerApplication.cpp
+    src/core/crypto/CryptoUtils.cpp
+    src/core/crypto/Encryptor.cpp
+    src/core/crypto/Decryptor.cpp
+    src/core/crypto/SecureStorage.cpp
+    src/core/database/DatabaseManager.cpp
+    src/core/filesystem/AppPaths.cpp
+    src/core/filesystem/FileUtils.cpp
+    src/core/filesystem/FileWatcher.cpp
+    src/core/logger/Logger.cpp
     src/core/network/HttpClient.cpp
     src/core/network/WebSocketClient.cpp
     src/core/network/NetworkManager.cpp
@@ -53,10 +90,31 @@ set(SOURCES
 set(HEADERS
     src/app/NeriPlayerApplication.h
     src/app/ServiceLocator.h
+    src/core/crypto/CryptoUtils.h
+    src/core/crypto/Encryptor.h
+    src/core/crypto/Decryptor.h
+    src/core/crypto/SecureStorage.h
+    src/core/database/DatabaseManager.h
+    src/core/filesystem/AppPaths.h
+    src/core/filesystem/FileUtils.h
+    src/core/filesystem/FileWatcher.h
+    src/core/logger/Logger.h
     src/core/network/HttpClient.h
     src/core/network/WebSocketClient.h
     src/core/network/NetworkManager.h
     src/core/network/NetworkMonitor.h
+    src/domain/Domain.h
+    src/domain/Enums.h
+    src/domain/Song.h
+    src/domain/Album.h
+    src/domain/Artist.h
+    src/domain/Playlist.h
+    src/domain/Lyrics.h
+    src/domain/PersistedPlayerState.h
+    src/domain/PlaylistSummary.h
+    src/domain/SearchResult.h
+    src/domain/SongIdentity.h
+    src/domain/SongUrlResult.h
     src/mainwindow.h
 )
 
@@ -74,11 +132,16 @@ target_link_libraries(NeriPlayerQt PRIVATE
     Qt6::Network
     Qt6::WebSockets
     ${NERIPLAYER_QCORO_LIBRARIES}
+    ${SQLITE3_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
+    OpenSSL::Crypto
 )
 
 # 包含目录
 target_include_directories(NeriPlayerQt PRIVATE
     ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
 )
 
 # Install target
@@ -87,3 +150,104 @@ install(TARGETS NeriPlayerQt
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+# Testing
+enable_testing()
+find_package(Qt6 REQUIRED COMPONENTS Test)
+
+add_executable(TestDomainModels
+    tests/domain/TestDomainModels.cpp
+)
+target_include_directories(TestDomainModels PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(TestDomainModels PRIVATE
+    Qt6::Core
+    Qt6::Test
+)
+target_compile_definitions(TestDomainModels PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestDomainModels COMMAND TestDomainModels)
+
+add_executable(TestDatabase
+    tests/core/TestDatabase.cpp
+    src/core/database/DatabaseManager.cpp
+)
+target_include_directories(TestDatabase PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+)
+target_link_libraries(TestDatabase PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestDatabase PRIVATE dl pthread)
+endif()
+target_compile_definitions(TestDatabase PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestDatabase COMMAND TestDatabase)
+
+add_executable(TestLogger
+    tests/core/TestLogger.cpp
+    src/core/logger/Logger.cpp
+)
+target_include_directories(TestLogger PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SPDLOG_INCLUDE_DIRS}
+)
+target_link_libraries(TestLogger PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SPDLOG_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestLogger PRIVATE pthread)
+endif()
+target_compile_definitions(TestLogger PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestLogger COMMAND TestLogger)
+
+add_executable(TestFileSystem
+    tests/core/TestFileSystem.cpp
+    src/core/filesystem/AppPaths.cpp
+    src/core/filesystem/FileUtils.cpp
+    src/core/filesystem/FileWatcher.cpp
+)
+target_include_directories(TestFileSystem PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(TestFileSystem PRIVATE
+    Qt6::Core
+    Qt6::Test
+)
+target_compile_definitions(TestFileSystem PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestFileSystem COMMAND TestFileSystem)
+
+add_executable(TestCrypto
+    tests/core/TestCrypto.cpp
+    src/core/crypto/CryptoUtils.cpp
+    src/core/crypto/Encryptor.cpp
+    src/core/crypto/Decryptor.cpp
+    src/core/crypto/SecureStorage.cpp
+    src/core/filesystem/FileUtils.cpp
+)
+target_include_directories(TestCrypto PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(TestCrypto PRIVATE
+    Qt6::Core
+    Qt6::Network
+    Qt6::Test
+    OpenSSL::Crypto
+)
+target_compile_definitions(TestCrypto PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestCrypto COMMAND TestCrypto)

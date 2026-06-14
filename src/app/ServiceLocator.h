@@ -8,8 +8,7 @@
 
 namespace NeriPlayerQt {
 
-class ServiceLocator
-{
+class ServiceLocator {
 public:
     ServiceLocator() = default;
     ~ServiceLocator() = default;
@@ -17,17 +16,13 @@ public:
     ServiceLocator(const ServiceLocator &) = delete;
     ServiceLocator &operator=(const ServiceLocator &) = delete;
 
-    template<typename T>
-    void registerService(std::unique_ptr<T> service)
+    template <typename T> void registerService(std::unique_ptr<T> service)
     {
-        m_services.insert_or_assign(
-            typeid(T),
-            ServicePtr(service.release(), [](void *ptr) { delete static_cast<T *>(ptr); })
-        );
+        m_services.insert_or_assign(typeid(T),
+                                    ServicePtr(service.release(), [](void *ptr) { delete static_cast<T *>(ptr); }));
     }
 
-    template<typename T>
-    T *service() const
+    template <typename T> T *service() const
     {
         auto it = m_services.find(typeid(T));
         if (it == m_services.end()) {
@@ -37,8 +32,7 @@ public:
         return static_cast<T *>(it->second.get());
     }
 
-    template<typename T>
-    bool hasService() const
+    template <typename T> bool hasService() const
     {
         return m_services.contains(typeid(T));
     }

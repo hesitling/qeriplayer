@@ -7,8 +7,7 @@
 
 namespace NeriPlayerQt {
 
-class WebSocketClient : public QObject
-{
+class WebSocketClient : public QObject {
     Q_OBJECT
 
 public:

@@ -21,8 +21,7 @@ struct HttpResponse {
     bool isSuccess() const;
 };
 
-class HttpClient : public QObject
-{
+class HttpClient : public QObject {
     Q_OBJECT
 
 public:

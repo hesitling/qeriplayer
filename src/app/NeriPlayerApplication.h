@@ -1,3 +1,7 @@
+/// @file NeriPlayerApplication.h
+/// @brief Application entry point with service registration
+/// @date 2024-01-15
+
 #ifndef NERIPLAYERQT_NERIPLAYERAPPLICATION_H
 #define NERIPLAYERQT_NERIPLAYERAPPLICATION_H
 
@@ -11,9 +15,12 @@ namespace NeriPlayerQt {
 
 class MainWindow;
 class NetworkManager;
+class DatabaseManager;
+class Logger;
+class AppPaths;
+class SecureStorage;
 
-class NeriPlayerApplication : public QApplication
-{
+class NeriPlayerApplication : public QApplication {
     Q_OBJECT
 
 public:

@@ -9,8 +9,7 @@
 
 namespace NeriPlayerQt {
 
-class NetworkManager : public QObject
-{
+class NetworkManager : public QObject {
     Q_OBJECT
 
 public:

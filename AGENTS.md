@@ -66,6 +66,58 @@ QCoro::Task<SearchResult> search(const QString &query) {
 4. Standard library
 5. Third-party libraries
 
+### Exception Handling
+
+- **Never swallow exceptions silently.** Every `catch` block must either log a warning, re-throw, or both.
+- Use `qWarning()` in low-level modules (`core/`) that should not depend on Logger.
+- Use `Logger::get(category)->warn()` in higher layers.
+- Rollback failures in nested try/catch should log and swallow (the original exception takes precedence):
+  ```cpp
+  try {
+      // ...
+  } catch (...) {
+      try { rollbackTransaction(); } catch (const std::exception &ex) {
+          qWarning() << "rollback failed:" << ex.what();
+      }
+      throw;
+  }
+  ```
+- Prefer RAII and `std::unique_ptr` over manual try/catch for resource cleanup.
+
+### Qt Types
+
+- Use `QString` for all user-facing text and internal strings (not `std::string`).
+- `QUrl` handles all URLs (not `QString`).
+- Durations (milliseconds), timestamps (epoch ms), and file sizes go in `qint64`.
+- All domain types passed through QVariant must use `Q_DECLARE_METATYPE`.
+- Domain structs are plain value types — no `QObject`, no `Q_GADGET`.
+
+### C++ Includes
+
+- Every header must explicitly include what it uses — never rely on transitive includes for standard types (`<stdexcept>`, `<cstdint>`, `<QString>`, etc.).
+
+### SQLite
+
+- Always wrap multi-statement write operations in transactions (`beginTransaction`/`commitTransaction`).
+- Check return codes on all `sqlite3_exec` calls — never pass `nullptr` for the error output.
+- Use parameterized queries (`?` or `:param`) — never concatenate user input into SQL.
+
+### QCoro
+
+- All async functions must return `QCoro::Task<T>` and use `co_await`/`co_return`.
+- Do not mix `QFuture` and `QCoro::Task` without explicit conversion.
+
+### spdlog
+
+- Use `daily_file_sink_mt` for log file rotation (not `rotating_file_sink_mt`).
+- Cache logger instances — do not call `Logger::get()` in hot paths.
+
+### Memory & Safety
+
+- Own heap objects with `std::unique_ptr` — no raw `new`/`delete`.
+- Use `thread_local` for per-thread mutable state (not `static`).
+- Set restrictive file permissions (0600) on sensitive files (keys, tokens).
+
 ## Length Guidelines
 
 | Type | Max | Recommended |
@@ -118,102 +170,13 @@ docs: update architecture documentation
 
 ## Doxygen Documentation
 
-Use `///` for brief comments, `/** */` for detailed documentation.
+Use `///` for brief comments, `/** */` for detailed documentation. Key conventions:
 
-### File Header
-
-```cpp
-/// @file HttpClient.h
-/// @brief HTTP client with coroutine support
-/// @author NeriPlayer Team
-/// @date 2024-01-15
-```
-
-### Class Documentation
-
-```cpp
-/**
- * @brief HTTP client for async network requests
- *
- * Provides coroutine-based HTTP methods using QCoro.
- * Supports GET, POST, PUT, DELETE with timeout and retry.
- *
- * @code
- * HttpClient client;
- * auto response = co_await client.get(QUrl("https://api.example.com"));
- * @endcode
- *
- * @see WebSocketClient, NetworkManager
- */
-class HttpClient : public QObject {
-    Q_OBJECT
-```
-
-### Function Documentation
-
-```cpp
-/**
- * @brief Send GET request
- * @param url Request URL
- * @param headers Optional HTTP headers
- * @return Response data
- * @throws NetworkError on request failure
- * @throws TimeoutError if request times out
- *
- * @code
- * auto response = co_await client.get(QUrl("https://example.com"));
- * @endcode
- */
-QCoro::Task<HttpResponse> get(const QUrl &url,
-                              const HttpHeaders &headers = {});
-```
-
-### Property Documentation
-
-```cpp
-/**
- * @brief Current playback state
- * @see PlaybackState
- */
-Q_PROPERTY(PlaybackState state READ state NOTIFY stateChanged)
-```
-
-### Enum Documentation
-
-```cpp
-/**
- * @brief Playback state
- */
-enum class PlaybackState {
-    Stopped,  ///< Playback stopped
-    Playing,  ///< Currently playing
-    Paused,   ///< Playback paused
-    Loading   ///< Loading media
-};
-```
-
-### Member Variable Documentation
-
-```cpp
-private:
-    QNetworkAccessManager *m_manager; ///< Network manager instance
-    int m_timeoutMs = 30000;          ///< Request timeout in milliseconds
-    int m_maxRetries = 3;             ///< Maximum retry attempts
-```
-
-### Grouping
-
-```cpp
-/**
- * @name Authentication
- * @brief User authentication methods
- * @{
- */
-QCoro::Task<LoginResult> login(const QString &user, const QString &pass);
-QCoro::Task<VoidResult> logout();
-bool isAuthenticated() const;
-/** @} */
-```
+- **File header:** `/// @file`, `/// @brief`, `/// @date`
+- **Classes:** `@brief`, `@code` example, `@see` cross-references
+- **Functions:** `@brief`, `@param`, `@return`, `@throws`
+- **Enums/Members:** `///< inline brief` after each value
+- **Properties:** `@brief`, `@see` the backing enum/type
 
 ## Testing
 

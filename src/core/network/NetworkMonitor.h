@@ -5,8 +5,7 @@
 
 namespace NeriPlayerQt {
 
-class NetworkMonitor : public QObject
-{
+class NetworkMonitor : public QObject {
     Q_OBJECT
 
 public:

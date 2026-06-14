@@ -9,11 +9,9 @@ WebSocketClient::WebSocketClient(QObject *parent)
 {
     connect(&m_socket, &QWebSocket::connected, this, &WebSocketClient::connected);
     connect(&m_socket, &QWebSocket::disconnected, this, &WebSocketClient::disconnected);
-    connect(&m_socket, &QWebSocket::textMessageReceived,
-            this, &WebSocketClient::textMessageReceived);
-    connect(&m_socket, &QWebSocket::errorOccurred, this, [this](QAbstractSocket::SocketError) {
-        emit errorOccurred(m_socket.errorString());
-    });
+    connect(&m_socket, &QWebSocket::textMessageReceived, this, &WebSocketClient::textMessageReceived);
+    connect(&m_socket, &QWebSocket::errorOccurred, this,
+            [this](QAbstractSocket::SocketError) { emit errorOccurred(m_socket.errorString()); });
 }
 
 void WebSocketClient::connectTo(const QUrl &url)
