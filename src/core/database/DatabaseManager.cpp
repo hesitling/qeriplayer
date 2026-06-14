@@ -74,37 +74,41 @@ void DatabaseManager::registerMigration(int version, std::function<bool(sqlite3 
 
 static void bindVariant(sqlite3_stmt *stmt, int idx, const QVariant &value)
 {
+    int rc = SQLITE_OK;
     switch (value.typeId()) {
         case QMetaType::QString: {
             QByteArray utf8 = value.toString().toUtf8();
-            sqlite3_bind_text(stmt, idx, utf8.constData(), utf8.size(), SQLITE_TRANSIENT);
+            rc = sqlite3_bind_text(stmt, idx, utf8.constData(), utf8.size(), SQLITE_TRANSIENT);
             break;
         }
         case QMetaType::Int:
         case QMetaType::UInt:
-            sqlite3_bind_int(stmt, idx, value.toInt());
+            rc = sqlite3_bind_int(stmt, idx, value.toInt());
             break;
         case QMetaType::LongLong:
         case QMetaType::ULongLong:
-            sqlite3_bind_int64(stmt, idx, value.toLongLong());
+            rc = sqlite3_bind_int64(stmt, idx, value.toLongLong());
             break;
         case QMetaType::Double:
-            sqlite3_bind_double(stmt, idx, value.toDouble());
+            rc = sqlite3_bind_double(stmt, idx, value.toDouble());
             break;
         case QMetaType::QByteArray: {
             QByteArray ba = value.toByteArray();
-            sqlite3_bind_blob(stmt, idx, ba.constData(), ba.size(), SQLITE_TRANSIENT);
+            rc = sqlite3_bind_blob(stmt, idx, ba.constData(), ba.size(), SQLITE_TRANSIENT);
             break;
         }
         case QMetaType::Nullptr:
         case QMetaType::UnknownType:
-            sqlite3_bind_null(stmt, idx);
+            rc = sqlite3_bind_null(stmt, idx);
             break;
         default: {
             QByteArray utf8 = value.toString().toUtf8();
-            sqlite3_bind_text(stmt, idx, utf8.constData(), utf8.size(), SQLITE_TRANSIENT);
+            rc = sqlite3_bind_text(stmt, idx, utf8.constData(), utf8.size(), SQLITE_TRANSIENT);
             break;
         }
+    }
+    if (rc != SQLITE_OK) {
+        throw DatabaseError("Bind failed at index " + std::to_string(idx) + ": " + sqlite3_errstr(rc));
     }
 }
 
