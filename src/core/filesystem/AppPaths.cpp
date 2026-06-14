@@ -5,6 +5,7 @@
 #include "core/filesystem/AppPaths.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
 
@@ -56,7 +57,10 @@ QString AppPaths::ensureCreated(const QString &path)
 {
     QDir dir(path);
     if (!dir.exists()) {
-        dir.mkpath(".");
+        if (!dir.mkpath(".")) {
+            qWarning() << "AppPaths: failed to create directory:" << path;
+            return { };
+        }
     }
     return dir.absolutePath();
 }
