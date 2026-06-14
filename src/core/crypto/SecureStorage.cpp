@@ -8,6 +8,7 @@
 #include "core/crypto/Encryptor.h"
 
 #include <QFile>
+#include <QFileDevice>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -132,6 +133,7 @@ QByteArray SecureStorage::deriveMasterKey() const
     if (written != key.size()) {
         throw CryptoError("Failed to write complete master key");
     }
+    secretFile.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
     return key;
 }
 
