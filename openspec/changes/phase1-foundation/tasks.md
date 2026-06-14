@@ -66,7 +66,7 @@
 - [x] 5.6 Implement `CryptoUtils::generateKey()` for 32-byte random key
 - [x] 5.7 Implement `CryptoUtils::sha256()` returning hex string
 - [x] 5.8 Implement `SecureStorage` class with encrypted key-value persistence on disk
-- [x] 5.9 Implement encryption key derivation/storage using OS secure storage (Keychain/DPAPI/Secret Service)
+- [x] 5.9 Implement encryption key derivation/storage with per-machine random key sidecar file (0600 permissions)
 
 ## 6. App Bootstrap Integration
 
