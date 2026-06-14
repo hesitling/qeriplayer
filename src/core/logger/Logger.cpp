@@ -80,21 +80,21 @@ void Logger::initialize(const LoggerConfig &config)
 
     s_config = config;
 
-    // Create log directory if needed
-    QDir logDir(config.logDir);
-    if (!logDir.exists()) {
-        logDir.mkpath(".");
+    std::vector<spdlog::sink_ptr> sinks;
+
+    // File sink with daily rotation (skip if logDir is empty for console-only degraded mode)
+    if (!config.logDir.isEmpty()) {
+        QDir logDir(config.logDir);
+        if (!logDir.exists()) {
+            logDir.mkpath(".");
+        }
+        QString logPath = logDir.filePath("neriplayer-%Y-%m-%d.log");
+        s_fileSink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(logPath.toStdString(), 0, 0, false, config.maxDays);
+        sinks.push_back(s_fileSink);
     }
 
-    // File sink with daily rotation (new file at midnight, keep maxDays)
-    QString logPath = logDir.filePath("neriplayer-%Y-%m-%d.log");
-    s_fileSink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(logPath.toStdString(), 0, 0, false, config.maxDays);
-
-    std::vector<spdlog::sink_ptr> sinks;
-    sinks.push_back(s_fileSink);
-
     // Console sink (optional)
-    if (config.enableConsole) {
+    if (config.enableConsole || !s_fileSink) {
         s_consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         sinks.push_back(s_consoleSink);
     }
