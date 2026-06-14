@@ -7,6 +7,7 @@
 
 #include <QByteArray>
 #include <QHash>
+#include <QMutex>
 #include <QString>
 
 namespace NeriPlayerQt {
@@ -56,6 +57,7 @@ private:
     QByteArray deriveMasterKey() const;
 
     QString m_filePath;
+    mutable QMutex m_mutex;
     mutable QHash<QString, QByteArray> m_encryptedData; // key -> encrypted value bytes
     mutable QByteArray m_masterKey;
     mutable bool m_loaded = false;

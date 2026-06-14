@@ -13,6 +13,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMutexLocker>
 
 namespace NeriPlayerQt {
 
@@ -23,6 +24,7 @@ SecureStorage::SecureStorage(const QString &filePath)
 
 void SecureStorage::set(const QString &key, const QString &value)
 {
+    QMutexLocker lock(&m_mutex);
     if (!m_loaded) {
         load();
     }
@@ -34,6 +36,7 @@ void SecureStorage::set(const QString &key, const QString &value)
 
 QString SecureStorage::get(const QString &key) const
 {
+    QMutexLocker lock(&m_mutex);
     if (!m_loaded) {
         load();
     }
@@ -54,6 +57,7 @@ QString SecureStorage::get(const QString &key) const
 
 void SecureStorage::remove(const QString &key)
 {
+    QMutexLocker lock(&m_mutex);
     if (!m_loaded) {
         load();
     }
@@ -64,6 +68,7 @@ void SecureStorage::remove(const QString &key)
 
 bool SecureStorage::contains(const QString &key) const
 {
+    QMutexLocker lock(&m_mutex);
     if (!m_loaded) {
         load();
     }
