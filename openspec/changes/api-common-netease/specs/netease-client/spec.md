@@ -67,7 +67,7 @@ The system SHALL provide a `NeteaseClient` class that takes an `HttpClient*` and
 
 #### Scenario: Search returns results
 - **WHEN** `searchSongs("周杰伦", 30, 0)` is called and the API returns 30 songs
-- **THEN** the result SHALL contain a `SearchResult` with `songs.size() == 30` and each song SHALL have `name`, `artist`, `durationMs` populated
+- **THEN** the result SHALL contain a `SearchResult` with `songs.size() == 30`, `totalCount` populated from the API response, and each song SHALL have `name`, `artist`, `durationMs` populated
 
 #### Scenario: Search returns empty
 - **WHEN** `searchSongs("nonexistent_query_xyz", 30, 0)` is called and the API returns 0 results
@@ -110,15 +110,19 @@ The system SHALL provide a `NeteaseClient` class that takes an `HttpClient*` and
 - **THEN** the result SHALL contain an `ApiError`
 
 ### Requirement: Song playback URL
-`NeteaseClient` SHALL provide `getSongUrl(songId, quality)` returning `QCoro::Task<ApiResult<PlaybackUrl>>`. The `quality` parameter SHALL default to `AudioQuality::High`.
+`NeteaseClient` SHALL provide `getSongUrl(songId, quality)` returning `QCoro::Task<ApiResult<SongUrlResult>>`. The `quality` parameter SHALL default to `AudioQuality::High`. The returned `SongUrlResult` SHALL use the existing domain type (with `status`, `url`, `durationMs`, `mimeType`, `audioInfo`, etc.) — no new `PlaybackUrl` type.
 
 #### Scenario: Get playback URL
 - **WHEN** `getSongUrl("12345", AudioQuality::High)` is called
-- **THEN** the result SHALL contain a `PlaybackUrl` with a non-empty `url` and `quality` matching the request
+- **THEN** the result SHALL contain a `SongUrlResult` with `status == Success` and a non-empty `url`
 
 #### Scenario: Lossless quality unavailable
 - **WHEN** `getSongUrl("12345", AudioQuality::Lossless)` is called and lossless is not available
-- **THEN** the API SHALL return a lower quality URL, and the result's `quality` SHALL reflect the actual quality returned
+- **THEN** the API SHALL return a lower quality URL, and the `SongUrlResult` SHALL reflect the actual quality returned
+
+#### Scenario: Song requires login
+- **WHEN** `getSongUrl("12345")` is called for a VIP-only song while not authenticated
+- **THEN** the result SHALL contain a `SongUrlResult` with `status == RequiresLogin`
 
 ### Requirement: Lyrics retrieval
 `NeteaseClient` SHALL provide `getLyrics(songId)` returning `QCoro::Task<ApiResult<Lyrics>>`. The result SHALL contain timed lyric lines if available.
@@ -182,18 +186,18 @@ These endpoints SHALL require authentication.
 - **THEN** the result SHALL contain an `ApiError` with `isAuthError()` true
 
 ### Requirement: NeteaseCrypto — WeAPI encryption
-`NeteaseCrypto` SHALL provide `weapiEncrypt(plaintext)` and `weapiDecrypt(ciphertext)` static methods using AES-128-CBC + RSA encryption matching the NetEase web client protocol.
+`NeteaseCrypto` SHALL provide a `weapiEncrypt(plaintext)` static method using AES-128-CBC + RSA encryption matching the NetEase web client protocol. WeAPI encryption is one-way (client → server) — there is no client-side `weapiDecrypt`. Server responses arrive over HTTPS and require no client-side decryption.
 
-#### Scenario: Encrypt and decrypt round-trip
-- **WHEN** `weapiEncrypt(data)` is called and the result is passed to `weapiDecrypt`
-- **THEN** the decrypted output SHALL equal the original `data`
+#### Scenario: Encrypt matches known test vector
+- **WHEN** `weapiEncrypt(data)` is called with a known plaintext and the AES random IV is fixed for testing
+- **THEN** the AES-encrypted payload (before RSA wrapping) SHALL match the expected ciphertext for that plaintext+IV combination
 
 #### Scenario: Encrypt produces different output each time
-- **WHEN** `weapiEncrypt(data)` is called twice with the same input
-- **THEN** the two outputs SHALL differ (due to random nonce/padding)
+- **WHEN** `weapiEncrypt(data)` is called twice with the same input (normal mode, random IV)
+- **THEN** the two outputs SHALL differ due to the random AES IV
 
 ### Requirement: NeteaseParser — JSON parsing
-`NeteaseParser` SHALL provide static methods to parse NetEase API JSON responses into domain types. Each parser method SHALL take a `QJsonObject` (or `QJsonDocument`) and return the corresponding domain type. Parsing SHALL not throw — malformed JSON SHALL result in empty/default values with a logged warning.
+`NeteaseParser` SHALL provide static methods to parse NetEase API JSON responses into domain types. Each parser method SHALL take a `QJsonObject` (or `QJsonDocument`) and return the corresponding domain type. Parsing SHALL not throw — malformed JSON SHALL result in empty/default values with a logged warning via `Logger::get("api")`.
 
 #### Scenario: Parse song from JSON
 - **WHEN** `NeteaseParser::parseSong(json)` is called with valid song JSON
@@ -201,7 +205,27 @@ These endpoints SHALL require authentication.
 
 #### Scenario: Parse malformed JSON
 - **WHEN** `NeteaseParser::parseSong(json)` is called with missing required fields
-- **THEN** the returned `Song` SHALL have default values and a warning SHALL be logged
+- **THEN** the returned `Song` SHALL have default values and a warning SHALL be logged via the `api` logger
+
+### Requirement: ApiError code classification
+`ApiError` classification methods SHALL handle both HTTP status codes and NetEase-specific body codes. The mapping SHALL be:
+
+| Method | HTTP codes | NetEase body codes |
+|--------|-----------|--------------------|
+| `isNetworkError()` | Connection failure (code = -1) | — |
+| `isAuthError()` | 401, 403 | -10 (auth expired), -460 (cheating detection) |
+| `isRateLimitError()` | 429 | -429 (too many requests) |
+| `isNotFoundError()` | 404 | — |
+
+NetEase API responses use a JSON body with a `code` field (e.g., `{"code": -10, "msg": "..."}`). `ApiError` SHALL store this body code as its primary code when present. HTTP status codes SHALL be used only when the body is not parseable.
+
+#### Scenario: NetEase auth expired
+- **WHEN** an `ApiError` is constructed from a response with body code -10
+- **THEN** `isAuthError()` SHALL return true
+
+#### Scenario: NetEase cheating detection
+- **WHEN** an `ApiError` is constructed from a response with body code -460
+- **THEN** `isAuthError()` SHALL return true and `userMessage()` SHALL indicate the account may be restricted
 
 ### Requirement: NeteaseClient service registration
 `NeteaseClient` SHALL be registered in `ServiceLocator` during `NeriPlayerApplication::initializeCoreServices()`, after `NetworkManager` and `SecureStorage`.
@@ -212,14 +236,16 @@ These endpoints SHALL require authentication.
 
 ### Requirement: NeteaseClient unit tests
 The system SHALL include unit tests for:
-- `NeteaseCrypto` — encryption/decryption round-trips for WeAPI
+- `NeteaseCrypto` — verify `weapiEncrypt` output against known test vectors (with fixed IV)
 - `NeteaseParser` — parsing songs, albums, artists, playlists, lyrics, search results, login results from recorded JSON fixtures
 - Error parsing — malformed JSON handling
 
-#### Scenario: Crypto round-trip test
-- **WHEN** the test encrypts a known plaintext with `weapiEncrypt` and decrypts with `weapiDecrypt`
-- **THEN** the result SHALL match the original plaintext
+Test fixtures SHALL be recorded as static JSON files under `tests/fixtures/netease/`. To update fixtures: capture raw JSON responses from the NetEase API (via browser DevTools or a recording proxy), strip any sensitive data (tokens, user IDs), and commit the sanitized JSON.
+
+#### Scenario: Crypto test-vector verification
+- **WHEN** the test calls `weapiEncrypt` with a known plaintext (IV fixed for determinism)
+- **THEN** the AES-encrypted portion SHALL match the expected ciphertext
 
 #### Scenario: Parser test with fixture
 - **WHEN** the test loads a recorded search response JSON and calls `NeteaseParser::parseSearchResult`
-- **THEN** the returned `SearchResult` SHALL have the expected number of songs with correct fields
+- **THEN** the returned `SearchResult` SHALL have the expected number of songs with correct fields, and `totalCount` and `hasMore` SHALL be populated from the response

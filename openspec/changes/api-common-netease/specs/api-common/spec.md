@@ -35,7 +35,7 @@ The system SHALL provide an `ApiResult<T>` template that holds either a value of
 - **THEN** the behavior SHALL be defined (return default-constructed `T` or throw) — documented in the header
 
 ### Requirement: VoidResult type
-The system SHALL provide a `VoidResult` type alias for operations that return no meaningful data on success. `ApiResult<VoidResult>` SHALL be valid and represent success-or-error with no payload.
+The system SHALL provide an empty struct `VoidResult {}` for operations that return no meaningful data on success. `ApiResult<VoidResult>` SHALL be valid and represent success-or-error with no payload. `VoidResult` MUST be a concrete type (not `void` or `std::monostate`) so it works as a template parameter.
 
 #### Scenario: VoidResult success
 - **WHEN** an `ApiResult<VoidResult>` is constructed in success state
@@ -45,10 +45,12 @@ The system SHALL provide a `VoidResult` type alias for operations that return no
 The system SHALL provide an `IMusicPlatformPlugin` abstract interface. All platform clients SHALL implement this interface. The interface SHALL declare the following pure virtual methods returning `QCoro::Task`:
 - `search(keyword, type, limit, offset)` → `ApiResult<SearchResult>`
 - `getSongDetail(songId)` → `ApiResult<Song>`
-- `getSongUrl(songId, quality)` → `ApiResult<PlaybackUrl>`
+- `getSongUrl(songId, quality)` → `ApiResult<SongUrlResult>`
 - `getLyrics(songId)` → `ApiResult<Lyrics>`
-- `isAuthenticated()` → `bool`
+- `isAuthenticated()` → `bool` (synchronous — intentionally in-memory check; see design D6 rationale)
 - `platformName()` → `QString`
+
+The interface SHALL include only operations that make sense across all platforms. Platform-specific operations (e.g., `getSimilarSongs`, playlist CRUD, user operations) SHALL live on the concrete client class, not on the interface.
 
 #### Scenario: NeteaseClient implements the interface
 - **WHEN** `NeteaseClient` is compiled
@@ -58,19 +60,12 @@ The system SHALL provide an `IMusicPlatformPlugin` abstract interface. All platf
 - **WHEN** `search("test", SearchType::Song, 10, 0)` is called on any `IMusicPlatformPlugin` implementation
 - **THEN** it SHALL return an `ApiResult<SearchResult>` with songs populated on success
 
-### Requirement: PlaybackUrl type
-The system SHALL provide a `PlaybackUrl` struct containing: `url` (QUrl), `quality` (AudioQuality), `format` (QString, e.g., "mp3", "flac"), `bitrate` (int), `fileSize` (qint64), and `canExpire` (bool).
-
-#### Scenario: Construct a PlaybackUrl
-- **WHEN** a `PlaybackUrl` is constructed with a URL and quality
-- **THEN** `url`, `quality`, `format`, `bitrate`, `fileSize`, and `canExpire` SHALL all be accessible
-
 ### Requirement: LoginResult type
-The system SHALL provide a `LoginResult` struct containing: `userId` (QString), `nickname` (QString), `avatarUrl` (QUrl), and `cookie` (QString).
+The system SHALL provide a `LoginResult` struct containing: `userId` (QString), `nickname` (QString), `avatarUrl` (QUrl), and `cookie` (QString). The `cookie` field SHALL be a semicolon-delimited string of key=value pairs (e.g., `"MUSIC_U=xxx; __csrf=yyy"`) suitable for injection into HTTP `Cookie` headers.
 
 #### Scenario: Construct a LoginResult
 - **WHEN** a `LoginResult` is parsed from a successful login response
-- **THEN** `userId`, `nickname`, `avatarUrl`, and `cookie` SHALL be populated
+- **THEN** `userId`, `nickname`, `avatarUrl`, and `cookie` SHALL be populated with `cookie` in `"key=val; key=val"` format
 
 ### Requirement: QrCodeData type
 The system SHALL provide a `QrCodeData` struct containing: `key` (QString), `qrUrl` (QUrl — the QR code image or data URL), and `expiresInSeconds` (int).
@@ -87,8 +82,8 @@ The system SHALL provide a `PlayHistory` struct containing: `song` (Song), `play
 - **THEN** `song` SHALL be populated and `playedAt` SHALL be a valid epoch timestamp
 
 ### Requirement: Q_DECLARE_METATYPE registration
-All API common types (`ApiError`, `PlaybackUrl`, `LoginResult`, `QrCodeData`, `PlayHistory`) SHALL be registered with `Q_DECLARE_METATYPE` for QVariant interop.
+All API common types (`ApiError`, `VoidResult`, `LoginResult`, `QrCodeData`, `PlayHistory`) SHALL be registered with `Q_DECLARE_METATYPE` for QVariant interop. `SongUrlResult` and `AudioInfo` are already registered in domain models.
 
-#### Scenario: Store PlaybackUrl in QVariant
-- **WHEN** a `PlaybackUrl` is stored in a `QVariant` and retrieved
+#### Scenario: Store LoginResult in QVariant
+- **WHEN** a `LoginResult` is stored in a `QVariant` and retrieved
 - **THEN** the retrieved value SHALL equal the original
