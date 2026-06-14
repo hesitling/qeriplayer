@@ -84,6 +84,40 @@ QCoro::Task<SearchResult> search(const QString &query) {
   ```
 - Prefer RAII and `std::unique_ptr` over manual try/catch for resource cleanup.
 
+### Qt Types
+
+- Use `QString` for all user-facing text and internal strings (not `std::string`).
+- Use `QUrl` for URLs, not `QString`.
+- Use `qint64` for durations (milliseconds), timestamps (epoch ms), and file sizes.
+- All domain types passed through QVariant must use `Q_DECLARE_METATYPE`.
+- Domain structs are plain value types — no `QObject`, no `Q_GADGET`.
+
+### C++ Includes
+
+- Every header must explicitly include what it uses — never rely on transitive includes for standard types (`<stdexcept>`, `<cstdint>`, `<QString>`, etc.).
+
+### SQLite
+
+- Always wrap multi-statement write operations in transactions (`beginTransaction`/`commitTransaction`).
+- Check return codes on all `sqlite3_exec` calls — never pass `nullptr` for the error output.
+- Use parameterized queries (`?` or `:param`) — never concatenate user input into SQL.
+
+### QCoro
+
+- All async functions must return `QCoro::Task<T>` and use `co_await`/`co_return`.
+- Do not mix `QFuture` and `QCoro::Task` without explicit conversion.
+
+### spdlog
+
+- Use `daily_file_sink_mt` for log file rotation (not `rotating_file_sink_mt`).
+- Cache logger instances — do not call `Logger::get()` in hot paths.
+
+### Memory & Safety
+
+- Own heap objects with `std::unique_ptr` — no raw `new`/`delete`.
+- Use `thread_local` for per-thread mutable state (not `static`).
+- Set restrictive file permissions (0600) on sensitive files (keys, tokens).
+
 ## Length Guidelines
 
 | Type | Max | Recommended |
