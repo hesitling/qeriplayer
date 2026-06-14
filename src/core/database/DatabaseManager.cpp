@@ -243,7 +243,7 @@ void DatabaseManager::ensureSchemaVersionTable()
     char *errMsg = nullptr;
     int rc = sqlite3_exec(m_db,
                  "CREATE TABLE IF NOT EXISTS schema_version ("
-                 "  version INTEGER NOT NULL"
+                 "  version INTEGER NOT NULL PRIMARY KEY"
                  ");",
                  nullptr, nullptr, &errMsg);
     if (rc != SQLITE_OK) {
@@ -332,7 +332,9 @@ void DatabaseManager::applyInitialSchema(sqlite3 *handle)
             playlist_id TEXT,
             song_id     TEXT,
             position    INTEGER,
-            PRIMARY KEY (playlist_id, song_id)
+            PRIMARY KEY (playlist_id, song_id),
+            FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
+            FOREIGN KEY (song_id) REFERENCES songs_cache(id) ON DELETE CASCADE
         );
 
         CREATE TABLE IF NOT EXISTS settings (
