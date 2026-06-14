@@ -9,7 +9,6 @@
 - [ ] 1.8 Define `PlayHistory` struct (song, playedAt, playCount)
 - [ ] 1.9 Define `IMusicPlatformPlugin` abstract interface with search, getSongDetail, getSongUrl (returns `SongUrlResult`), getLyrics, isAuthenticated, platformName
 - [ ] 1.10 Register all API common types with `Q_DECLARE_METATYPE` (SongUrlResult/AudioInfo already registered in domain)
-- [ ] 1.11 Update `CMakeLists.txt` to include new API common source/header files
 
 ## 2. NeteaseCrypto
 
@@ -19,7 +18,6 @@
 - [ ] 2.4 Implement WeAPI RSA encryption for the AES key
 - [ ] 2.5 Implement `weapiEncrypt()` combining AES + RSA per the NetEase web protocol (one-way client→server encryption)
 - [ ] 2.6 Write unit tests verifying `weapiEncrypt` output against known test vectors (with fixed IV for determinism)
-- [ ] 2.8 Update `CMakeLists.txt` to include NeteaseCrypto source files and link OpenSSL
 
 ## 3. NeteaseParser
 
@@ -38,7 +36,6 @@
 - [ ] 3.13 Add logging for malformed JSON with `Logger::get("api")` in each parser method
 - [ ] 3.14 Create recorded JSON fixture files under `tests/fixtures/netease/` for each endpoint
 - [ ] 3.15 Write unit tests for all parser methods using fixture files
-- [ ] 3.16 Update `CMakeLists.txt` to include NeteaseParser source files and test target
 
 ## 4. NeteaseClient — Core
 
@@ -104,6 +101,6 @@
 ## 10. Service Registration & Build
 
 - [ ] 10.1 Register `NeteaseClient` in `NeriPlayerApplication::initializeCoreServices()` after NetworkManager and SecureStorage
-- [ ] 10.2 Update `CMakeLists.txt` with all new source files for the API module and test targets
+- [ ] 10.2 Update `CMakeLists.txt` with all new source files (`src/api/common/`, `src/api/netease/`) and test targets (`TestNeteaseCrypto`, `TestNeteaseParser`)
 - [ ] 10.3 Verify full build compiles without errors
 - [ ] 10.4 Run all existing tests to verify no regressions
