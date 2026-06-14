@@ -124,9 +124,13 @@ QByteArray SecureStorage::deriveMasterKey() const
 
     // Generate new random key
     QByteArray key = CryptoUtils::generateKey();
-    if (secretFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        secretFile.write(key);
-        secretFile.close();
+    if (!secretFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        throw CryptoError("Failed to persist master key: " + secretFile.errorString().toStdString());
+    }
+    qint64 written = secretFile.write(key);
+    secretFile.close();
+    if (written != key.size()) {
+        throw CryptoError("Failed to write complete master key");
     }
     return key;
 }
