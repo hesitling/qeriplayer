@@ -39,6 +39,7 @@ public:
     explicit NamedLogger(std::shared_ptr<spdlog::logger> logger);
 
     void setLevel(LogLevel level);
+    LogLevel level() const;
 
     void trace(const char *msg);
     void debug(const char *msg);

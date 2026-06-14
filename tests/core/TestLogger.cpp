@@ -67,6 +67,7 @@ void TestLogger::doubleInitialize_noop()
     // Level should still be Debug (from first init)
     auto logger = Logger::get("test");
     QVERIFY(logger != nullptr);
+    QCOMPARE(logger->level(), LogLevel::Debug);
 }
 
 void TestLogger::get_returnsNamedLogger()

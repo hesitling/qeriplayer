@@ -24,6 +24,19 @@ void NamedLogger::setLevel(LogLevel level)
     m_logger->set_level(Logger::toSpdlogLevel(level));
 }
 
+LogLevel NamedLogger::level() const
+{
+    switch (m_logger->level()) {
+        case spdlog::level::trace:    return LogLevel::Trace;
+        case spdlog::level::debug:    return LogLevel::Debug;
+        case spdlog::level::info:     return LogLevel::Info;
+        case spdlog::level::warn:     return LogLevel::Warn;
+        case spdlog::level::err:      return LogLevel::Error;
+        case spdlog::level::critical: return LogLevel::Fatal;
+        default:                      return LogLevel::Info;
+    }
+}
+
 void NamedLogger::trace(const char *msg)
 {
     m_logger->trace(msg);
