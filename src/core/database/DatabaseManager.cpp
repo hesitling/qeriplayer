@@ -254,9 +254,16 @@ void DatabaseManager::runMigrations()
 {
     // Apply initial schema (version 1) if needed
     if (m_currentVersion < 1) {
-        applyInitialSchema(m_db);
-        exec("UPDATE schema_version SET version = ?", { QVariant(1) });
-        m_currentVersion = 1;
+        beginTransaction();
+        try {
+            applyInitialSchema(m_db);
+            exec("UPDATE schema_version SET version = ?", { QVariant(1) });
+            commitTransaction();
+            m_currentVersion = 1;
+        } catch (...) {
+            try { rollbackTransaction(); } catch (...) {}
+            throw;
+        }
     }
 
     // Apply registered migrations in version order
