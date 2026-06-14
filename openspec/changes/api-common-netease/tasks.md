@@ -1,14 +1,14 @@
 ## 1. API Common Types
 
-- [ ] 1.1 Create `src/api/common/` directory structure
-- [ ] 1.2 Define `ApiError` class with code, message, details, and classification methods (`isNetworkError`, `isAuthError`, `isRateLimitError`, `isNotFoundError`, `userMessage`)
-- [ ] 1.3 Define `ApiResult<T>` template with `isSuccess()`, `isError()`, `data()`, `error()`, and implicit bool conversion
-- [ ] 1.4 Define `VoidResult` as empty struct (`struct VoidResult {};`) for no-payload operations
-- [ ] 1.5 Define `LoginResult` struct (userId, nickname, avatarUrl, cookie) — cookie is semicolon-delimited key=value string
-- [ ] 1.7 Define `QrCodeData` struct (key, qrUrl, expiresInSeconds)
-- [ ] 1.8 Define `PlayHistory` struct (song, playedAt, playCount)
-- [ ] 1.9 Define `IMusicPlatformPlugin` abstract interface with search, getSongDetail, getSongUrl (returns `SongUrlResult`), getLyrics, isAuthenticated, platformName
-- [ ] 1.10 Register all API common types with `Q_DECLARE_METATYPE` (SongUrlResult/AudioInfo already registered in domain)
+- [x] 1.1 Create `src/api/common/` directory structure
+- [x] 1.2 Define `ApiError` class with code, message, details, and classification methods (`isNetworkError`, `isAuthError`, `isRateLimitError`, `isNotFoundError`, `userMessage`)
+- [x] 1.3 Define `ApiResult<T>` template with `isSuccess()`, `isError()`, `data()`, `error()`, and implicit bool conversion
+- [x] 1.4 Define `VoidResult` as empty struct (`struct VoidResult {};`) for no-payload operations
+- [x] 1.5 Define `LoginResult` struct (userId, nickname, avatarUrl, cookie) — cookie is semicolon-delimited key=value string
+- [x] 1.7 Define `QrCodeData` struct (key, qrUrl, expiresInSeconds)
+- [x] 1.8 Define `PlayHistory` struct (song, playedAt, playCount)
+- [x] 1.9 Define `IMusicPlatformPlugin` abstract interface with search, getSongDetail, getSongUrl (returns `SongUrlResult`), getLyrics, isAuthenticated, platformName
+- [x] 1.10 Register all API common types with `Q_DECLARE_METATYPE` (SongUrlResult/AudioInfo already registered in domain)
 
 ## 2. NeteaseCrypto
 
