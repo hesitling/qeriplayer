@@ -29,6 +29,12 @@ private Q_SLOTS:
     // AudioQuality enum
     void audioQuality_ordering();
 
+    // PlaybackAudioSource enum
+    void playbackAudioSource_defaultIsLocal();
+
+    // BiliPlaylistKind enum
+    void biliPlaylistKind_distinctValues();
+
     // Song
     void song_defaultConstruction();
     void song_parameterizedConstruction();
@@ -50,9 +56,27 @@ private Q_SLOTS:
     // SearchResult
     void searchResult_defaultConstruction();
 
+    // SongIdentity
+    void songIdentity_stableKey();
+    void songIdentity_equality();
+
+    // SongUrlResult
+    void songUrlResult_defaultIsFailure();
+    void songUrlResult_success();
+
+    // PlaylistSummary / AlbumSummary / BiliPlaylist
+    void playlistSummary_defaultConstruction();
+    void albumSummary_defaultConstruction();
+    void biliPlaylist_defaultConstruction();
+
+    // PersistedPlayerState
+    void persistedPlayerState_defaultConstruction();
+
     // Q_DECLARE_METATYPE
     void song_metatype();
 };
+
+// --- Enum tests ---
 
 void TestDomainModels::musicPlatform_comparison()
 {
@@ -70,7 +94,7 @@ void TestDomainModels::musicPlatform_defaultIsUnknown()
 void TestDomainModels::searchType_defaultIsSong()
 {
     SearchType t { };
-    QCOMPARE(t, SearchType::Song); // default-constructed enum is 0 = Song
+    QCOMPARE(t, SearchType::Song);
 }
 
 void TestDomainModels::playbackState_playingNotStopped()
@@ -92,6 +116,21 @@ void TestDomainModels::audioQuality_ordering()
     QVERIFY(AudioQuality::High > AudioQuality::Standard);
     QVERIFY(AudioQuality::Standard > AudioQuality::Low);
 }
+
+void TestDomainModels::playbackAudioSource_defaultIsLocal()
+{
+    PlaybackAudioSource src { };
+    QCOMPARE(src, PlaybackAudioSource::Local);
+}
+
+void TestDomainModels::biliPlaylistKind_distinctValues()
+{
+    QVERIFY(BiliPlaylistKind::CreatedFavorite != BiliPlaylistKind::CollectedFavorite);
+    QVERIFY(BiliPlaylistKind::CollectedFavorite != BiliPlaylistKind::Collection);
+    QVERIFY(BiliPlaylistKind::CreatedFavorite != BiliPlaylistKind::Collection);
+}
+
+// --- Song tests ---
 
 void TestDomainModels::song_defaultConstruction()
 {
@@ -135,6 +174,8 @@ void TestDomainModels::song_copySemantics()
     QCOMPARE(copy.platform, s.platform);
 }
 
+// --- Album / Artist / Playlist ---
+
 void TestDomainModels::album_defaultConstruction()
 {
     Album a;
@@ -170,6 +211,8 @@ void TestDomainModels::playlist_withSongs()
     QCOMPARE(p.songs[2].id, QStringLiteral("3"));
 }
 
+// --- Lyrics ---
+
 void TestDomainModels::lyrics_ordering()
 {
     Lyrics lyrics;
@@ -201,6 +244,8 @@ void TestDomainModels::lyrics_wordTiming()
     QCOMPARE(lyrics.lines[0].words[1].startTimeMs, 2000);
 }
 
+// --- SearchResult ---
+
 void TestDomainModels::searchResult_defaultConstruction()
 {
     SearchResult r;
@@ -211,6 +256,81 @@ void TestDomainModels::searchResult_defaultConstruction()
     QCOMPARE(r.totalCount, 0);
     QCOMPARE(r.hasMore, false);
 }
+
+// --- SongIdentity ---
+
+void TestDomainModels::songIdentity_stableKey()
+{
+    SongIdentity id1 { QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
+    SongIdentity id2 { QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
+    QCOMPARE(id1.stableKey(), id2.stableKey());
+    QVERIFY(!id1.stableKey().isEmpty());
+}
+
+void TestDomainModels::songIdentity_equality()
+{
+    SongIdentity a { QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
+    SongIdentity b { QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
+    SongIdentity c { QStringLiteral("2"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
+    QCOMPARE(a, b);
+    QVERIFY(a != c);
+}
+
+// --- SongUrlResult ---
+
+void TestDomainModels::songUrlResult_defaultIsFailure()
+{
+    SongUrlResult r;
+    QCOMPARE(r.status, SongUrlResult::Status::Failure);
+    QVERIFY(r.url.isEmpty());
+}
+
+void TestDomainModels::songUrlResult_success()
+{
+    SongUrlResult r;
+    r.status = SongUrlResult::Status::Success;
+    r.url = QStringLiteral("http://example.com/stream");
+    r.durationMs = 180000;
+    QCOMPARE(r.status, SongUrlResult::Status::Success);
+    QCOMPARE(r.url, QStringLiteral("http://example.com/stream"));
+    QCOMPARE(r.durationMs, 180000);
+}
+
+// --- Summary models ---
+
+void TestDomainModels::playlistSummary_defaultConstruction()
+{
+    PlaylistSummary ps;
+    QCOMPARE(ps.playCount, 0);
+    QCOMPARE(ps.trackCount, 0);
+}
+
+void TestDomainModels::albumSummary_defaultConstruction()
+{
+    AlbumSummary as;
+    QCOMPARE(as.size, 0);
+}
+
+void TestDomainModels::biliPlaylist_defaultConstruction()
+{
+    BiliPlaylist bp;
+    QCOMPARE(bp.kind, BiliPlaylistKind::CreatedFavorite);
+    QCOMPARE(bp.count, 0);
+}
+
+// --- PersistedPlayerState ---
+
+void TestDomainModels::persistedPlayerState_defaultConstruction()
+{
+    PersistedPlayerState ps;
+    QCOMPARE(ps.currentIndex, 0);
+    QCOMPARE(ps.positionMs, 0);
+    QCOMPARE(ps.shouldResumePlayback, false);
+    QCOMPARE(ps.repeatMode, RepeatMode::Off);
+    QCOMPARE(ps.shuffleEnabled, false);
+}
+
+// --- Metatype ---
 
 void TestDomainModels::song_metatype()
 {
