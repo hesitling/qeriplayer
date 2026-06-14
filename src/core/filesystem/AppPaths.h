@@ -12,9 +12,10 @@ namespace NeriPlayerQt {
 /**
  * @brief Provides platform-specific application directory paths
  *
- * - Linux: ~/.local/share/NeriPlayer, ~/.config/NeriPlayer, ~/.cache/NeriPlayer
- * - macOS: ~/Library/Application Support/NeriPlayer, ~/Library/Caches/NeriPlayer
- * - Windows: %APPDATA%/NeriPlayer, %LOCALAPPDATA%/NeriPlayer/Cache
+ * Linux uses hardcoded paths to match NeriPlayer naming convention:
+ *   ~/.local/share/NeriPlayer, ~/.config/NeriPlayer, ~/.cache/NeriPlayer
+ *
+ * Windows and macOS use QStandardPaths (AppDataLocation, CacheLocation).
  */
 class AppPaths {
 public:
