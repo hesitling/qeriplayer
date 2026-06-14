@@ -7,6 +7,8 @@
 #include "core/crypto/Decryptor.h"
 #include "core/crypto/Encryptor.h"
 
+#include "core/filesystem/FileUtils.h"
+
 #include <QDebug>
 #include <QFile>
 #include <QFileDevice>
@@ -108,12 +110,9 @@ void SecureStorage::save() const
     }
 
     QJsonDocument doc(root);
-    QFile file(m_filePath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        throw CryptoError("Failed to save secure storage: " + file.errorString().toStdString());
+    if (!FileUtils::writeFile(m_filePath, doc.toJson(QJsonDocument::Compact))) {
+        throw CryptoError("Failed to save secure storage: " + FileUtils::lastError().toStdString());
     }
-    file.write(doc.toJson(QJsonDocument::Compact));
-    file.close();
 }
 
 QByteArray SecureStorage::deriveMasterKey() const
