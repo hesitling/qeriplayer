@@ -8,6 +8,8 @@
 #include <QMetaType>
 #include <QString>
 
+#include <cstdint>
+
 namespace NeriPlayerQt {
 
 /**
