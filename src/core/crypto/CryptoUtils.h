@@ -8,6 +8,8 @@
 #include <QByteArray>
 #include <QString>
 
+#include <stdexcept>
+
 namespace NeriPlayerQt {
 
 /**
