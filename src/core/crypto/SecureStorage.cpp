@@ -134,12 +134,13 @@ QByteArray SecureStorage::deriveMasterKey() const
     if (!secretFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         throw CryptoError("Failed to persist master key: " + secretFile.errorString().toStdString());
     }
+    // Set permissions before writing to minimize window of exposure
+    secretFile.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
     qint64 written = secretFile.write(key);
     secretFile.close();
     if (written != key.size()) {
         throw CryptoError("Failed to write complete master key");
     }
-    secretFile.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
     return key;
 }
 
