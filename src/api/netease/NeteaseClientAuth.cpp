@@ -1,6 +1,5 @@
 /// @file NeteaseClientAuth.cpp
 /// @brief NeteaseClient — authentication, captcha, session management
-/// @date 2024-01-15
 
 #include "api/netease/NeteaseClient.h"
 

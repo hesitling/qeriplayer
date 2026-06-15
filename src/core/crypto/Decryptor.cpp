@@ -1,6 +1,5 @@
 /// @file Decryptor.cpp
 /// @brief AES-256-GCM decryption implementation
-/// @date 2024-01-15
 
 #include "core/crypto/Decryptor.h"
 #include "core/crypto/CryptoUtils.h"

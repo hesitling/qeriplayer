@@ -1,6 +1,5 @@
 /// @file TestCrypto.cpp
 /// @brief Unit tests for the crypto module
-/// @date 2024-01-15
 
 #include "core/crypto/CryptoUtils.h"
 #include "core/crypto/Decryptor.h"

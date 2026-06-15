@@ -1,6 +1,5 @@
 /// @file TestNeteaseE2E.cpp
 /// @brief End-to-end tests for NeteaseClient against the real NetEase API
-/// @date 2024-01-15
 ///
 /// Usage:
 ///   NETEASE_COOKIE="MUSIC_U=xxx; __csrf=yyy" ./TestNeteaseE2E

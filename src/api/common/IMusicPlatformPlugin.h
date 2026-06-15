@@ -1,6 +1,5 @@
 /// @file IMusicPlatformPlugin.h
 /// @brief Abstract interface for music platform clients
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_IMUSICPLATFORMPLUGIN_H
 #define NERIPLAYERQT_IMUSICPLATFORMPLUGIN_H

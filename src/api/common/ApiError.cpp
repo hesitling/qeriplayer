@@ -1,6 +1,5 @@
 /// @file ApiError.cpp
 /// @brief API error type implementation
-/// @date 2024-01-15
 
 #include "api/common/ApiError.h"
 

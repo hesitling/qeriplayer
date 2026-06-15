@@ -1,6 +1,5 @@
 /// @file CryptoUtils.h
 /// @brief Cryptographic utilities: key generation, hashing
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_CRYPTOUTILS_H
 #define NERIPLAYERQT_CRYPTOUTILS_H

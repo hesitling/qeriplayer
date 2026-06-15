@@ -1,6 +1,5 @@
 /// @file Enums.h
 /// @brief Domain enumerations shared across all layers
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_ENUMS_H
 #define NERIPLAYERQT_ENUMS_H

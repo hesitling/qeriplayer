@@ -1,6 +1,5 @@
 /// @file SongIdentity.h
 /// @brief Song identity for cross-platform deduplication
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_SONGIDENTITY_H
 #define NERIPLAYERQT_SONGIDENTITY_H

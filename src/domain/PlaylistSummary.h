@@ -1,6 +1,5 @@
 /// @file PlaylistSummary.h
 /// @brief Lightweight summary models for playlist and album cards
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_PLAYLISTSUMMARY_H
 #define NERIPLAYERQT_PLAYLISTSUMMARY_H

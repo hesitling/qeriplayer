@@ -1,6 +1,5 @@
 /// @file TestNeteaseParser.cpp
 /// @brief Unit tests for NeteaseParser using recorded JSON fixtures
-/// @date 2024-01-15
 
 #include "api/netease/NeteaseParser.h"
 

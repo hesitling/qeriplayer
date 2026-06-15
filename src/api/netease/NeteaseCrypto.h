@@ -1,6 +1,5 @@
 /// @file NeteaseCrypto.h
 /// @brief NetEase WeAPI encryption helpers
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_NETEASECRYPTO_H
 #define NERIPLAYERQT_NETEASECRYPTO_H

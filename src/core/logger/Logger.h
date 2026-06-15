@@ -1,6 +1,5 @@
 /// @file Logger.h
 /// @brief spdlog-based logging with file rotation and named loggers
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_LOGGER_H
 #define NERIPLAYERQT_LOGGER_H

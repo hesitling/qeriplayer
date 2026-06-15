@@ -1,6 +1,5 @@
 /// @file ApiResult.h
 /// @brief Result type for API operations
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_APIRESULT_H
 #define NERIPLAYERQT_APIRESULT_H

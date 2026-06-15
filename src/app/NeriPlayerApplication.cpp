@@ -1,6 +1,5 @@
 /// @file NeriPlayerApplication.cpp
 /// @brief Application entry point with service registration
-/// @date 2024-01-15
 
 #include "app/NeriPlayerApplication.h"
 

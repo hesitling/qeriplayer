@@ -1,6 +1,5 @@
 /// @file NeteaseClientUser.cpp
 /// @brief NeteaseClient — user operations, download, collections, wrappers
-/// @date 2024-01-15
 
 #include "api/netease/NeteaseClient.h"
 

@@ -1,6 +1,5 @@
 /// @file Artist.h
 /// @brief Artist domain model
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_ARTIST_H
 #define NERIPLAYERQT_ARTIST_H

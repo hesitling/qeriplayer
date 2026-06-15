@@ -1,6 +1,5 @@
 /// @file SecureStorage.cpp
 /// @brief Encrypted key-value storage implementation
-/// @date 2024-01-15
 
 #include "core/crypto/SecureStorage.h"
 #include "core/crypto/CryptoUtils.h"

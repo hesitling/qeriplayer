@@ -1,6 +1,5 @@
 /// @file DatabaseManager.cpp
 /// @brief SQLite database wrapper implementation
-/// @date 2024-01-15
 
 #include "core/database/DatabaseManager.h"
 

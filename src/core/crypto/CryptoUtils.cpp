@@ -1,6 +1,5 @@
 /// @file CryptoUtils.cpp
 /// @brief Cryptographic utilities implementation using OpenSSL
-/// @date 2024-01-15
 
 #include "core/crypto/CryptoUtils.h"
 

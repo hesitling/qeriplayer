@@ -1,6 +1,5 @@
 /// @file DatabaseManager.h
 /// @brief SQLite database wrapper with schema management
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_DATABASEMANAGER_H
 #define NERIPLAYERQT_DATABASEMANAGER_H

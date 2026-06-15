@@ -1,6 +1,5 @@
 /// @file NeteaseClientCore.cpp
 /// @brief NeteaseClient — constructor, configuration, request helpers
-/// @date 2024-01-15
 
 #include "api/netease/NeteaseClient.h"
 

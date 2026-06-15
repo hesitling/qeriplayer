@@ -1,6 +1,5 @@
 /// @file NeteaseCaptchaLogin.cpp
 /// @brief Interactive CLI tool for testing Netease captcha login flow
-/// @date 2024-01-15
 ///
 /// Usage:
 ///   ./NeteaseCaptchaLogin [--phone=PHONE] [--ctcode=86]

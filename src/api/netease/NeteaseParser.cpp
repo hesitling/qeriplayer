@@ -1,6 +1,5 @@
 /// @file NeteaseParser.cpp
 /// @brief JSON-to-domain parsing for NetEase API responses
-/// @date 2024-01-15
 
 #include "api/netease/NeteaseParser.h"
 

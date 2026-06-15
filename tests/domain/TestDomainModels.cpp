@@ -1,6 +1,5 @@
 /// @file TestDomainModels.cpp
 /// @brief Unit tests for domain models
-/// @date 2024-01-15
 
 #include "domain/Domain.h"
 #include "domain/ListenTogether.h"

@@ -1,6 +1,5 @@
 /// @file FileUtils.cpp
 /// @brief Safe file I/O utilities implementation
-/// @date 2024-01-15
 
 #include "core/filesystem/FileUtils.h"
 

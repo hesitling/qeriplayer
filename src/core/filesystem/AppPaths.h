@@ -1,6 +1,5 @@
 /// @file AppPaths.h
 /// @brief Cross-platform application directory paths
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_APPPATHS_H
 #define NERIPLAYERQT_APPPATHS_H

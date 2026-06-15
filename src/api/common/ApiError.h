@@ -1,6 +1,5 @@
 /// @file ApiError.h
 /// @brief API error type with code classification
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_APIERROR_H
 #define NERIPLAYERQT_APIERROR_H

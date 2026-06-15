@@ -1,6 +1,5 @@
 /// @file LoginResult.h
 /// @brief Login result type
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_LOGINRESULT_H
 #define NERIPLAYERQT_LOGINRESULT_H

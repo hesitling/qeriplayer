@@ -1,6 +1,5 @@
 /// @file Album.h
 /// @brief Album domain model
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_ALBUM_H
 #define NERIPLAYERQT_ALBUM_H

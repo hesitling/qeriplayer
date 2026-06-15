@@ -1,6 +1,5 @@
 /// @file ListenTogether.h
 /// @brief Listen Together domain models for synchronized playback
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_LISTENTOGETHER_H
 #define NERIPLAYERQT_LISTENTOGETHER_H

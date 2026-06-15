@@ -1,6 +1,5 @@
 /// @file TestNeteaseCrypto.cpp
 /// @brief Unit tests for NeteaseCrypto
-/// @date 2024-01-15
 
 #include "api/netease/NeteaseCrypto.h"
 

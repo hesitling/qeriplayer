@@ -1,6 +1,5 @@
 /// @file Song.h
 /// @brief Song domain model
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_SONG_H
 #define NERIPLAYERQT_SONG_H

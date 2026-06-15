@@ -1,6 +1,5 @@
 /// @file NeteaseClientContent.cpp
 /// @brief NeteaseClient — IMusicPlatformPlugin, search, playlists, albums
-/// @date 2024-01-15
 
 #include "api/netease/NeteaseClient.h"
 

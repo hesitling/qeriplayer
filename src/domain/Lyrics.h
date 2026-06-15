@@ -1,6 +1,5 @@
 /// @file Lyrics.h
 /// @brief Lyrics domain model with word-level timing support
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_LYRICS_H
 #define NERIPLAYERQT_LYRICS_H

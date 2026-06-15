@@ -1,6 +1,5 @@
 /// @file Logger.cpp
 /// @brief spdlog-based logging implementation
-/// @date 2024-01-15
 
 #include "core/logger/Logger.h"
 

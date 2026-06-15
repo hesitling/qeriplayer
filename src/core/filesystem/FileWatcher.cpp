@@ -1,6 +1,5 @@
 /// @file FileWatcher.cpp
 /// @brief File change monitoring implementation
-/// @date 2024-01-15
 
 #include "core/filesystem/FileWatcher.h"
 

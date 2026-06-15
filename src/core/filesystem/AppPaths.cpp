@@ -1,6 +1,5 @@
 /// @file AppPaths.cpp
 /// @brief Cross-platform application directory paths
-/// @date 2024-01-15
 
 #include "core/filesystem/AppPaths.h"
 

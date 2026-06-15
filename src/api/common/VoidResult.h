@@ -1,6 +1,5 @@
 /// @file VoidResult.h
 /// @brief Empty result type for no-payload operations
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_VOIDRESULT_H
 #define NERIPLAYERQT_VOIDRESULT_H

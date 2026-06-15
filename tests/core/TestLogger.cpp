@@ -1,6 +1,5 @@
 /// @file TestLogger.cpp
 /// @brief Unit tests for the logger module
-/// @date 2024-01-15
 
 #include "core/logger/Logger.h"
 

@@ -1,6 +1,5 @@
 /// @file PersistedPlayerState.h
 /// @brief Player state persistence models
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_PERSISTEDPLAYERSTATE_H
 #define NERIPLAYERQT_PERSISTEDPLAYERSTATE_H

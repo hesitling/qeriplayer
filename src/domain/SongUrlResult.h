@@ -1,6 +1,5 @@
 /// @file SongUrlResult.h
 /// @brief Song URL resolution result
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_SONGURLRESULT_H
 #define NERIPLAYERQT_SONGURLRESULT_H

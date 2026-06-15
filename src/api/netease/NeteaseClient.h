@@ -1,6 +1,5 @@
 /// @file NeteaseClient.h
 /// @brief NetEase Cloud Music API client
-/// @date 2024-01-15
 
 #ifndef NERIPLAYERQT_NETEASECLIENT_H
 #define NERIPLAYERQT_NETEASECLIENT_H
