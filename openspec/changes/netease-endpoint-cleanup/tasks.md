@@ -99,8 +99,8 @@
 
 ## 10. Fix Parameter Differences
 
-- [ ] 10.1 Update `getLyrics()` params to match Kotlin: lv=0, add rv=0, yv=1, ytv=1, yrv=0
-- [ ] 10.2 Add 301 retry logic to `getLyrics()` like Kotlin `getLyricNew()`
+- [x] 10.1 Update `getLyrics()` params to match Kotlin: lv=0, add rv=0, yv=1, ytv=1, yrv=0
+- [x] 10.2 Add 301 retry logic to `getLyrics()` like Kotlin `getLyricNew()`
 
 ## 11. Remove Qt-Only Methods (Not in Kotlin)
 
