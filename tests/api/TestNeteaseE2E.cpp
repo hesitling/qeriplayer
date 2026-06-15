@@ -57,6 +57,7 @@ private Q_SLOTS:
     void testUnlikeSong();
     void testGetLikedSongIds();
     void testGetCurrentUserAccount();
+    void testGetCurrentUserId();
 
     // Download
     void testGetSongDownloadUrl();
@@ -65,6 +66,18 @@ private Q_SLOTS:
     void testGetHighQualityTags();
     void testGetRecommendedPlaylists();
     void testGetHighQualityPlaylists();
+
+    // DJ Radio
+    void testGetDjRadioDetail();
+
+    // Related Playlists
+    void testGetRelatedPlaylists();
+
+    // User Playlist Wrappers
+    void testGetUserCreatedPlaylists();
+    void testGetUserSubscribedPlaylists();
+    void testGetLikedPlaylistId();
+    void testGetUserStaredAlbums();
 
     // Cleanup
     void testLogout();
@@ -281,6 +294,17 @@ void TestNeteaseE2E::testGetCurrentUserAccount()
              "Missing userId in profile");
 }
 
+void TestNeteaseE2E::testGetCurrentUserId()
+{
+    auto result = QCoro::waitFor(m_client->getCurrentUserId());
+
+    QVERIFY2(result.isSuccess(),
+             qPrintable(result.error().message()));
+
+    QVERIFY2(result.data() > 0,
+             qPrintable(QStringLiteral("Invalid userId: %1").arg(result.data())));
+}
+
 void TestNeteaseE2E::testGetSongDownloadUrl()
 {
     if (m_firstSongId.isEmpty()) {
@@ -323,6 +347,109 @@ void TestNeteaseE2E::testGetHighQualityPlaylists()
     if (result.isError()) {
         QSKIP(qPrintable(QStringLiteral("getHighQualityPlaylists failed: %1").arg(result.error().message())));
     }
+}
+
+void TestNeteaseE2E::testGetDjRadioDetail()
+{
+    // Use a known DJ radio ID (same endpoint as playlist detail)
+    auto result = QCoro::waitFor(
+        m_client->getDjRadioDetail(QStringLiteral("3778678")));
+
+    QVERIFY2(result.isSuccess(),
+             qPrintable(result.error().message()));
+
+    QJsonObject playlist = result.data()[QLatin1String("playlist")].toObject();
+    QVERIFY2(!playlist[QLatin1String("name")].toString().isEmpty(),
+             "DJ radio detail missing name");
+}
+
+void TestNeteaseE2E::testGetRelatedPlaylists()
+{
+    // Use the hot playlist 3778678
+    auto result = QCoro::waitFor(
+        m_client->getRelatedPlaylists(QStringLiteral("3778678")));
+
+    QVERIFY2(result.isSuccess(),
+             qPrintable(result.error().message()));
+
+    QJsonArray playlists = result.data()[QLatin1String("playlists")].toArray();
+    // Related playlists may be empty for some playlists, so just check code
+    QCOMPARE(result.data()[QLatin1String("code")].toInt(), 200);
+}
+
+void TestNeteaseE2E::testGetUserCreatedPlaylists()
+{
+    auto accountResult = QCoro::waitFor(m_client->getCurrentUserAccount());
+    if (accountResult.isError()) {
+        QSKIP("Cannot get user account");
+    }
+
+    QJsonObject profile = accountResult.data()[QLatin1String("profile")].toObject();
+    QString userId = QString::number(profile[QLatin1String("userId")].toVariant().toLongLong());
+
+    auto result = QCoro::waitFor(m_client->getUserCreatedPlaylists(userId, 10));
+
+    QVERIFY2(result.isSuccess(),
+             qPrintable(result.error().message()));
+
+    QCOMPARE(result.data()[QLatin1String("code")].toInt(), 200);
+}
+
+void TestNeteaseE2E::testGetUserSubscribedPlaylists()
+{
+    auto accountResult = QCoro::waitFor(m_client->getCurrentUserAccount());
+    if (accountResult.isError()) {
+        QSKIP("Cannot get user account");
+    }
+
+    QJsonObject profile = accountResult.data()[QLatin1String("profile")].toObject();
+    QString userId = QString::number(profile[QLatin1String("userId")].toVariant().toLongLong());
+
+    auto result = QCoro::waitFor(m_client->getUserSubscribedPlaylists(userId, 10));
+
+    QVERIFY2(result.isSuccess(),
+             qPrintable(result.error().message()));
+
+    QCOMPARE(result.data()[QLatin1String("code")].toInt(), 200);
+}
+
+void TestNeteaseE2E::testGetLikedPlaylistId()
+{
+    auto accountResult = QCoro::waitFor(m_client->getCurrentUserAccount());
+    if (accountResult.isError()) {
+        QSKIP("Cannot get user account");
+    }
+
+    QJsonObject profile = accountResult.data()[QLatin1String("profile")].toObject();
+    QString userId = QString::number(profile[QLatin1String("userId")].toVariant().toLongLong());
+
+    auto result = QCoro::waitFor(m_client->getLikedPlaylistId(userId));
+
+    QVERIFY2(result.isSuccess(),
+             qPrintable(result.error().message()));
+
+    QVERIFY2(!result.data().isEmpty(),
+             "Liked playlist ID is empty");
+}
+
+void TestNeteaseE2E::testGetUserStaredAlbums()
+{
+    auto accountResult = QCoro::waitFor(m_client->getCurrentUserAccount());
+    if (accountResult.isError()) {
+        QSKIP("Cannot get user account");
+    }
+
+    QJsonObject profile = accountResult.data()[QLatin1String("profile")].toObject();
+    QString userId = QString::number(profile[QLatin1String("userId")].toVariant().toLongLong());
+
+    auto result = QCoro::waitFor(m_client->getUserStaredAlbums(userId, 10));
+
+    // May fail if user has no starred albums or API structure differs
+    if (result.isError()) {
+        QSKIP(qPrintable(QStringLiteral("getUserStaredAlbums failed: %1").arg(result.error().message())));
+    }
+
+    QCOMPARE(result.data()[QLatin1String("code")].toInt(), 200);
 }
 
 void TestNeteaseE2E::testLogout()
