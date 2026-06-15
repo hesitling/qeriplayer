@@ -41,7 +41,7 @@ QCoro::Task<ApiResult<LoginResult>> NeteaseClient::loginByEmail(
 {
     QJsonObject params;
     params[QLatin1String("email")] = email;
-    params[QLatin1String("password")] = password;
+    params[QLatin1String("password")] = NeteaseCrypto::md5Hex(password);
     params[QLatin1String("rememberLogin")] = true;
 
     auto result = co_await makeEapiRequest(QStringLiteral("/w/login"), params);
