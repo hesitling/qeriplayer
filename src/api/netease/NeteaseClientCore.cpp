@@ -162,6 +162,13 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeUnencryptedRequest(
 {
     QUrl url = m_baseUrl.resolved(QUrl(path));
 
+    // Inject CSRF token into URL query (like makeRequest)
+    if (!m_csrfToken.isEmpty()) {
+        QUrlQuery csrfQuery(url.query());
+        csrfQuery.addQueryItem(QStringLiteral("csrf_token"), m_csrfToken);
+        url.setQuery(csrfQuery);
+    }
+
     QUrlQuery query;
     for (auto it = params.constBegin(); it != params.constEnd(); ++it) {
         query.addQueryItem(it.key(), it.value().toVariant().toString());
