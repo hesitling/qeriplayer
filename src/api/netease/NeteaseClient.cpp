@@ -824,4 +824,146 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getRelatedPlaylists(
     co_return ApiResult<QJsonObject>(result);
 }
 
+QCoro::Task<ApiResult<long long>> NeteaseClient::getCurrentUserId()
+{
+    auto accountResult = co_await getCurrentUserAccount();
+    if (accountResult.isError()) {
+        co_return ApiResult<long long>(accountResult.error());
+    }
+
+    QJsonObject profile = accountResult.data()[QLatin1String("profile")].toObject();
+    long long userId = profile[QLatin1String("userId")].toVariant().toLongLong();
+    if (userId == 0) {
+        co_return ApiResult<long long>(ApiError(-1, QStringLiteral("userId not found in profile")));
+    }
+
+    co_return ApiResult<long long>(userId);
+}
+
+QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserCreatedPlaylists(
+    const QString &userId, int limit, int offset)
+{
+    // Get raw JSON from user playlists API
+    QJsonObject params;
+    params[QLatin1String("uid")] = userId;
+    params[QLatin1String("limit")] = limit;
+    params[QLatin1String("offset")] = offset;
+    params[QLatin1String("includeVideo")] = QStringLiteral("true");
+
+    auto raw = co_await makeRequest(QStringLiteral("/weapi/user/playlist"), params);
+    if (raw.isError()) {
+        co_return ApiResult<QJsonObject>(raw.error());
+    }
+
+    long long uid = userId.toLongLong();
+    QJsonArray playlistArray = raw.data()[QLatin1String("playlist")].toArray();
+    QJsonArray created;
+    for (const auto &item : playlistArray) {
+        QJsonObject pl = item.toObject();
+        bool subscribed = pl[QLatin1String("subscribed")].toBool();
+        long long creatorId = pl[QLatin1String("creator")].toObject()
+                                  [QLatin1String("userId")]
+                                      .toVariant()
+                                      .toLongLong();
+        if (creatorId == uid || !subscribed) {
+            created.append(pl);
+        }
+    }
+
+    QJsonObject result;
+    result[QLatin1String("code")] = 200;
+    result[QLatin1String("playlist")] = created;
+    result[QLatin1String("count")] = created.size();
+    co_return ApiResult<QJsonObject>(result);
+}
+
+QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserSubscribedPlaylists(
+    const QString &userId, int limit, int offset)
+{
+    QJsonObject params;
+    params[QLatin1String("uid")] = userId;
+    params[QLatin1String("limit")] = limit;
+    params[QLatin1String("offset")] = offset;
+    params[QLatin1String("includeVideo")] = QStringLiteral("true");
+
+    auto raw = co_await makeRequest(QStringLiteral("/weapi/user/playlist"), params);
+    if (raw.isError()) {
+        co_return ApiResult<QJsonObject>(raw.error());
+    }
+
+    QJsonArray playlistArray = raw.data()[QLatin1String("playlist")].toArray();
+    QJsonArray subs;
+    for (const auto &item : playlistArray) {
+        QJsonObject pl = item.toObject();
+        if (pl[QLatin1String("subscribed")].toBool()) {
+            subs.append(pl);
+        }
+    }
+
+    QJsonObject result;
+    result[QLatin1String("code")] = 200;
+    result[QLatin1String("playlist")] = subs;
+    result[QLatin1String("count")] = subs.size();
+    co_return ApiResult<QJsonObject>(result);
+}
+
+QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserStaredAlbums(
+    const QString &userId, int limit, int offset)
+{
+    auto raw = co_await getUserAlbums(userId, limit, offset);
+    if (raw.isError()) {
+        co_return ApiResult<QJsonObject>(raw.error());
+    }
+
+    // Extract albums from the nested structure
+    QJsonArray dataList =
+        raw.data()
+            .value(QLatin1String("data"))
+            .toObject()
+            .value(QLatin1String("mainCollectInfo"))
+            .toObject()
+            .value(QLatin1String("mineAllTabDto"))
+            .toObject()
+            .value(QLatin1String("dataList"))
+            .toArray();
+
+    QJsonObject result;
+    result[QLatin1String("code")] = 200;
+    result[QLatin1String("playlist")] = dataList;
+    result[QLatin1String("count")] = dataList.size();
+    co_return ApiResult<QJsonObject>(result);
+}
+
+QCoro::Task<ApiResult<QString>> NeteaseClient::getLikedPlaylistId(
+    const QString &userId)
+{
+    QJsonObject params;
+    params[QLatin1String("uid")] = userId;
+    params[QLatin1String("limit")] = 1000;
+    params[QLatin1String("offset")] = 0;
+    params[QLatin1String("includeVideo")] = QStringLiteral("true");
+
+    auto raw = co_await makeRequest(QStringLiteral("/weapi/user/playlist"), params);
+    if (raw.isError()) {
+        co_return ApiResult<QString>(raw.error());
+    }
+
+    long long uid = userId.toLongLong();
+    QJsonArray playlistArray = raw.data()[QLatin1String("playlist")].toArray();
+    for (const auto &item : playlistArray) {
+        QJsonObject pl = item.toObject();
+        int specialType = pl[QLatin1String("specialType")].toInt();
+        long long creatorId = pl[QLatin1String("creator")].toObject()
+                                  [QLatin1String("userId")]
+                                      .toVariant()
+                                      .toLongLong();
+        if (creatorId == uid && specialType == 5) {
+            co_return ApiResult<QString>(
+                QString::number(pl[QLatin1String("id")].toVariant().toLongLong()));
+        }
+    }
+
+    co_return ApiResult<QString>(ApiError(404, QStringLiteral("Liked playlist not found")));
+}
+
 } // namespace NeriPlayerQt

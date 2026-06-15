@@ -88,11 +88,11 @@
 
 - [x] 9.1 Add `getDjRadioDetail(radioId)` — `/api/v6/playlist/detail` (same as playlist detail)
 - [x] 9.2 Add `getRelatedPlaylists(playlistId)` — HTML scrape from `/playlist?id=xxx`
-- [ ] 9.3 Add `getUserCreatedPlaylists(userId)` — wrapper around `getUserPlaylists` filtering by creator
-- [ ] 9.4 Add `getUserStaredAlbums(userId)` — wrapper around `getUserAlbums` filtering subscribed
-- [ ] 9.5 Add `getUserSubscribedPlaylists(userId)` — wrapper around `getUserPlaylists` filtering subscribed
-- [ ] 9.6 Add `getLikedPlaylistId(userId)` — wrapper around `getUserPlaylists` finding specialType=5
-- [ ] 9.7 Add `getCurrentUserId()` — helper using `getCurrentUserAccount()`
+- [x] 9.3 Add `getUserCreatedPlaylists(userId)` — wrapper around `getUserPlaylists` filtering by creator
+- [x] 9.4 Add `getUserStaredAlbums(userId)` — wrapper around `getUserAlbums` filtering subscribed
+- [x] 9.5 Add `getUserSubscribedPlaylists(userId)` — wrapper around `getUserPlaylists` filtering subscribed
+- [x] 9.6 Add `getLikedPlaylistId(userId)` — wrapper around `getUserPlaylists` finding specialType=5
+- [x] 9.7 Add `getCurrentUserId()` — helper using `getCurrentUserAccount()`
 - [ ] 9.8 Add `loginByCaptcha(phone, captcha, ctcode)` — EAPI `/w/login/cellphone` with captcha
 - [ ] 9.9 Add `sendCaptcha(phone, ctcode)` — `/weapi/sms/captcha/sent`
 - [ ] 9.10 Add `verifyCaptcha(phone, captcha, ctcode)` — `/weapi/sms/captcha/verify`
