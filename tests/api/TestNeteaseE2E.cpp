@@ -390,8 +390,6 @@ void TestNeteaseE2E::testGetUserCreatedPlaylists()
 
     QVERIFY2(result.isSuccess(),
              qPrintable(result.error().message()));
-
-    QCOMPARE(result.data()[QLatin1String("code")].toInt(), 200);
 }
 
 void TestNeteaseE2E::testGetUserSubscribedPlaylists()
@@ -408,8 +406,6 @@ void TestNeteaseE2E::testGetUserSubscribedPlaylists()
 
     QVERIFY2(result.isSuccess(),
              qPrintable(result.error().message()));
-
-    QCOMPARE(result.data()[QLatin1String("code")].toInt(), 200);
 }
 
 void TestNeteaseE2E::testGetLikedPlaylistId()

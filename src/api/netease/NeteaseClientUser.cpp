@@ -4,6 +4,7 @@
 #include "api/netease/NeteaseClient.h"
 
 #include "api/common/ApiError.h"
+#include "api/netease/NeteaseParser.h"
 #include "core/network/HttpClient.h"
 
 #include <QJsonArray>
@@ -232,10 +233,9 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getRelatedPlaylists(
 
 // ─── User Playlist Wrappers ───────────────────────────────────────────────
 
-QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserCreatedPlaylists(
+QCoro::Task<ApiResult<QVector<Playlist>>> NeteaseClient::getUserCreatedPlaylists(
     const QString &userId, int limit, int offset)
 {
-    // Get raw JSON from user playlists API
     QJsonObject params;
     params[QLatin1String("uid")] = userId;
     params[QLatin1String("limit")] = limit;
@@ -244,12 +244,13 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserCreatedPlaylists(
 
     auto raw = co_await makeRequest(QStringLiteral("/weapi/user/playlist"), params);
     if (raw.isError()) {
-        co_return ApiResult<QJsonObject>(raw.error());
+        co_return ApiResult<QVector<Playlist>>(raw.error());
     }
 
     long long uid = userId.toLongLong();
     QJsonArray playlistArray = raw.data()[QLatin1String("playlist")].toArray();
-    QJsonArray created;
+    QVector<Playlist> playlists;
+    playlists.reserve(playlistArray.size());
     for (const auto &item : playlistArray) {
         QJsonObject pl = item.toObject();
         bool subscribed = pl[QLatin1String("subscribed")].toBool();
@@ -258,18 +259,14 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserCreatedPlaylists(
                                       .toVariant()
                                       .toLongLong();
         if (creatorId == uid || !subscribed) {
-            created.append(pl);
+            playlists.append(NeteaseParser::parsePlaylist(pl));
         }
     }
 
-    QJsonObject result;
-    result[QLatin1String("code")] = 200;
-    result[QLatin1String("playlist")] = created;
-    result[QLatin1String("count")] = created.size();
-    co_return ApiResult<QJsonObject>(result);
+    co_return ApiResult<QVector<Playlist>>(playlists);
 }
 
-QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserSubscribedPlaylists(
+QCoro::Task<ApiResult<QVector<Playlist>>> NeteaseClient::getUserSubscribedPlaylists(
     const QString &userId, int limit, int offset)
 {
     QJsonObject params;
@@ -280,23 +277,20 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserSubscribedPlaylists(
 
     auto raw = co_await makeRequest(QStringLiteral("/weapi/user/playlist"), params);
     if (raw.isError()) {
-        co_return ApiResult<QJsonObject>(raw.error());
+        co_return ApiResult<QVector<Playlist>>(raw.error());
     }
 
     QJsonArray playlistArray = raw.data()[QLatin1String("playlist")].toArray();
-    QJsonArray subs;
+    QVector<Playlist> playlists;
+    playlists.reserve(playlistArray.size());
     for (const auto &item : playlistArray) {
         QJsonObject pl = item.toObject();
         if (pl[QLatin1String("subscribed")].toBool()) {
-            subs.append(pl);
+            playlists.append(NeteaseParser::parsePlaylist(pl));
         }
     }
 
-    QJsonObject result;
-    result[QLatin1String("code")] = 200;
-    result[QLatin1String("playlist")] = subs;
-    result[QLatin1String("count")] = subs.size();
-    co_return ApiResult<QJsonObject>(result);
+    co_return ApiResult<QVector<Playlist>>(playlists);
 }
 
 QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserStaredAlbums(

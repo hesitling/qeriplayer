@@ -170,9 +170,9 @@ public:
 
     // ─── User Playlist Wrappers ───────────────────────────────────────────
 
-    QCoro::Task<ApiResult<QJsonObject>> getUserCreatedPlaylists(
+    QCoro::Task<ApiResult<QVector<Playlist>>> getUserCreatedPlaylists(
         const QString &userId, int limit = 1000, int offset = 0);
-    QCoro::Task<ApiResult<QJsonObject>> getUserSubscribedPlaylists(
+    QCoro::Task<ApiResult<QVector<Playlist>>> getUserSubscribedPlaylists(
         const QString &userId, int limit = 1000, int offset = 0);
     QCoro::Task<ApiResult<QJsonObject>> getUserStaredAlbums(
         const QString &userId, int limit = 1000, int offset = 0);
