@@ -343,3 +343,40 @@ target_link_libraries(TestNeteaseE2E PRIVATE
 )
 # Not added to ctest — requires credentials
 # Run manually: ./TestNeteaseE2E --phone=xxx --password=xxx
+
+add_executable(NeteaseCaptchaLogin
+    tests/api/NeteaseCaptchaLogin.cpp
+    src/api/netease/NeteaseClient.cpp
+    src/api/netease/NeteaseCrypto.cpp
+    src/api/netease/NeteaseParser.cpp
+    src/api/common/ApiError.cpp
+    src/core/network/HttpClient.cpp
+    src/core/network/NetworkManager.cpp
+    src/core/network/NetworkMonitor.cpp
+    src/core/network/WebSocketClient.cpp
+    src/core/crypto/CryptoUtils.cpp
+    src/core/crypto/Encryptor.cpp
+    src/core/crypto/Decryptor.cpp
+    src/core/crypto/SecureStorage.cpp
+    src/core/filesystem/AppPaths.cpp
+    src/core/filesystem/FileUtils.cpp
+    src/core/filesystem/FileWatcher.cpp
+    src/core/database/DatabaseManager.cpp
+    src/core/logger/Logger.cpp
+)
+target_include_directories(NeteaseCaptchaLogin PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
+)
+target_link_libraries(NeteaseCaptchaLogin PRIVATE
+    Qt6::Core
+    Qt6::Network
+    Qt6::WebSockets
+    ${NERIPLAYER_QCORO_LIBRARIES}
+    ${SQLITE3_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
+    OpenSSL::Crypto
+)
+# Run: ./NeteaseCaptchaLogin --phone=13800138000
+# Or just: ./NeteaseCaptchaLogin  (will prompt for phone)
