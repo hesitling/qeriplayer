@@ -215,7 +215,7 @@ Lyrics NeteaseParser::parseLyrics(const QJsonObject &json)
 
     for (const QString &line : lines) {
         // Match [mm:ss.xx] or [mm:ss.xxx]
-        static const QRegularExpression timeRegex(
+        thread_local const QRegularExpression timeRegex(
             QStringLiteral(R"(\[(\d{2}):(\d{2})\.(\d{2,3})\](.*))"));
         QRegularExpressionMatch match = timeRegex.match(line);
 

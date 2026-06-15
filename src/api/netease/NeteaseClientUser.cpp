@@ -93,11 +93,14 @@ QCoro::Task<ApiResult<QStringList>> NeteaseClient::getHighQualityTags()
         co_return ApiResult<QStringList>(result.error());
     }
 
-    // Parse tags from response
+    // Parse tags from response: { tags: [{ name, category, hot }, ...] }
     QStringList tags;
-    QJsonObject data = result.data()[QLatin1String("data")].toObject();
-    for (auto it = data.constBegin(); it != data.constEnd(); ++it) {
-        tags.append(it.key());
+    QJsonArray tagArray = result.data()[QLatin1String("tags")].toArray();
+    for (const auto &item : tagArray) {
+        QString name = item.toObject()[QLatin1String("name")].toString();
+        if (!name.isEmpty()) {
+            tags.append(name);
+        }
     }
     co_return ApiResult<QStringList>(tags);
 }
