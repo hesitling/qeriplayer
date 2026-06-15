@@ -82,7 +82,7 @@
 
 - [x] 8.1 Verify build compiles without errors
 - [x] 8.2 Run all existing tests to verify no regressions
-- [ ] 8.3 Run E2E tests with valid credentials to verify new endpoints work
+- [x] 8.3 Run E2E tests with valid credentials to verify new endpoints work
 
 ## 9. Add Missing Kotlin APIs
 
@@ -107,5 +107,5 @@
 - [x] 11.1 Remove `searchPlaylists()` — Kotlin only has `searchSongs(type=1)`
 - [x] 11.2 Remove `searchAlbums()` — Kotlin only has `searchSongs(type=1)`
 - [x] 11.3 Remove `searchArtists()` — Kotlin only has `searchSongs(type=1)`
-- [ ] 11.4 Decide on `loginByEmail()` — keep or remove?
-- [ ] 11.5 Decide on `unlikeSong()` — keep as convenience or remove?
+- [x] 11.4 Decide on `loginByEmail()` — keep or remove? **Keep** — useful for desktop users
+- [x] 11.5 Decide on `unlikeSong()` — keep as convenience or remove? **Keep** — cleaner API
