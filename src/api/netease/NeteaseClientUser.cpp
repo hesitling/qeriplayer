@@ -191,6 +191,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getRelatedPlaylists(
     const QString html = QString::fromUtf8(response.body);
 
     // Parse related playlists from HTML (matches Kotlin regex)
+    // Fragile: depends on NetEase HTML structure — will break silently if they change their markup
     static const QRegularExpression regex(
         QStringLiteral(
             "<div class=\"cver u-cover u-cover-3\">[\\s\\S]*?"
