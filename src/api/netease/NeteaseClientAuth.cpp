@@ -17,12 +17,13 @@ namespace NeriPlayerQt {
 
 QCoro::Task<ApiResult<LoginResult>> NeteaseClient::login(
     const QString &phone,
-    const QString &password)
+    const QString &password,
+    int ctcode)
 {
     QJsonObject params;
     params[QLatin1String("phone")] = phone;
     params[QLatin1String("password")] = NeteaseCrypto::md5Hex(password);
-    params[QLatin1String("countrycode")] = QStringLiteral("86");
+    params[QLatin1String("countrycode")] = QString::number(ctcode);
     params[QLatin1String("rememberLogin")] = true;
 
     auto result = co_await makeEapiRequest(QStringLiteral("/w/login/cellphone"), params);

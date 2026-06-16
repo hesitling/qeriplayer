@@ -79,7 +79,8 @@ public:
     // ─── Authentication ───────────────────────────────────────────────────
 
     QCoro::Task<ApiResult<LoginResult>> login(const QString &phone,
-                                               const QString &password);
+                                               const QString &password,
+                                               int ctcode = 86);
     QCoro::Task<ApiResult<LoginResult>> loginByEmail(const QString &email,
                                                       const QString &password);
     QCoro::Task<ApiResult<VoidResult>> logout();
