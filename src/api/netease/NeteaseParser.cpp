@@ -29,6 +29,12 @@ Song NeteaseParser::parseSong(const QJsonObject &json)
     const QJsonArray songsArr = json.value(QLatin1String("songs")).toArray();
     const QJsonObject &songJson = (!songsArr.isEmpty()) ? songsArr.first().toObject() : json;
 
+    if (songsArr.size() > 1) {
+        logMalformed(QStringLiteral("parseSong"),
+                     QStringLiteral("songs array has %1 entries, using first only — use parseSongs() instead")
+                         .arg(songsArr.size()));
+    }
+
     song.id = QString::number(songJson[QLatin1String("id")].toInteger());
     song.name = songJson[QLatin1String("name")].toString();
     song.platform = MusicPlatform::NetEase;
