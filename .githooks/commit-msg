@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Commit-msg hook: enforce Conventional Commits format
+#
+# Format: <type>(<scope>): <description>
+#   or:   <type>: <description>
+#
+# Types: feat, fix, docs, style, refactor, test, chore, build, ci, perf
+#
+# Skip with: git commit --no-verify
+set -euo pipefail
+
+commit_msg_file="$1"
+commit_msg=$(head -1 "$commit_msg_file")
+
+# Skip merge/fixup/squash commits
+if [[ "$commit_msg" =~ ^(Merge|fixup!|squash!) ]]; then
+    exit 0
+fi
+
+# Pattern: type(optional-scope): description
+pattern='^(feat|fix|docs|style|refactor|test|chore|build|ci|perf)(\([a-z0-9/_-]+\))?: .{1,}'
+
+if ! [[ "$commit_msg" =~ $pattern ]]; then
+    printf '\033[1;31mInvalid commit message:\033[0m %s\n' "$commit_msg"
+    echo ""
+    echo "Expected: <type>(<scope>): <description>"
+    echo ""
+    echo "  Types: feat, fix, docs, style, refactor, test, chore, build, ci, perf"
+    echo "  Scope: optional, lowercase (e.g. core, api, player, ui)"
+    echo ""
+    echo "  Examples:"
+    echo "    feat(api): add YouTube Music search support"
+    echo "    fix(network): handle connection timeout"
+    echo "    docs: update architecture documentation"
+    echo ""
+    echo "Skip with: git commit --no-verify"
+    exit 1
+fi
