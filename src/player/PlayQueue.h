@@ -93,7 +93,6 @@ Q_SIGNALS:
 private:
     void rebuildShuffleArray();
     int advanceIndex(int index) const;
-    int retreatIndex(int index) const;
 
     QVector<Song> m_songs;
     int m_currentIndex = 0;

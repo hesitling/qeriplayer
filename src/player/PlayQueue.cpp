@@ -336,12 +336,4 @@ int PlayQueue::advanceIndex(int index) const
     return index;
 }
 
-int PlayQueue::retreatIndex(int index) const
-{
-    if (index > 0) {
-        return index - 1;
-    }
-    return index;
-}
-
 } // namespace NeriPlayerQt
