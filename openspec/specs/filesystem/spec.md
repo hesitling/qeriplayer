@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the filesystem utilities: platform-appropriate paths for app data, cache, and logs (`AppPaths`), file I/O helpers (`FileUtils`), and file change monitoring (`FileWatcher`).
+
+## Requirements
 
 ### Requirement: Application data directory
 The system SHALL provide `AppPaths::dataDir()` that returns the platform-appropriate directory for persistent application data:

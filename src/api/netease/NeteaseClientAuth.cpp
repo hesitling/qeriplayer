@@ -61,7 +61,7 @@ QCoro::Task<ApiResult<VoidResult>> NeteaseClient::logout()
     }
 
     clearCookies();
-    co_return ApiResult<VoidResult>(VoidResult { });
+    co_return ApiResult<VoidResult>(VoidResult {});
 }
 
 // ─── Cookie Management ─────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ QCoro::Task<ApiResult<VoidResult>> NeteaseClient::sendCaptcha(const QString &pho
         co_return ApiResult<VoidResult>(result.error());
     }
 
-    co_return ApiResult<VoidResult>(VoidResult { });
+    co_return ApiResult<VoidResult>(VoidResult {});
 }
 
 QCoro::Task<ApiResult<VoidResult>> NeteaseClient::verifyCaptcha(const QString &phone, const QString &captcha,
@@ -196,7 +196,7 @@ QCoro::Task<ApiResult<VoidResult>> NeteaseClient::verifyCaptcha(const QString &p
         co_return ApiResult<VoidResult>(result.error());
     }
 
-    co_return ApiResult<VoidResult>(VoidResult { });
+    co_return ApiResult<VoidResult>(VoidResult {});
 }
 
 } // namespace NeriPlayerQt

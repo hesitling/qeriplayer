@@ -35,7 +35,7 @@ void SecureStorage::set(const QString &key, const QString &value)
     save();
 }
 
-QString SecureStorage::get(const QString &key) const
+std::optional<QString> SecureStorage::get(const QString &key) const
 {
     QMutexLocker lock(&m_mutex);
     if (!m_loaded) {
@@ -44,7 +44,7 @@ QString SecureStorage::get(const QString &key) const
 
     auto it = m_encryptedData.find(key);
     if (it == m_encryptedData.end()) {
-        return { };
+        return std::nullopt;
     }
 
     try {
@@ -52,7 +52,7 @@ QString SecureStorage::get(const QString &key) const
         return QString::fromUtf8(decrypted);
     } catch (const CryptoError &ex) {
         qWarning() << "SecureStorage: decrypt failed for key" << key << ":" << ex.what();
-        return { };
+        return std::nullopt;
     }
 }
 

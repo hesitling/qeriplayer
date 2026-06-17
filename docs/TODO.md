@@ -8,43 +8,43 @@ This document tracks the full implementation plan for NeriPlayer Qt, organized b
 
 Build the core infrastructure that all other modules depend on.
 
-- [ ] **Domain Models** (`src/domain/`)
-  - [ ] `Song` — id, title, artist, album, duration, coverUrl, platform, playbackUrl
-  - [ ] `Album` — id, title, artist, coverUrl, song list
-  - [ ] `Artist` — id, name, avatarUrl, description
-  - [ ] `Playlist` — id, name, description, coverUrl, song count, owner
-  - [ ] `Lyrics` — raw text, timed lines with timestamps
-  - [ ] `SearchResult` — list of songs, playlists, albums, artists with pagination
-  - [ ] Enums — `MusicPlatform`, `SearchType`, `PlaybackState`, `RepeatMode`, `AudioQuality`
+- [x] **Domain Models** (`src/domain/`)
+  - [x] `Song` — id, title, artist, album, duration, coverUrl, platform, playbackUrl
+  - [x] `Album` — id, title, artist, coverUrl, song list
+  - [x] `Artist` — id, name, avatarUrl, description
+  - [x] `Playlist` — id, name, description, coverUrl, song count, owner
+  - [x] `Lyrics` — raw text, timed lines with timestamps
+  - [x] `SearchResult` — list of songs, playlists, albums, artists with pagination
+  - [x] Enums — `MusicPlatform`, `SearchType`, `PlaybackState`, `RepeatMode`, `AudioQuality`
   - [ ] Value types — `PageInfo`, `Duration`, `CoverImage`
 
-- [ ] **Database Module** (`src/core/database/`)
-  - [ ] `DatabaseManager` — open/close SQLite, connection lifecycle
+- [x] **Database Module** (`src/core/database/`)
+  - [x] `DatabaseManager` — open/close SQLite, connection lifecycle
   - [ ] `SchemaManager` — table creation, migrations, version tracking
   - [ ] `QueryHelper` — type-safe query builder, bind parameters
   - [ ] Schema for: songs cache, playlists, user settings, play history, download queue
 
-- [ ] **Logger Module** (`src/core/logger/`)
-  - [ ] `Logger` — spdlog wrapper with named loggers
-  - [ ] File sink with daily rotation
-  - [ ] Console sink with color output
+- [x] **Logger Module** (`src/core/logger/`)
+  - [x] `Logger` — spdlog wrapper with named loggers
+  - [x] File sink with daily rotation
+  - [x] Console sink with color output
   - [ ] Log level configuration via settings
-  - [ ] Category-based loggers (network, player, api, ui)
+  - [x] Category-based loggers (network, player, api, ui)
 
-- [ ] **FileSystem Module** (`src/core/filesystem/`)
-  - [ ] `AppPaths` — config dir, cache dir, data dir, temp dir (cross-platform)
-  - [ ] `FileUtils` — safe read/write, atomic save, directory creation
-  - [ ] `FileWatcher` — watch for external changes to cached files
+- [x] **FileSystem Module** (`src/core/filesystem/`)
+  - [x] `AppPaths` — config dir, cache dir, data dir, temp dir (cross-platform)
+  - [x] `FileUtils` — safe read/write, atomic save, directory creation
+  - [x] `FileWatcher` — watch for external changes to cached files
 
-- [ ] **Crypto Module** (`src/core/crypto/`)
-  - [ ] `Encryptor` — AES-256-GCM encrypt/decrypt for credentials
-  - [ ] `SecureStorage` — store API tokens, cookies encrypted on disk
-  - [ ] `HashUtils` — SHA-256 for cache keys, request signing
+- [x] **Crypto Module** (`src/core/crypto/`)
+  - [x] `Encryptor` — AES-256-GCM encrypt/decrypt for credentials
+  - [x] `SecureStorage` — store API tokens, cookies encrypted on disk
+  - [x] `CryptoUtils` — SHA-256 for cache keys, request signing
 
-- [ ] **App Bootstrap Updates** (`src/app/`)
-  - [ ] Register all core services in `ServiceLocator`
-  - [ ] Initialize database, logger, filesystem, crypto on startup
-  - [ ] Graceful shutdown and resource cleanup
+- [x] **App Bootstrap Updates** (`src/app/`)
+  - [x] Register all core services in `ServiceLocator`
+  - [x] Initialize database, logger, filesystem, crypto on startup
+  - [x] Graceful shutdown and resource cleanup
 
 ---
 
@@ -52,18 +52,18 @@ Build the core infrastructure that all other modules depend on.
 
 Implement API clients for each music platform and the repository layer.
 
-- [ ] **API Common Types** (`src/api/common/`)
-  - [ ] Shared request/response types for all platforms
+- [x] **API Common Types** (`src/api/common/`)
+  - [x] Shared request/response types for all platforms
   - [ ] Pagination helpers
-  - [ ] Error handling and retry policies
+  - [x] Error handling and retry policies
 
-- [ ] **NetEase Cloud Music API** (`src/api/netease/`)
-  - [ ] `NeteaseClient` implementing `IMusicPlatformPlugin`
-  - [ ] Login (phone, email, QR code)
-  - [ ] Search (songs, playlists, albums, artists)
-  - [ ] Song detail, playback URL, lyrics
-  - [ ] Playlist detail, user playlists
-  - [ ] Recommended playlists, daily recommendations
+- [x] **NetEase Cloud Music API** (`src/api/netease/`)
+  - [x] `NeteaseClient` implementing `IMusicPlatformPlugin`
+  - [x] Login (phone, email, captcha)
+  - [x] Search (songs, playlists, albums, artists)
+  - [x] Song detail, playback URL, lyrics
+  - [x] Playlist detail, user playlists
+  - [x] Recommended playlists, high-quality playlists
 
 - [ ] **Bilibili API** (`src/api/bilibili/`)
   - [ ] `BilibiliClient` implementing `IMusicPlatformPlugin`
@@ -85,12 +85,12 @@ Implement API clients for each music platform and the repository layer.
   - [ ] Search, song detail, playback URL
   - [ ] Lyrics, playlist support
 
-- [ ] **Repository Layer** (`src/repository/`)
-  - [ ] `IMusicRepository` — abstract interface for song/album/artist data
-  - [ ] `CachedMusicRepository` — API calls with SQLite cache
-  - [ ] `PlaylistRepository` — local playlist CRUD
-  - [ ] `SettingsRepository` — app settings persistence
-  - [ ] `HistoryRepository` — play history tracking
+- [x] **Repository Layer** (`src/repo/`)
+  - [x] `ISongRepository` / `SongRepository` — song CRUD on songs_cache
+  - [x] `IPlaylistRepository` / `PlaylistRepository` — playlist CRUD + song membership
+  - [x] `IPlayerStateRepository` / `PlayerStateRepository` — singleton player state
+  - [x] `ISettingsRepository` / `SettingsRepository` — key-value settings
+  - [x] `IPlayHistoryRepository` / `PlayHistoryRepository` — play event tracking
 
 ---
 
@@ -225,10 +225,10 @@ Final touches and extended features.
   - [ ] Network error retry with exponential backoff
   - [ ] Crash recovery (save playback state)
 
-- [ ] **Testing**
-  - [ ] Unit tests for domain models
-  - [ ] Unit tests for core modules (database, crypto, logger)
-  - [ ] Integration tests for API clients (with recorded responses)
+- [x] **Testing**
+  - [x] Unit tests for domain models
+  - [x] Unit tests for core modules (database, crypto, logger)
+  - [x] Integration tests for API clients (with recorded responses)
   - [ ] ViewModel tests with mock services
 
 ---

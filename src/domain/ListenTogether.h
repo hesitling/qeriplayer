@@ -184,17 +184,17 @@ struct ListenTogetherEvent {
  *
  * Matches Android NeriPlayer's buildStableTrackKey() logic.
  */
-inline QString buildStableTrackKey(const QString &channelId, const QString &audioId, const QString &subAudioId = { },
-                                   const QString &playlistContextId = { })
+inline QString buildStableTrackKey(const QString &channelId, const QString &audioId, const QString &subAudioId = {},
+                                   const QString &playlistContextId = {})
 {
     if (channelId == QString::fromLatin1(ListenTogetherChannels::BILIBILI)) {
-        QStringList parts { channelId, audioId };
+        QStringList parts {channelId, audioId};
         if (!subAudioId.isEmpty())
             parts.append(subAudioId);
         return parts.join(QStringLiteral(":"));
     }
     if (channelId == QString::fromLatin1(ListenTogetherChannels::YOUTUBE_MUSIC)) {
-        QStringList parts { channelId, audioId };
+        QStringList parts {channelId, audioId};
         if (!playlistContextId.isEmpty())
             parts.append(playlistContextId);
         return parts.join(QStringLiteral(":"));
@@ -246,18 +246,18 @@ inline ListenTogetherTrack songToTrack(const Song &song)
     const QString playlistContext = song.playlistContextId;
     const QString stableKey = buildStableTrackKey(channel, audio, subAudio, playlistContext);
 
-    return ListenTogetherTrack { stableKey,
-                                 channel,
-                                 audio,
-                                 subAudio,
-                                 playlistContext,
-                                 song.mediaUri.toString(),
-                                 song.streamUrl,
-                                 song.customName.isEmpty() ? song.name : song.customName,
-                                 song.customArtist.isEmpty() ? song.artist : song.customArtist,
-                                 song.album,
-                                 song.durationMs,
-                                 song.customCoverUrl.isEmpty() ? song.coverUrl.toString() : song.customCoverUrl };
+    return ListenTogetherTrack {stableKey,
+                                channel,
+                                audio,
+                                subAudio,
+                                playlistContext,
+                                song.mediaUri.toString(),
+                                song.streamUrl,
+                                song.customName.isEmpty() ? song.name : song.customName,
+                                song.customArtist.isEmpty() ? song.artist : song.customArtist,
+                                song.album,
+                                song.durationMs,
+                                song.customCoverUrl.isEmpty() ? song.coverUrl.toString() : song.customCoverUrl};
 }
 
 /**

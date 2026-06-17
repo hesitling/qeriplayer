@@ -57,7 +57,7 @@ namespace NeriPlayerQt {
 
 inline SongIdentity songIdentityFromSong(const Song &song)
 {
-    return SongIdentity { song.id, song.album, song.mediaUri.toString() };
+    return SongIdentity {song.id, song.album, song.mediaUri.toString()};
 }
 
 } // namespace NeriPlayerQt

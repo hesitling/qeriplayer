@@ -26,7 +26,7 @@ public:
      * @param message Human-readable error message
      * @param details Optional additional details
      */
-    ApiError(int code, const QString &message, const QString &details = { });
+    ApiError(int code, const QString &message, const QString &details = {});
 
     int code() const;
     const QString &message() const;

@@ -29,12 +29,12 @@ QByteArray FileUtils::readFile(const QString &path)
     QFile file(path);
     if (!file.exists()) {
         s_lastError = QStringLiteral("File does not exist: %1").arg(path);
-        return { };
+        return {};
     }
 
     if (!file.open(QIODevice::ReadOnly)) {
         s_lastError = QStringLiteral("Cannot open file: %1 — %2").arg(path, file.errorString());
-        return { };
+        return {};
     }
 
     return file.readAll();

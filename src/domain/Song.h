@@ -5,6 +5,7 @@
 #define NERIPLAYERQT_SONG_H
 
 #include "domain/Enums.h"
+#include "domain/Lyrics.h"
 
 #include <QMetaType>
 #include <QString>
@@ -38,6 +39,8 @@ struct Song {
     MusicPlatform matchedLyricSource = MusicPlatform::Unknown;
     QString matchedSongId;
     qint64 userLyricOffsetMs = 0;
+
+    Lyrics lyrics; ///< Parsed lyrics with word-level timing
 
     // User customizations (overrides)
     QString customCoverUrl;

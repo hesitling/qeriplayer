@@ -29,8 +29,9 @@ NeteaseClient::NeteaseClient(HttpClient *httpClient, SecureStorage *storage, QOb
 
     // Restore cookies from secure storage
     if (m_storage) {
-        m_cookie = m_storage->get(COOKIE_STORAGE_KEY);
-        if (!m_cookie.isEmpty()) {
+        auto cookieOpt = m_storage->get(COOKIE_STORAGE_KEY);
+        if (cookieOpt.has_value()) {
+            m_cookie = cookieOpt.value();
             // Extract CSRF token from cookie
             const QStringList parts = m_cookie.split(QLatin1String("; "));
             for (const QString &part : parts) {

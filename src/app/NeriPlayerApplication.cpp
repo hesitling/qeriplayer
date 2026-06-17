@@ -10,6 +10,11 @@
 #include "core/logger/Logger.h"
 #include "core/network/NetworkManager.h"
 #include "mainwindow.h"
+#include "repo/PlayHistoryRepository.h"
+#include "repo/PlayerStateRepository.h"
+#include "repo/PlaylistRepository.h"
+#include "repo/SettingsRepository.h"
+#include "repo/SongRepository.h"
 
 #include <QDebug>
 
@@ -96,7 +101,29 @@ void NeriPlayerApplication::initializeCoreServices()
     // 4. Network
     m_services.registerService<NetworkManager>(std::make_unique<NetworkManager>());
 
-    // 5. NeteaseClient
+    // 5. Repositories
+    if (m_services.hasService<DatabaseManager>()) {
+        auto *db = m_services.service<DatabaseManager>();
+
+        auto songRepo = std::make_unique<SongRepository>(db);
+        m_services.registerService<SongRepository>(std::move(songRepo));
+
+        auto playlistRepo = std::make_unique<PlaylistRepository>(db);
+        m_services.registerService<PlaylistRepository>(std::move(playlistRepo));
+
+        auto playHistoryRepo = std::make_unique<PlayHistoryRepository>(db);
+        m_services.registerService<PlayHistoryRepository>(std::move(playHistoryRepo));
+
+        auto playerStateRepo = std::make_unique<PlayerStateRepository>(db);
+        m_services.registerService<PlayerStateRepository>(std::move(playerStateRepo));
+
+        auto settingsRepo = std::make_unique<SettingsRepository>(db);
+        m_services.registerService<SettingsRepository>(std::move(settingsRepo));
+
+        log->info("Repositories registered");
+    }
+
+    // 6. NeteaseClient
     auto *netMgr = m_services.service<NetworkManager>();
     auto *secStorage = m_services.service<SecureStorage>();
     m_services.registerService<NeteaseClient>(std::make_unique<NeteaseClient>(netMgr->httpClient(), secStorage));

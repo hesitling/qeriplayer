@@ -1,83 +1,74 @@
-## ADDED Requirements
+## Purpose
 
-### Requirement: DatabaseManager lifecycle
-The system SHALL provide a `DatabaseManager` class that opens an SQLite database file at a configurable path. Opening SHALL create the file if it does not exist. Closing SHALL flush all pending writes and release the file handle.
+Defines the SQLite database schema, migration system, and query execution layer. Provides `DatabaseManager` for schema lifecycle, parameterized queries, and transaction support.
 
-#### Scenario: Open a new database
-- **WHEN** `DatabaseManager::open(path)` is called with a path to a non-existent file
-- **THEN** the file SHALL be created and the database SHALL be opened successfully
+## Requirements
 
-#### Scenario: Open an existing database
-- **WHEN** `DatabaseManager::open(path)` is called with a path to a valid SQLite file
-- **THEN** the database SHALL be opened and existing tables SHALL be accessible
+### Requirement: Schema v2 migration
+The system SHALL provide a migration from schema version 1 to version 2. The migration SHALL recreate the `songs_cache` table with renamed and new columns, preserving existing data. The migration SHALL be wrapped in a transaction.
 
-#### Scenario: Close a database
-- **WHEN** `DatabaseManager::close()` is called after a successful open
-- **THEN** the file handle SHALL be released and subsequent operations SHALL fail gracefully
+#### Scenario: Migrate v1 database to v2
+- **WHEN** a database at schema version 1 is opened
+- **THEN** the migration SHALL execute, creating the new `songs_cache` schema with all v1 data copied to the new column names, and the schema version SHALL be set to 2
 
-### Requirement: Schema versioning
-The system SHALL maintain a `schema_version` table with a single integer column. On open, `DatabaseManager` SHALL read the current version. If the version is lower than the expected version, migrations SHALL be applied sequentially.
+#### Scenario: Migration preserves existing songs
+- **WHEN** a v1 database has 10 songs in `songs_cache`
+- **THEN** after migration, all 10 songs SHALL exist in the new `songs_cache` with `title` copied to `name`, `playback_url` copied to `media_uri`, and `duration` copied to `duration_ms`
 
-#### Scenario: First-time database creation
-- **WHEN** a database is opened for the first time
-- **THEN** the `schema_version` table SHALL be created with version 0, then all migrations up to the current version SHALL be applied
+#### Scenario: Migration creates player_state table
+- **WHEN** a v1 database is migrated to v2
+- **THEN** the `player_state` table SHALL exist with the singleton constraint
 
-#### Scenario: Database at current version
-- **WHEN** a database is opened and its version matches the current expected version
-- **THEN** no migrations SHALL be applied
+#### Scenario: Migration adds columns to playlists
+- **WHEN** a v1 database is migrated to v2
+- **THEN** the `playlists` table SHALL have `custom_cover_url` and `modified_at` columns
 
-#### Scenario: Database behind by two versions
-- **WHEN** a database is at version N and the current version is N+2
-- **THEN** migration N+1 SHALL be applied first, then migration N+2
+### Requirement: songs_cache v2 schema
+The `songs_cache` table SHALL have the following columns after v2 migration:
+- `id` TEXT PRIMARY KEY
+- `platform` TEXT
+- `name` TEXT
+- `artist` TEXT
+- `album` TEXT
+- `album_id` TEXT
+- `duration_ms` INTEGER
+- `cover_url` TEXT
+- `media_uri` TEXT
+- `custom_name` TEXT
+- `custom_artist` TEXT
+- `custom_cover_url` TEXT
+- `original_name` TEXT
+- `original_artist` TEXT
+- `original_cover_url` TEXT
+- `local_file_name` TEXT
+- `local_file_path` TEXT
+- `matched_lyric_source` TEXT
+- `matched_song_id` TEXT
+- `user_lyric_offset_ms` INTEGER DEFAULT 0
+- `lyrics_json` TEXT
+- `channel_id` TEXT
+- `audio_id` TEXT
+- `sub_audio_id` TEXT
+- `extra_json` TEXT
+- `cached_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+- `last_played_at` TIMESTAMP
 
-### Requirement: Migration registration
-The system SHALL allow registering migration functions keyed by version number. Each migration SHALL receive a raw SQLite handle and SHALL execute DDL/DML statements to bring the schema to that version.
+#### Scenario: Verify v2 songs_cache columns
+- **WHEN** a v2 database is queried for `songs_cache` column info
+- **THEN** all 27 columns SHALL exist with the specified types
 
-#### Scenario: Register and run a migration
-- **WHEN** a migration for version 1 is registered that creates a `songs` table
-- **THEN** after opening a version-0 database, the `songs` table SHALL exist
+### Requirement: player_state table schema
+The `player_state` table SHALL have the following columns:
+- `id` INTEGER PRIMARY KEY CHECK(id = 1)
+- `playlist_json` TEXT
+- `current_index` INTEGER DEFAULT 0
+- `media_url` TEXT
+- `position_ms` INTEGER DEFAULT 0
+- `should_resume` INTEGER DEFAULT 0
+- `repeat_mode` INTEGER DEFAULT 0
+- `shuffle_enabled` INTEGER DEFAULT 0
+- `updated_at` TIMESTAMP
 
-### Requirement: Query execution
-The system SHALL provide methods to execute SQL statements with bound parameters. Parameters SHALL be bindable by position (1-indexed) or by name (`:param`). The system SHALL return results as rows of QVariant values.
-
-#### Scenario: Execute a SELECT with positional parameters
-- **WHEN** `exec("SELECT * FROM songs WHERE id = ?", {"abc"})` is called
-- **THEN** all matching rows SHALL be returned with column values as QVariant
-
-#### Scenario: Execute an INSERT
-- **WHEN** `exec("INSERT INTO songs (id, title) VALUES (?, ?)", {"abc", "Test"})` is called
-- **THEN** a new row with id="abc" and title="Test" SHALL exist in the songs table
-
-#### Scenario: Execute with a named parameter
-- **WHEN** `exec("SELECT * FROM songs WHERE id = :id", {{":id", "abc"}})` is called
-- **THEN** the query SHALL return the same results as the positional equivalent
-
-### Requirement: Transaction support
-The system SHALL provide `beginTransaction()`, `commitTransaction()`, and `rollbackTransaction()` methods. Within a transaction, all statements SHALL be part of the same atomic unit.
-
-#### Scenario: Commit a transaction
-- **WHEN** a transaction is begun, two inserts are executed, and the transaction is committed
-- **THEN** both rows SHALL be visible after the commit
-
-#### Scenario: Rollback a transaction
-- **WHEN** a transaction is begun, an insert is executed, and the transaction is rolled back
-- **THEN** the inserted row SHALL NOT be visible
-
-### Requirement: Error handling
-All database operations SHALL return a result type or throw a `DatabaseError` exception on failure. The error message SHALL include the SQLite error string.
-
-#### Scenario: Execute invalid SQL
-- **WHEN** `exec("INVALID SQL", {})` is called
-- **THEN** a `DatabaseError` SHALL be thrown with a message containing the SQLite error description
-
-### Requirement: Initial schema tables
-The initial schema (version 1) SHALL create the following tables:
-- `songs_cache`: id (TEXT PK), platform (TEXT), title, artist, album, duration (INTEGER), cover_url, playback_url, extra_json, cached_at (TIMESTAMP)
-- `playlists`: id (TEXT PK), platform (TEXT), name, description, cover_url, song_count (INTEGER), owner
-- `playlist_songs`: playlist_id (TEXT FK), song_id (TEXT FK), position (INTEGER), PRIMARY KEY (playlist_id, song_id)
-- `settings`: key (TEXT PK), value (TEXT)
-- `play_history`: id INTEGER PRIMARY KEY AUTOINCREMENT, song_id (TEXT), played_at (TIMESTAMP)
-
-#### Scenario: Schema creation on fresh database
-- **WHEN** a fresh database is opened with the initial migration
-- **THEN** all five tables SHALL exist with the specified columns and constraints
+#### Scenario: Singleton constraint
+- **WHEN** an INSERT is attempted with `id=2`
+- **THEN** the INSERT SHALL fail due to the CHECK constraint

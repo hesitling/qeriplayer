@@ -25,6 +25,7 @@ bool DatabaseManager::open(const QString &path)
 
     int rc = sqlite3_open(path.toUtf8().constData(), &m_db);
     if (rc != SQLITE_OK) {
+        qWarning() << "DatabaseManager: failed to open" << path << ":" << sqlite3_errmsg(m_db);
         m_db = nullptr;
         return false;
     }
@@ -268,7 +269,7 @@ void DatabaseManager::ensureSchemaVersionTable()
 
     auto rows = exec("SELECT version FROM schema_version");
     if (rows.isEmpty()) {
-        exec("INSERT INTO schema_version (version) VALUES (?)", { QVariant(0) });
+        exec("INSERT INTO schema_version (version) VALUES (?)", {QVariant(0)});
         m_currentVersion = 0;
     } else {
         m_currentVersion = rows[0][0].toInt();
@@ -277,14 +278,14 @@ void DatabaseManager::ensureSchemaVersionTable()
 
 void DatabaseManager::runMigrations()
 {
-    // Apply initial schema (version 1) if needed
-    if (m_currentVersion < 1) {
+    // Apply initial schema (version 2) if needed
+    if (m_currentVersion < 2) {
         beginTransaction();
         try {
             applyInitialSchema(m_db);
-            exec("UPDATE schema_version SET version = ?", { QVariant(1) });
+            exec("UPDATE schema_version SET version = ?", {QVariant(2)});
             commitTransaction();
-            m_currentVersion = 1;
+            m_currentVersion = 2;
         } catch (...) {
             try {
                 rollbackTransaction();
@@ -305,7 +306,7 @@ void DatabaseManager::runMigrations()
                 if (!fn(m_db)) {
                     throw DatabaseError("Migration to version " + std::to_string(version) + " failed");
                 }
-                exec("UPDATE schema_version SET version = ?", { QVariant(version) });
+                exec("UPDATE schema_version SET version = ?", {QVariant(version)});
                 commitTransaction();
                 m_currentVersion = version;
             } catch (...) {
@@ -324,26 +325,45 @@ void DatabaseManager::applyInitialSchema(sqlite3 *handle)
 {
     const char *sql = R"SQL(
         CREATE TABLE IF NOT EXISTS songs_cache (
-            id           TEXT PRIMARY KEY,
-            platform     TEXT,
-            title        TEXT,
-            artist       TEXT,
-            album        TEXT,
-            duration     INTEGER,
-            cover_url    TEXT,
-            playback_url TEXT,
-            extra_json   TEXT,
-            cached_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            id                   TEXT PRIMARY KEY,
+            platform             TEXT,
+            name                 TEXT,
+            artist               TEXT,
+            album                TEXT,
+            album_id             TEXT,
+            duration_ms          INTEGER,
+            cover_url            TEXT,
+            media_uri            TEXT,
+            custom_name          TEXT,
+            custom_artist        TEXT,
+            custom_cover_url     TEXT,
+            original_name        TEXT,
+            original_artist      TEXT,
+            original_cover_url   TEXT,
+            local_file_name      TEXT,
+            local_file_path      TEXT,
+            matched_lyric_source TEXT,
+            matched_song_id      TEXT,
+            user_lyric_offset_ms INTEGER DEFAULT 0,
+            lyrics_json          TEXT,
+            channel_id           TEXT,
+            audio_id             TEXT,
+            sub_audio_id         TEXT,
+            extra_json           TEXT,
+            cached_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_played_at       TIMESTAMP
         );
 
         CREATE TABLE IF NOT EXISTS playlists (
-            id         TEXT PRIMARY KEY,
-            platform   TEXT,
-            name       TEXT,
-            description TEXT,
-            cover_url  TEXT,
-            song_count INTEGER DEFAULT 0,
-            owner      TEXT
+            id               TEXT PRIMARY KEY,
+            platform         TEXT,
+            name             TEXT,
+            description      TEXT,
+            cover_url        TEXT,
+            song_count       INTEGER DEFAULT 0,
+            owner            TEXT,
+            custom_cover_url TEXT,
+            modified_at      INTEGER DEFAULT 0
         );
 
         CREATE TABLE IF NOT EXISTS playlist_songs (
@@ -364,6 +384,18 @@ void DatabaseManager::applyInitialSchema(sqlite3 *handle)
             id       INTEGER PRIMARY KEY AUTOINCREMENT,
             song_id  TEXT,
             played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS player_state (
+            id             INTEGER PRIMARY KEY CHECK(id = 1),
+            playlist_json  TEXT,
+            current_index  INTEGER DEFAULT 0,
+            media_url      TEXT,
+            position_ms    INTEGER DEFAULT 0,
+            should_resume  INTEGER DEFAULT 0,
+            repeat_mode    INTEGER DEFAULT 0,
+            shuffle_enabled INTEGER DEFAULT 0,
+            updated_at     TIMESTAMP
         );
     )SQL";
 

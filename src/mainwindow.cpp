@@ -82,8 +82,8 @@ void MainWindow::setupCentralWidget()
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setStyleSheet("font-size: 24px; font-weight: bold; color: #333;");
 
-    QLabel *versionLabel = new QLabel(tr("Version %1 - Under Development")
-                                           .arg(QCoreApplication::applicationVersion()), centralWidget);
+    QLabel *versionLabel
+        = new QLabel(tr("Version %1 - Under Development").arg(QCoreApplication::applicationVersion()), centralWidget);
     versionLabel->setAlignment(Qt::AlignCenter);
     versionLabel->setStyleSheet("font-size: 14px; color: #666;");
 

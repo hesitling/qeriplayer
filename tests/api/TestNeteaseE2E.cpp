@@ -27,14 +27,13 @@ static void delay(int ms)
 /// Assert ApiResult is success; on failure, report the error message and fail the test.
 /// Unlike QVERIFY2, this does NOT eagerly evaluate result.error() on success,
 /// which would trigger the assert in ApiResult::error().
-#define QVERIFY_RESULT(result)                                                           \
-    do {                                                                                 \
-        if (!(result).isSuccess()) {                                                     \
-            QByteArray _msg = QString::fromUtf8("%1").arg((result).error().message())    \
-                                  .toUtf8();                                             \
-            QTest::qFail(_msg.constData(), __FILE__, __LINE__);                          \
-            return;                                                                      \
-        }                                                                                \
+#define QVERIFY_RESULT(result)                                                                                         \
+    do {                                                                                                               \
+        if (!(result).isSuccess()) {                                                                                   \
+            QByteArray _msg = QString::fromUtf8("%1").arg((result).error().message()).toUtf8();                        \
+            QTest::qFail(_msg.constData(), __FILE__, __LINE__);                                                        \
+            return;                                                                                                    \
+        }                                                                                                              \
     } while (false)
 
 class TestNeteaseE2E : public QObject {
@@ -227,9 +226,8 @@ void TestNeteaseE2E::testLikeSong()
     auto result = QCoro::waitFor(m_client->likeSong(m_firstSongId));
 
     if (!result.isSuccess()) {
-        QFAIL(qPrintable(QStringLiteral("likeSong failed (code=%1): %2")
-                              .arg(result.error().code())
-                              .arg(result.error().message())));
+        QFAIL(qPrintable(
+            QStringLiteral("likeSong failed (code=%1): %2").arg(result.error().code()).arg(result.error().message())));
     }
 }
 
@@ -243,8 +241,8 @@ void TestNeteaseE2E::testUnlikeSong()
 
     if (!result.isSuccess()) {
         QFAIL(qPrintable(QStringLiteral("unlikeSong failed (code=%1): %2")
-                              .arg(result.error().code())
-                              .arg(result.error().message())));
+                             .arg(result.error().code())
+                             .arg(result.error().message())));
     }
 }
 
@@ -262,8 +260,8 @@ void TestNeteaseE2E::testGetLikedSongIds()
 
     if (!result.isSuccess()) {
         QFAIL(qPrintable(QStringLiteral("getLikedSongIds failed (code=%1): %2")
-                              .arg(result.error().code())
-                              .arg(result.error().message())));
+                             .arg(result.error().code())
+                             .arg(result.error().message())));
     }
 }
 

@@ -243,7 +243,7 @@ void TestNeteaseParser::parseSearchResult_albums()
     QJsonObject al;
     al[QLatin1String("id")] = 888;
     al[QLatin1String("name")] = QStringLiteral("Search Album");
-    al[QLatin1String("artist")] = QJsonObject { { QLatin1String("name"), QStringLiteral("Album Artist") } };
+    al[QLatin1String("artist")] = QJsonObject {{QLatin1String("name"), QStringLiteral("Album Artist")}};
     al[QLatin1String("picUrl")] = QStringLiteral("https://example.com/sa.jpg");
     al[QLatin1String("size")] = 12;
     albums.append(al);

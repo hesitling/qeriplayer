@@ -83,6 +83,12 @@ set(SOURCES
     src/core/network/WebSocketClient.cpp
     src/core/network/NetworkManager.cpp
     src/core/network/NetworkMonitor.cpp
+    src/repo/SqlRowMapper.cpp
+    src/repo/SongRepository.cpp
+    src/repo/SettingsRepository.cpp
+    src/repo/PlayHistoryRepository.cpp
+    src/repo/PlaylistRepository.cpp
+    src/repo/PlayerStateRepository.cpp
     src/mainwindow.cpp
     src/api/common/ApiError.cpp
     src/api/netease/NeteaseCrypto.cpp
@@ -110,6 +116,17 @@ set(HEADERS
     src/core/network/WebSocketClient.h
     src/core/network/NetworkManager.h
     src/core/network/NetworkMonitor.h
+    src/repo/SqlRowMapper.h
+    src/repo/SongRepository.h
+    src/repo/SettingsRepository.h
+    src/repo/PlayHistoryRepository.h
+    src/repo/PlaylistRepository.h
+    src/repo/PlayerStateRepository.h
+    src/repo/ISongRepository.h
+    src/repo/IPlaylistRepository.h
+    src/repo/IPlayHistoryRepository.h
+    src/repo/IPlayerStateRepository.h
+    src/repo/ISettingsRepository.h
     src/domain/Domain.h
     src/domain/Enums.h
     src/domain/Song.h
@@ -308,6 +325,173 @@ if(UNIX)
     target_link_libraries(TestNeteaseParser PRIVATE pthread)
 endif()
 add_test(NAME TestNeteaseParser COMMAND TestNeteaseParser)
+
+add_executable(TestSchemaV2
+    tests/repo/TestSchemaV2.cpp
+    src/core/database/DatabaseManager.cpp
+)
+target_include_directories(TestSchemaV2 PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+)
+target_link_libraries(TestSchemaV2 PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestSchemaV2 PRIVATE dl pthread)
+endif()
+target_compile_definitions(TestSchemaV2 PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestSchemaV2 COMMAND TestSchemaV2)
+
+add_executable(TestSqlRowMapper
+    tests/repo/TestSqlRowMapper.cpp
+    src/repo/SqlRowMapper.cpp
+    src/core/database/DatabaseManager.cpp
+)
+target_include_directories(TestSqlRowMapper PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+)
+target_link_libraries(TestSqlRowMapper PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestSqlRowMapper PRIVATE dl pthread)
+endif()
+target_compile_definitions(TestSqlRowMapper PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestSqlRowMapper COMMAND TestSqlRowMapper)
+
+add_executable(TestSongRepository
+    tests/repo/TestSongRepository.cpp
+    src/repo/SongRepository.cpp
+    src/repo/SqlRowMapper.cpp
+    src/core/database/DatabaseManager.cpp
+    src/core/logger/Logger.cpp
+)
+target_include_directories(TestSongRepository PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
+)
+target_link_libraries(TestSongRepository PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestSongRepository PRIVATE dl pthread)
+endif()
+target_compile_definitions(TestSongRepository PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestSongRepository COMMAND TestSongRepository)
+
+add_executable(TestSettingsRepository
+    tests/repo/TestSettingsRepository.cpp
+    src/repo/SettingsRepository.cpp
+    src/core/database/DatabaseManager.cpp
+)
+target_include_directories(TestSettingsRepository PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+)
+target_link_libraries(TestSettingsRepository PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestSettingsRepository PRIVATE dl pthread)
+endif()
+target_compile_definitions(TestSettingsRepository PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestSettingsRepository COMMAND TestSettingsRepository)
+
+add_executable(TestPlayHistoryRepository
+    tests/repo/TestPlayHistoryRepository.cpp
+    src/repo/PlayHistoryRepository.cpp
+    src/repo/SqlRowMapper.cpp
+    src/core/database/DatabaseManager.cpp
+    src/core/logger/Logger.cpp
+)
+target_include_directories(TestPlayHistoryRepository PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
+)
+target_link_libraries(TestPlayHistoryRepository PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestPlayHistoryRepository PRIVATE dl pthread)
+endif()
+target_compile_definitions(TestPlayHistoryRepository PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestPlayHistoryRepository COMMAND TestPlayHistoryRepository)
+
+add_executable(TestPlaylistRepository
+    tests/repo/TestPlaylistRepository.cpp
+    src/repo/PlaylistRepository.cpp
+    src/repo/SongRepository.cpp
+    src/repo/SqlRowMapper.cpp
+    src/core/database/DatabaseManager.cpp
+    src/core/logger/Logger.cpp
+)
+target_include_directories(TestPlaylistRepository PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
+)
+target_link_libraries(TestPlaylistRepository PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestPlaylistRepository PRIVATE dl pthread)
+endif()
+target_compile_definitions(TestPlaylistRepository PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestPlaylistRepository COMMAND TestPlaylistRepository)
+
+add_executable(TestPlayerStateRepository
+    tests/repo/TestPlayerStateRepository.cpp
+    src/repo/PlayerStateRepository.cpp
+    src/repo/SqlRowMapper.cpp
+    src/core/database/DatabaseManager.cpp
+)
+target_include_directories(TestPlayerStateRepository PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+)
+target_link_libraries(TestPlayerStateRepository PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestPlayerStateRepository PRIVATE dl pthread)
+endif()
+target_compile_definitions(TestPlayerStateRepository PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestPlayerStateRepository COMMAND TestPlayerStateRepository)
 
 # Shared library for Netease API + core infra (used by E2E tests and CLI tools)
 set(NETEASE_E2E_SOURCES

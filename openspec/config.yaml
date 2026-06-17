@@ -1,20 +1,83 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  ## NeriPlayer Qt
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Multi-platform music player built with Qt 6, C++20, and QCoro.
+  Android NeriPlayer is the feature reference.
+
+  ### Tech Stack
+
+  | Category | Technology |
+  |----------|-----------|
+  | Language | C++20 |
+  | UI Framework | Qt 6.5+ (Widgets) |
+  | Async | QCoro 0.10+ (C++20 coroutines) |
+  | Build System | CMake 3.16+ |
+  | Database | SQLite 3.35+ (raw sqlite3 C API) |
+  | JSON | nlohmann/json 3.11+ |
+  | Logging | spdlog 1.12+ |
+  | Crypto | OpenSSL (AES-256-GCM, SHA-256) |
+
+  ### Code Conventions
+
+  - **Naming**: PascalCase files/classes, camelCase functions/locals, m_camelCase members, UPPER_SNAKE_CASE constants
+  - **Interfaces**: IPascalCase (e.g., ISongRepository)
+  - **Signals**: camelCase (e.g., stateChanged)
+  - **Coroutine style**: `QCoro::Task<T>` with `co_await`/`co_return`
+  - **Include order**: corresponding header, QCoro, Qt, stdlib, third-party
+  - **Exceptions**: never swallow silently; log or re-throw
+  - **Memory**: `std::unique_ptr` ownership, no raw new/delete
+  - **Strings**: `QString` for user-facing text, `QUrl` for URLs, `qint64` for durations/timestamps
+  - **Line width**: 120 chars max, 80-100 recommended
+  - **File length**: 200 lines max for headers, 500 for source, 50 for functions
+
+  ### Project Structure
+
+  ```
+  src/
+  ├── app/           # NeriPlayerApplication, ServiceLocator
+  ├── core/          # network, database, filesystem, crypto, logger
+  ├── domain/        # Shared value types (Song, Playlist, Lyrics, enums)
+  ├── api/           # Platform API clients
+  │   ├── common/    # ApiError, ApiResult, IMusicPlatformPlugin
+  │   └── netease/   # NeteaseClient
+  ├── repo/          # Repository layer (SQLite-backed)
+  └── ...
+  tests/
+  ├── domain/        # Domain model tests
+  ├── core/          # Core module tests
+  ├── api/           # API tests (parser, crypto, e2e)
+  └── repo/          # Repository tests
+  ```
+
+  ### Commit Conventions
+
+  Conventional Commits: `type(scope): subject`
+  Types: feat, fix, docs, refactor, test, chore
+  Scopes: app, core, api, player, ui, docs, build, test
+
+  ### Key Design Patterns
+
+  - **ServiceLocator** (not singleton) — owned by NeriPlayerApplication
+  - **Repository pattern** — IXxxRepository interfaces, XxxRepository SQLite impls
+  - **IMusicPlatformPlugin** — abstract interface for all platform clients
+  - **ApiResult<T>** — success/error result type for all API operations
+  - **Domain models** — plain value types in src/domain/, Q_DECLARE_METATYPE registered
+
+rules:
+  proposal:
+    - Include a "Non-goals" section
+    - Reference which layer(s) are affected (core, domain, api, repo, ui)
+    - Keep under 500 words
+  specs:
+    - Each Requirement must have at least one Scenario
+    - Use SHALL for mandatory behavior, MAY for optional
+    - Field names must match the actual code (e.g., Song.name not Song.title)
+  tasks:
+    - Break tasks into chunks of max 2 hours
+    - Each task should be independently testable
+    - Group related tasks (e.g., "all parser methods" or "all repository CRUD")
+  design:
+    - Reference actual class names from src/ (e.g., DatabaseManager, not SchemaManager)
+    - Note which interfaces are affected (IMusicPlatformPlugin, ISongRepository, etc.)

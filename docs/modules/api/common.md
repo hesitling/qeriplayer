@@ -1,360 +1,144 @@
-# API Common Types
+# API Common Types (api/common/)
 
-## 1. Overview
+## Overview
 
-This document defines the common data types and structures used by the API module.
+Common types shared across all platform API integrations: error handling, result types, login data, and the abstract plugin interface.
 
-## 2. Music Types
+## Source Files
 
-### 2.1 Song
-
-Song information.
-
-```cpp
-struct Song {
-    QString id;              // Unique identifier
-    QString title;           // Song title
-    QString artist;          // Artist name
-    QString album;           // Album name
-    QString coverUrl;        // Cover URL
-    qint64 duration;         // Duration (milliseconds)
-    MusicPlatform platform;  // Platform
-    QVariantMap metadata;    // Extended metadata
-    
-    // Platform-specific fields
-    QString neteaseId;       // NetEase ID
-    QString bilibiliBvid;    // Bilibili BV number
-    QString youtubeVideoId;  // YouTube video ID
-    
-    // Comparison operators
-    bool operator==(const Song &other) const;
-    bool operator!=(const Song &other) const;
-};
+```
+src/api/common/
+├── ApiError.h / .cpp         # Error with code classification
+├── ApiResult.h               # Result<T> template (value or error)
+├── VoidResult.h              # Empty success type
+├── LoginResult.h             # Login success data
+├── QrCodeData.h              # QR code login data
+├── PlayHistory.h             # Play history entry
+└── IMusicPlatformPlugin.h    # Abstract platform interface
 ```
 
-### 2.2 Playlist
+## ApiError
 
-Playlist.
-
-```cpp
-struct Playlist {
-    QString id;              // Unique identifier
-    QString name;            // Name
-    QString description;     // Description
-    QString coverUrl;        // Cover URL
-    QString creator;         // Creator
-    QList<Song> songs;       // Song list
-    int songCount;           // Song count
-    QDateTime createdAt;     // Creation time
-    QDateTime updatedAt;     // Update time
-    MusicPlatform platform;  // Platform
-};
-```
-
-### 2.3 Album
-
-Album.
-
-```cpp
-struct Album {
-    QString id;              // Unique identifier
-    QString name;            // Name
-    QString artist;          // Artist
-    QString coverUrl;        // Cover URL
-    QString description;     // Description
-    QList<Song> songs;       // Song list
-    int songCount;           // Song count
-    QDateTime releaseDate;   // Release date
-    MusicPlatform platform;  // Platform
-};
-```
-
-### 2.4 Artist
-
-Artist.
-
-```cpp
-struct Artist {
-    QString id;              // Unique identifier
-    QString name;            // Name
-    QString avatarUrl;       // Avatar URL
-    QString description;     // Description
-    int songCount;           // Song count
-    int albumCount;          // Album count
-    MusicPlatform platform;  // Platform
-};
-```
-
-### 2.5 Lyrics
-
-Lyrics.
-
-```cpp
-struct Lyrics {
-    struct Line {
-        qint64 timestamp;          // Timestamp (milliseconds)
-        QString text;              // Lyric text
-        QString translation;       // Translation
-        QList<WordTiming> words;   // Word-level lyrics
-    };
-    
-    QList<Line> lines;       // Lyric lines
-    QString rawText;         // Raw text
-    QString translation;     // Full translation
-    
-    bool hasTranslation() const;
-    bool hasWordTiming() const;
-    
-    // Get current line
-    int currentLine(qint64 position) const;
-    Line lineAt(int index) const;
-};
-
-// Word timing
-struct WordTiming {
-    qint64 startTime;  // Start time (milliseconds)
-    qint64 endTime;    // End time (milliseconds)
-    QString word;      // Word
-};
-```
-
-### 2.6 UserProfile
-
-User profile.
-
-```cpp
-struct UserProfile {
-    QString id;              // User ID
-    QString name;            // Username
-    QString avatarUrl;       // Avatar URL
-    QString description;     // Description
-    MusicPlatform platform;  // Platform
-};
-```
-
-## 3. Enumeration Types
-
-### 3.1 MusicPlatform
-
-Music platform.
-
-```cpp
-enum class MusicPlatform {
-    All,          // All platforms
-    Netease,      // NetEase Cloud Music
-    Bilibili,     // Bilibili
-    YouTubeMusic, // YouTube Music
-    QQMusic,      // QQ Music
-    Local         // Local
-};
-```
-
-### 3.2 AudioQuality
-
-Audio quality.
-
-```cpp
-enum class AudioQuality {
-    Low = 128000,       // 128kbps
-    Medium = 192000,    // 192kbps
-    High = 320000,      // 320kbps
-    Lossless = 1000000  // Lossless
-};
-```
-
-### 3.3 SearchType
-
-Search type.
-
-```cpp
-enum class SearchType {
-    All,       // Comprehensive search
-    Song,      // Song
-    Playlist,  // Playlist
-    Album,     // Album
-    Artist     // Artist
-};
-```
-
-## 4. Search Types
-
-### 4.1 SearchResult
-
-Search result.
-
-```cpp
-struct SearchResult {
-    MusicPlatform platform;    // Platform
-    SearchType type;           // Type
-    QList<Song> songs;         // Song list
-    QList<Playlist> playlists; // Playlist list
-    QList<Album> albums;       // Album list
-    QList<Artist> artists;     // Artist list
-    int totalCount;            // Total count
-    bool hasMore;              // Has more results
-    QString nextPageToken;     // Next page token
-    QString query;             // Query string
-};
-```
-
-### 4.2 SearchFilter
-
-Search filter.
-
-```cpp
-struct SearchFilter {
-    SearchType type = SearchType::All;
-    MusicPlatform platform = MusicPlatform::All;
-    AudioQuality minQuality = AudioQuality::Low;
-    QString language;          // Language
-    QString region;            // Region
-};
-```
-
-## 5. API Errors
-
-### 5.1 ApiError
-
-API error class.
+Stores an integer error code, message, and optional details. Provides classification methods.
 
 ```cpp
 class ApiError {
 public:
-    ApiError(int code, const QString &message, 
-             const QString &details = {});
-    
-    int code() const;           // Error code
-    QString message() const;    // Error message
-    QString details() const;    // Details
-    
-    // Error type checks
-    bool isNetworkError() const;    // Network error
-    bool isAuthError() const;       // Authentication error
-    bool isRateLimitError() const;  // Rate limit error
-    bool isNotFoundError() const;   // Not found
-    
-    // User-friendly error message
-    QString userMessage() const;
-    
-private:
-    int m_code;
-    QString m_message;
-    QString m_details;
+    ApiError(int code, const QString &message, const QString &details = {});
+
+    int code() const;
+    const QString &message() const;
+    const QString &details() const;
+
+    bool isNetworkError() const;   // code == -1
+    bool isAuthError() const;      // HTTP 401/403, NetEase -10, -460
+    bool isRateLimitError() const; // HTTP 429, NetEase -429
+    bool isNotFoundError() const;  // HTTP 404
+
+    QString userMessage() const;   // User-facing description
 };
 ```
 
-### 5.2 ApiResult
+### NetEase Error Code Mapping
 
-API result template class.
+| Method | HTTP Codes | NetEase Body Codes |
+|--------|-----------|-------------------|
+| `isNetworkError()` | -1 (connection failure) | — |
+| `isAuthError()` | 401, 403 | -10 (auth expired), -460 (cheating) |
+| `isRateLimitError()` | 429 | -429 |
+| `isNotFoundError()` | 404 | — |
+
+## ApiResult\<T\>
+
+Holds either a value of type `T` or an `ApiError`. Used as the return type for all API operations.
 
 ```cpp
-template<typename T>
+template <typename T>
 class ApiResult {
 public:
-    ApiResult(T data);
-    ApiResult(ApiError error);
-    
+    explicit ApiResult(T value);
+    explicit ApiResult(ApiError error);
+
     bool isSuccess() const;
     bool isError() const;
-    
-    T data() const;
-    ApiError error() const;
-    
-    // Implicit conversion
-    operator bool() const { return isSuccess(); }
-    
-private:
-    bool m_success;
-    T m_data;
-    ApiError m_error;
+    explicit operator bool() const;  // true if success
+
+    const T &data() const;     // Asserts if error
+    const ApiError &error() const; // Asserts if success
 };
 ```
 
-## 6. Detail Types
+## VoidResult
 
-### 6.1 SongDetail
-
-Song detail.
+Empty struct for operations that return no data on success. Use `ApiResult<VoidResult>`.
 
 ```cpp
-struct SongDetail {
-    Song song;                 // Basic information
-    Lyrics lyrics;             // Lyrics
-    QList<Song> similarSongs;  // Similar songs
-    QString playbackUrl;       // Playback URL
-    AudioQuality quality;      // Audio quality
+struct VoidResult {};
+```
+
+## LoginResult
+
+Result of a successful login.
+
+```cpp
+struct LoginResult {
+    QString userId;
+    QString nickname;
+    QUrl avatarUrl;
+    QString cookie; // Semicolon-delimited "key=val; key=val"
 };
 ```
 
-### 6.2 PlaylistDetail
+## QrCodeData
 
-Playlist detail.
+Data for QR code-based login flow.
 
 ```cpp
-struct PlaylistDetail {
-    Playlist playlist;         // Basic information
-    QList<Song> tracks;        // Complete song list
-    QStringList tags;          // Tags
-    int playCount;             // Play count
-    int shareCount;            // Share count
+struct QrCodeData {
+    QString key;              // Polling key
+    QUrl qrUrl;               // QR code image URL
+    int expiresInSeconds = 0;
 };
 ```
 
-### 6.3 AlbumDetail
+## PlayHistory
 
-Album detail.
+A record of a song play event.
 
 ```cpp
-struct AlbumDetail {
-    Album album;               // Basic information
-    QList<Song> tracks;        // Complete song list
-    QString company;           // Distribution company
-    QStringList genres;        // Genres
+struct PlayHistory {
+    Song song;
+    qint64 playedAt = 0; // Epoch ms
+    int playCount = 0;
 };
 ```
 
-### 6.4 ArtistDetail
+## IMusicPlatformPlugin
 
-Artist detail.
+Abstract interface that all platform clients implement. Defines the cross-platform contract for search, song details, playback URLs, lyrics, and auth status.
 
 ```cpp
-struct ArtistDetail {
-    Artist artist;             // Basic information
-    QList<Song> hotSongs;      // Hot songs
-    QList<Album> albums;       // Album list
-    QStringList genres;        // Genres
+class IMusicPlatformPlugin {
+public:
+    virtual ~IMusicPlatformPlugin() = default;
+
+    virtual QCoro::Task<ApiResult<SearchResult>> search(
+        const QString &keyword, SearchType type, int limit, int offset) = 0;
+    virtual QCoro::Task<ApiResult<Song>> getSongDetail(const QString &songId) = 0;
+    virtual QCoro::Task<ApiResult<SongUrlResult>> getSongUrl(
+        const QString &songId, AudioQuality quality = AudioQuality::High) = 0;
+    virtual QCoro::Task<ApiResult<Lyrics>> getLyrics(const QString &songId) = 0;
+    virtual bool isAuthenticated() const = 0;
+    virtual QString platformName() const = 0;
 };
 ```
 
-## 7. Usage Examples
+### Design Rationale
 
-```cpp
-// Create song
-Song song;
-song.id = "12345";
-song.title = "Song Title";
-song.artist = "Artist Name";
-song.album = "Album Name";
-song.duration = 180000;
-song.platform = MusicPlatform::Netease;
+- **Minimal interface** — only operations that make sense across all platforms. Platform-specific operations (playlist CRUD, user data, recommendations) live on the concrete client class.
+- **`isAuthenticated()` is synchronous** — it's an in-memory check (cookie/token presence), not a network call.
+- **All methods return `ApiResult<T>`** — callers must check `isSuccess()` before accessing `data()`.
 
-// Search result handling
-SearchResult result;
-if (result.songs.isEmpty()) {
-    // No results
-} else {
-    for (const auto &song : result.songs) {
-        qDebug() << song.title << song.artist;
-    }
-}
+## Q_DECLARE_METATYPE Registration
 
-// API result handling
-ApiResult<Song> result = co_await client->getSongDetail("12345");
-if (result.isSuccess()) {
-    Song song = result.data();
-    // Process song
-} else {
-    ApiError error = result.error();
-    // Handle error
-}
-```
+All common types are registered with `Q_DECLARE_METATYPE` for QVariant interop: `ApiError`, `VoidResult`, `LoginResult`, `QrCodeData`, `PlayHistory`.

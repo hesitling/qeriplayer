@@ -55,6 +55,7 @@ AllowAllParametersOfDeclarationOnNextLine: true
 BinPackArguments: true
 BinPackParameters: true
 BreakConstructorInitializers: BeforeComma
+Cpp11BracedListStyle: true
 MaxEmptyLinesToKeep: 1
 PointerAlignment: Right
 ReflowComments: true

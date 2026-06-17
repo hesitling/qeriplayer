@@ -164,15 +164,15 @@ public:
 
 private:
     // Request helpers
-    QCoro::Task<ApiResult<QJsonObject>> makeRequest(const QString &path, const QJsonObject &params = { },
-                                                    const QString &host = { }, bool retried = false);
+    QCoro::Task<ApiResult<QJsonObject>> makeRequest(const QString &path, const QJsonObject &params = {},
+                                                    const QString &host = {}, bool retried = false);
 
-    QCoro::Task<ApiResult<QJsonObject>> makeEapiRequest(const QString &path, const QJsonObject &params = { },
+    QCoro::Task<ApiResult<QJsonObject>> makeEapiRequest(const QString &path, const QJsonObject &params = {},
                                                         const QString &host
                                                         = QStringLiteral("https://interface.music.163.com"),
                                                         bool returnRawOnNon200 = false, bool retried = false);
 
-    QCoro::Task<ApiResult<QJsonObject>> makeUnencryptedRequest(const QString &path, const QJsonObject &params = { });
+    QCoro::Task<ApiResult<QJsonObject>> makeUnencryptedRequest(const QString &path, const QJsonObject &params = {});
 
     void injectCookies(QNetworkRequest &request);
     void persistCookies(const QString &cookieString);

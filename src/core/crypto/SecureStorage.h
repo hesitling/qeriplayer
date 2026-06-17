@@ -9,6 +9,8 @@
 #include <QMutex>
 #include <QString>
 
+#include <optional>
+
 namespace NeriPlayerQt {
 
 /**
@@ -35,9 +37,9 @@ public:
     /**
      * @brief Retrieve and decrypt a value
      * @param key Key name
-     * @return Decrypted value, or empty string if not found
+     * @return Decrypted value, or nullopt if not found or decryption failed
      */
-    QString get(const QString &key) const;
+    std::optional<QString> get(const QString &key) const;
 
     /**
      * @brief Remove a stored value

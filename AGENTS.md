@@ -14,6 +14,38 @@ Guidelines for AI agents working on NeriPlayer Qt.
 | JSON | nlohmann/json | 3.11+ |
 | Logging | spdlog | 1.12+ |
 
+## Build & Development
+
+Use the `justfile` for all build, test, and format commands:
+
+```bash
+just build        # configure + build
+just test         # build + run all tests
+just test Foo     # run tests matching "Foo"
+just format       # format changed files
+just check        # format check (CI-friendly, no writes)
+just ci           # build + test + format check
+```
+
+### Build Directory
+
+For development, prefer using a tmp directory to avoid polluting the project tree and to get faster builds on tmpfs:
+
+```bash
+just build_dir=/tmp/neriplayer-build build
+just build_dir=/tmp/neriplayer-build test
+```
+
+Or set it permanently for the session:
+
+```bash
+export JUST_BUILD_DIR=/tmp/neriplayer-build
+just build
+just test
+```
+
+The default `build/` directory is fine for CI and clean builds.
+
 ## Project Structure
 
 ```

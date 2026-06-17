@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the logging infrastructure built on spdlog: initialization with file and console sinks, per-category loggers, daily log rotation, and log level configuration.
+
+## Requirements
 
 ### Requirement: Logger initialization
 The system SHALL provide a `Logger` class that initializes spdlog with a file sink and a console sink. Initialization SHALL be called once during application startup.

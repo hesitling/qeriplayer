@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the cryptographic utilities used by the application: AES-256-GCM encryption/decryption, secure key derivation, and encrypted file storage for secrets (cookies, tokens).
+
+## Requirements
 
 ### Requirement: AES-256-GCM encryption
 The system SHALL provide an `Encryptor` class with an `encrypt(plaintext, key)` method that returns ciphertext with an appended authentication tag. The key SHALL be 32 bytes (256 bits). A random 12-byte nonce SHALL be generated for each encryption and prepended to the output.

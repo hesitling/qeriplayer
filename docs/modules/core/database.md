@@ -1,319 +1,110 @@
-# Database Module (database/)
+# Database Module (core/database/)
 
-## 1. Overview
+## Overview
 
-The database module provides SQLite database operation support, including table management, data migration, query building, and transaction handling.
+The database module provides SQLite database access using the raw sqlite3 C API. It manages database lifecycle, schema versioning with a migration system, parameterized queries, and transaction support.
 
-## 2. Directory Structure
+## Source Files
 
 ```
 src/core/database/
-├── DatabaseManager.h/.cpp    # Database manager
-├── QueryBuilder.h/.cpp       # Query builder
-└── MigrationManager.h/.cpp   # Migration manager
+├── DatabaseManager.h
+└── DatabaseManager.cpp
 ```
 
-## 3. Main Class Design
+## DatabaseManager
 
-### 3.1 DatabaseManager
-
-Database manager that manages database connections and operations.
+Manages a single SQLite connection. Supports registering versioned migrations that run automatically on `open()`.
 
 ```cpp
-class DatabaseManager : public QObject {
-    Q_OBJECT
+class DatabaseManager {
 public:
-    explicit DatabaseManager(const QString &dbPath, 
-                             QObject *parent = nullptr);
+    DatabaseManager();
     ~DatabaseManager();
-    
-    // Initialize database
-    bool initialize();
-    
-    // Execute query
-    QSqlQuery execute(const QString &sql, 
-                      const QVariantMap &params = {});
-    
-    // Transaction management
-    bool beginTransaction();
-    bool commitTransaction();
-    bool rollbackTransaction();
-    
-    // Table operations
-    bool createTable(const QString &tableName, 
-                     const TableSchema &schema);
-    bool dropTable(const QString &tableName);
-    bool tableExists(const QString &tableName) const;
-    bool alterTable(const QString &tableName,
-                    const TableSchema &newSchema);
-    
-    // Data operations
-    bool insert(const QString &table, const QVariantMap &data);
-    bool update(const QString &table, const QVariantMap &data,
-                const QString &where, const QVariantMap &params = {});
-    bool remove(const QString &table, 
-                const QString &where, const QVariantMap &params = {});
-    
-    // Query
-    QSqlQuery select(const QString &table, 
-                     const QStringList &columns = {},
-                     const QString &where = {},
-                     const QVariantMap &params = {},
-                     const QString &orderBy = {},
-                     int limit = -1, int offset = -1);
-    
-    // Get last inserted ID
-    qint64 lastInsertId() const;
-    
-    // Get affected row count
+
+    // Lifecycle
+    bool open(const QString &path);
+    void close();
+    bool isOpen() const;
+
+    // Queries (positional parameters)
+    QVector<QueryRow> exec(const QString &sql, const QVariantList &params = {});
+
+    // Queries (named parameters)
+    QVector<QueryRow> execNamed(const QString &sql, const QVariantMap &params);
+
+    // Transactions
+    void beginTransaction();
+    void commitTransaction();
+    void rollbackTransaction();
+
+    // Schema versioning
+    int schemaVersion() const;
+    void registerMigration(int version, std::function<bool(sqlite3 *)> fn);
+
+    // Info
     int affectedRows() const;
-    
-    // Database path
-    QString databasePath() const;
-    
-    // Database size
-    qint64 databaseSize() const;
-    
-    // Compact database
-    bool vacuum();
-    
-signals:
-    void databaseOpened();
-    void databaseClosed();
-    void databaseError(const QString &error);
-    
-private:
-    bool openDatabase();
-    void closeDatabase();
-    bool runMigrations();
-    
-    QString m_dbPath;
-    QSqlDatabase m_database;
-    std::unique_ptr<MigrationManager> m_migrationManager;
 };
 ```
 
-### 3.2 QueryBuilder
-
-Query builder that provides chain-style query construction.
+### Key Types
 
 ```cpp
-class QueryBuilder {
-public:
-    QueryBuilder(const QString &table);
-    
-    // SELECT
-    QueryBuilder& select(const QStringList &columns);
-    QueryBuilder& selectAll();
-    QueryBuilder& selectDistinct(const QStringList &columns);
-    
-    // WHERE
-    QueryBuilder& where(const QString &condition, const QVariant &value);
-    QueryBuilder& where(const QString &condition);
-    QueryBuilder& whereIn(const QString &column, const QVariantList &values);
-    QueryBuilder& whereNotIn(const QString &column, const QVariantList &values);
-    QueryBuilder& whereNull(const QString &column);
-    QueryBuilder& whereNotNull(const QString &column);
-    QueryBuilder& whereBetween(const QString &column, 
-                               const QVariant &from, const QVariant &to);
-    QueryBuilder& whereLike(const QString &column, const QString &pattern);
-    
-    // JOIN
-    QueryBuilder& join(const QString &table, const QString &condition,
-                       JoinType type = JoinType::Inner);
-    QueryBuilder& leftJoin(const QString &table, const QString &condition);
-    QueryBuilder& rightJoin(const QString &table, const QString &condition);
-    
-    // ORDER BY
-    QueryBuilder& orderBy(const QString &column, 
-                          Qt::SortOrder order = Qt::AscendingOrder);
-    QueryBuilder& orderByDesc(const QString &column);
-    
-    // GROUP BY
-    QueryBuilder& groupBy(const QStringList &columns);
-    QueryBuilder& having(const QString &condition, const QVariant &value);
-    
-    // LIMIT / OFFSET
-    QueryBuilder& limit(int limit);
-    QueryBuilder& offset(int offset);
-    
-    // Build query
-    QString toSql() const;
-    QVariantMap bindings() const;
-    
-    // Execute query
-    QSqlQuery execute(DatabaseManager *db) const;
-    
-private:
-    QString m_table;
-    QStringList m_columns;
-    QStringList m_whereConditions;
-    QVariantMap m_bindings;
-    QStringList m_joins;
-    QStringList m_orderBy;
-    QStringList m_groupBy;
-    QString m_having;
-    int m_limit = -1;
-    int m_offset = 0;
-    bool m_distinct = false;
-};
+using QueryRow = QVector<QVariant>;
 
-// JOIN type
-enum class JoinType {
-    Inner,
-    Left,
-    Right,
-    Cross
-};
+class DatabaseError : public std::runtime_error { ... };
 ```
 
-### 3.3 MigrationManager
+### Design Decisions
 
-Migration manager that manages database versions and migrations.
+- **Raw sqlite3 C API** instead of QSqlDatabase/QSqlQuery for minimal overhead and direct control over the SQLite connection.
+- **Migration registration**: Call `registerMigration()` before `open()`. Migrations run inside `open()` in version order.
+- **Exceptions on error**: `exec()`, `execNamed()`, and transaction methods throw `DatabaseError` on failure. Callers must catch or let propagate.
+- **Thread safety**: Not thread-safe. Use from a single thread or external synchronization.
 
-```cpp
-class MigrationManager {
-public:
-    explicit MigrationManager(DatabaseManager *db);
-    
-    // Register migration
-    void addMigration(int version, 
-                      std::function<bool(DatabaseManager*)> migrate);
-    
-    // Execute migration
-    bool migrate();
-    
-    // Get current version
-    int currentVersion() const;
-    
-    // Get target version
-    int targetVersion() const;
-    
-    // Check if migration is needed
-    bool needsMigration() const;
-    
-private:
-    bool createMigrationTable();
-    bool runMigration(int version);
-    
-    DatabaseManager *m_db;
-    QMap<int, std::function<bool(DatabaseManager*)>> m_migrations;
-    int m_currentVersion = 0;
-};
-```
+## Schema
 
-### 3.4 TableSchema
+The database uses a `schema_version` table to track the current version. The initial schema and subsequent migrations are registered in `NeriPlayerApplication::initializeCoreServices()`.
 
-Table schema definition.
+### Schema v2 Tables
+
+**songs_cache** — Offline song cache with 27 columns:
+`id`, `platform`, `name`, `artist`, `album`, `album_id`, `duration_ms`, `cover_url`, `media_uri`, `custom_name`, `custom_artist`, `custom_cover_url`, `original_name`, `original_artist`, `original_cover_url`, `local_file_name`, `local_file_path`, `matched_lyric_source`, `matched_song_id`, `user_lyric_offset_ms`, `lyrics_json`, `channel_id`, `audio_id`, `sub_audio_id`, `extra_json`, `cached_at`, `last_played_at`.
+
+**playlists** — User playlists with `id`, `name`, `description`, `cover_url`, `song_count`, `platform`, `custom_cover_url`, `modified_at`.
+
+**playlist_songs** — Join table: `playlist_id`, `song_id`, `position`. Foreign keys with `ON DELETE CASCADE`.
+
+**settings** — Key-value store: `key` (TEXT PRIMARY KEY), `value` (TEXT).
+
+**play_history** — Play events: `id`, `song_id`, `played_at`. Foreign key to `songs_cache`.
+
+**player_state** — Singleton table (`CHECK(id=1)`): `playlist_json`, `current_index`, `media_url`, `position_ms`, `should_resume`, `repeat_mode`, `shuffle_enabled`, `updated_at`.
+
+## Usage
 
 ```cpp
-struct TableSchema {
-    struct Column {
-        QString name;
-        QString type;
-        bool primaryKey = false;
-        bool autoIncrement = false;
-        bool notNull = false;
-        QVariant defaultValue;
-        QString references;  // Foreign key reference
-    };
-    
-    QList<Column> columns;
-    QStringList indices;
-    QStringList uniqueConstraints;
-};
-```
-
-## 4. Usage Examples
-
-### 4.1 Initialize Database
-
-```cpp
-auto *db = new DatabaseManager("app.db");
-if (!db->initialize()) {
-    LOG_ERROR("Database", "Failed to initialize database");
-    return;
+DatabaseManager db;
+db.registerMigration(1, [](sqlite3 *handle) { /* v1 schema */ });
+db.registerMigration(2, [](sqlite3 *handle) { /* v1→v2 migration */ });
+if (!db.open(AppPaths::dataDir() + "/neriplayer.db")) {
+    // handle error
 }
-```
 
-### 4.2 Create Table
+// Parameterized query
+auto rows = db.exec("SELECT name FROM songs_cache WHERE platform = ?", { "NetEase" });
 
-```cpp
-TableSchema schema;
-schema.columns = {
-    {"id", "INTEGER", true, true},
-    {"title", "TEXT", false, false, true},
-    {"artist", "TEXT"},
-    {"duration", "INTEGER"},
-    {"created_at", "DATETIME", false, false, false, "CURRENT_TIMESTAMP"}
-};
-schema.indices = {"title", "artist"};
-
-db->createTable("songs", schema);
-```
-
-### 4.3 Insert Data
-
-```cpp
-QVariantMap data;
-data["title"] = "Song Title";
-data["artist"] = "Artist Name";
-data["duration"] = 180000;
-db->insert("songs", data);
-```
-
-### 4.4 Query Builder
-
-```cpp
-// Complex query
-auto query = QueryBuilder("songs")
-    .select({"songs.*", "playlists.name as playlist_name"})
-    .join("playlist_songs", "songs.id = playlist_songs.song_id")
-    .join("playlists", "playlist_songs.playlist_id = playlists.id")
-    .where("songs.artist", "Artist Name")
-    .orderBy("songs.title")
-    .limit(50)
-    .offset(0);
-
-auto result = query.execute(db);
-while (result.next()) {
-    // Process results
-}
-```
-
-### 4.5 Transaction Handling
-
-```cpp
-db->beginTransaction();
+// Transaction
+db.beginTransaction();
 try {
-    db->insert("songs", songData1);
-    db->insert("songs", songData2);
-    db->commitTransaction();
+    db.exec("INSERT INTO songs_cache (id, name) VALUES (?, ?)", { "1", "Test" });
+    db.commitTransaction();
 } catch (...) {
-    db->rollbackTransaction();
+    db.rollbackTransaction();
     throw;
 }
 ```
 
-## 5. Testing
+## Testing
 
-```cpp
-class DatabaseManagerTest : public QObject {
-    Q_OBJECT
-private slots:
-    void testCreateTable();
-    void testInsert();
-    void testSelect();
-    void testUpdate();
-    void testDelete();
-    void testTransaction();
-    void testMigration();
-};
-```
-
-## 6. Summary
-
-The database module provides complete SQLite database support:
-- **DatabaseManager**: Database connection, table management, CRUD operations
-- **QueryBuilder**: Chain-style query construction, parameter binding
-- **MigrationManager**: Database version management, migration execution
+See `tests/core/TestDatabase.cpp` and `tests/repo/TestSchemaV2.cpp`.

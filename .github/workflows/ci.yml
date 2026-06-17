@@ -1,0 +1,57 @@
+name: CI
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main, 'feat/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8'
+          modules: 'qtwebsockets'
+
+      - name: Install system dependencies
+        run: scripts/install-deps.sh
+
+      - name: Clone QCoro
+        run: scripts/install-qcoro.sh
+
+      - name: Configure
+        run: cmake -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Test
+        run: cd build && ctest --output-on-failure -j$(nproc)
+
+  format-check:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install clang-format
+        run: uv tool install clang-format==22.1.5
+
+      - name: Check formatting
+        run: scripts/check-format.sh ${{ github.event.pull_request.base.sha || 'HEAD~1' }}

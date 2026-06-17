@@ -1,60 +1,60 @@
 # API Module (api/)
 
-## 1. Overview
+## Overview
 
-The API module encapsulates API clients for various music platforms, providing a unified interface to access online resources from NetEase Cloud Music, Bilibili, YouTube Music, and other platforms.
+The API module contains platform-specific API clients that implement `IMusicPlatformPlugin`. Each client handles authentication, content browsing, playback URL resolution, and platform-specific features.
 
-## 2. Module Composition
+## Module Structure
 
-```
+```text
 src/api/
-├── netease/              # NetEase Cloud Music
-├── bilibili/             # Bilibili
-├── youtube/              # YouTube Music
-├── qqmusic/              # QQ Music
-└── common/               # Common types
+├── common/                  # Shared types and interfaces
+│   ├── ApiError.h           # Error classification
+│   ├── ApiResult.h          # Result<T> template
+│   ├── VoidResult.h         # Empty success type
+│   ├── LoginResult.h        # Login result
+│   ├── QrCodeData.h         # QR code login data
+│   ├── PlayHistory.h        # Play history entry
+│   └── IMusicPlatformPlugin.h  # Abstract interface
+├── netease/                 # NetEase Cloud Music
+│   ├── NeteaseClient.h
+│   ├── NeteaseCrypto.h
+│   └── NeteaseParser.h
+├── bilibili/                # (planned)
+├── youtube/                 # (planned)
+└── qqmusic/                 # (planned)
 ```
 
-## 3. Submodule Documents
+## Submodule Documents
 
-- [Common Types](common.md) - Music types, search types, API errors
-- [NetEase Cloud Music](netease.md) - NetEase Cloud Music API client
-- [Bilibili](bilibili.md) - Bilibili API client
-- [YouTube Music](youtube.md) - YouTube Music API client
-- [QQ Music](qqmusic.md) - QQ Music API client
+- [Common Types](common.md) — `ApiError`, `ApiResult<T>`, `VoidResult`, `LoginResult`, `QrCodeData`, `PlayHistory`, `IMusicPlatformPlugin`
+- [NetEase Cloud Music](netease.md) — `NeteaseClient`, `NeteaseCrypto`, `NeteaseParser`
 
-## 4. Module Dependencies
+## Plugin Interface
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Search Module (search/)                 │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                       API Module (api/)                      │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐        │
-│  │ Netease  │ │ Bilibili │ │ YouTube  │ │ QQMusic  │        │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘        │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                       Core Module (core/)                    │
-│                      Network (HttpClient)                    │
-└─────────────────────────────────────────────────────────────┘
+All platform clients implement `IMusicPlatformPlugin`:
+
+```cpp
+class IMusicPlatformPlugin {
+public:
+    virtual QCoro::Task<ApiResult<SearchResult>> search(
+        const QString &keyword, SearchType type, int limit, int offset) = 0;
+    virtual QCoro::Task<ApiResult<Song>> getSongDetail(const QString &songId) = 0;
+    virtual QCoro::Task<ApiResult<SongUrlResult>> getSongUrl(
+        const QString &songId, AudioQuality quality = AudioQuality::High) = 0;
+    virtual QCoro::Task<ApiResult<Lyrics>> getLyrics(const QString &songId) = 0;
+    virtual bool isAuthenticated() const = 0;
+    virtual QString platformName() const = 0;
+};
 ```
 
-## 5. Design Principles
+Platform-specific operations (playlist CRUD, user data, recommendations) live on the concrete client class, not on the interface.
 
-- **Unified Interface**: All platform clients implement the same interface
-- **Async Operations**: All API calls return QCoro::Task
-- **Error Handling**: Unified ApiError error handling
-- **Extensible**: Support for adding new platform plugins
+## Implementation Status
 
-## 6. Supported Platforms
-
-| Platform | Search | Playback | Lyrics | Playlists | Download |
-|----------|--------|----------|--------|-----------|----------|
-| NetEase Cloud Music | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Bilibili | ✅ | ✅ | ❌ | ✅ | ✅ |
-| YouTube Music | ✅ | ✅ | ✅ | ✅ | ✅ |
-| QQ Music | ✅ | ❌ | ✅ | ❌ | ❌ |
+| Platform | Status | Notes |
+|----------|--------|-------|
+| NetEase | ✅ Implemented | Full auth, search, playback, playlists, user data |
+| Bilibili | 📋 Planned | |
+| YouTube Music | 📋 Planned | |
+| QQ Music | 📋 Planned | |

@@ -26,22 +26,18 @@ NeriPlayer Qt is a cross-platform desktop music player client developed using th
 | **Build System** | CMake 3.16+ | Modern C++ build |
 | **C++ Standard** | C++20 | Coroutine support |
 | **Multimedia** | Qt Multimedia / VLC | Audio playback |
-| **Network** | Qt Network / libcurl | HTTP requests |
-| **Database** | SQLite | Local data storage |
+| **Network** | Qt Network / QCoro | HTTP requests (coroutine-based) |
+| **Database** | SQLite (sqlite3 C API) | Local data storage |
 | **Serialization** | nlohmann/json | JSON processing |
-| **Configuration** | QSettings / TOML | Application configuration |
-| **Logging** | spdlog / Qt Logging | Logging system |
+| **Logging** | spdlog | Logging with daily file rotation |
 
 ## 4. Document Index
 
-- [Layered Architecture](layers.md) - Detailed layered architecture design
-- [C++20 Coroutines & QCoro](coroutines.md) - Coroutine support and asynchronous programming
-- [Porting from Android NeriPlayer](porting-from-android.md) - Rules for using Android as a feature reference without copying global singleton dependencies
-- [Core Components](components.md) - Core component design
-- [Threading Model](threading.md) - Thread division and communication
-- [Plugin Architecture](plugin.md) - Plugin system design
-- [Data Architecture](data.md) - Data storage and models
-- [Configuration & Logging](config.md) - Configuration management and logging system
+- [Layered Architecture](layers.md) — Detailed layered architecture design
+- [C++20 Coroutines & QCoro](coroutines.md) — Coroutine support and asynchronous programming
+- [Porting from Android NeriPlayer](porting-from-android.md) — Rules for using Android as a feature reference
+
+See also: [Module Design Documents](../modules/index.md)
 
 ## 5. Overall Architecture Diagram
 

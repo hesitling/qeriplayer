@@ -95,13 +95,13 @@ void TestDomainModels::musicPlatform_comparison()
 
 void TestDomainModels::musicPlatform_defaultIsUnknown()
 {
-    MusicPlatform p { };
+    MusicPlatform p {};
     QCOMPARE(p, MusicPlatform::Unknown);
 }
 
 void TestDomainModels::searchType_defaultIsSong()
 {
-    SearchType t { };
+    SearchType t {};
     QCOMPARE(t, SearchType::Song);
 }
 
@@ -127,7 +127,7 @@ void TestDomainModels::audioQuality_ordering()
 
 void TestDomainModels::playbackAudioSource_defaultIsLocal()
 {
-    PlaybackAudioSource src { };
+    PlaybackAudioSource src {};
     QCOMPARE(src, PlaybackAudioSource::Local);
 }
 
@@ -210,7 +210,7 @@ void TestDomainModels::playlist_withSongs()
 
     Playlist p;
     p.name = QStringLiteral("My Playlist");
-    p.songs = { s1, s2, s3 };
+    p.songs = {s1, s2, s3};
     p.songCount = p.songs.size();
 
     QCOMPARE(p.songCount, 3);
@@ -225,7 +225,7 @@ void TestDomainModels::lyrics_ordering()
 {
     Lyrics lyrics;
     lyrics.rawText = QStringLiteral("[00:00.000]Hello\n[00:05.000]World");
-    lyrics.lines = { { 0, 5000, QStringLiteral("Hello"), { } }, { 5000, 10000, QStringLiteral("World"), { } } };
+    lyrics.lines = {{0, 5000, QStringLiteral("Hello"), {}}, {5000, 10000, QStringLiteral("World"), {}}};
 
     QCOMPARE(lyrics.lines[0].startTimeMs, 0);
     QCOMPARE(lyrics.lines[0].endTimeMs, 5000);
@@ -241,7 +241,7 @@ void TestDomainModels::lyrics_wordTiming()
     line.startTimeMs = 1000;
     line.endTimeMs = 3000;
     line.text = QStringLiteral("Hello World");
-    line.words = { { QStringLiteral("Hello"), 1000, 2000 }, { QStringLiteral("World"), 2000, 3000 } };
+    line.words = {{QStringLiteral("Hello"), 1000, 2000}, {QStringLiteral("World"), 2000, 3000}};
     lyrics.lines.append(line);
 
     QCOMPARE(lyrics.lines[0].words.size(), 2);
@@ -269,17 +269,17 @@ void TestDomainModels::searchResult_defaultConstruction()
 
 void TestDomainModels::songIdentity_stableKey()
 {
-    SongIdentity id1 { QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
-    SongIdentity id2 { QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
+    SongIdentity id1 {QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com")};
+    SongIdentity id2 {QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com")};
     QCOMPARE(id1.stableKey(), id2.stableKey());
     QVERIFY(!id1.stableKey().isEmpty());
 }
 
 void TestDomainModels::songIdentity_equality()
 {
-    SongIdentity a { QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
-    SongIdentity b { QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
-    SongIdentity c { QStringLiteral("2"), QStringLiteral("Album"), QStringLiteral("http://example.com") };
+    SongIdentity a {QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com")};
+    SongIdentity b {QStringLiteral("1"), QStringLiteral("Album"), QStringLiteral("http://example.com")};
+    SongIdentity c {QStringLiteral("2"), QStringLiteral("Album"), QStringLiteral("http://example.com")};
     QCOMPARE(a, b);
     QVERIFY(a != c);
 }
@@ -362,7 +362,7 @@ void TestDomainModels::listenTogether_stableKey_youtube()
 {
     // YouTube with playlistContextId: channelId:audioId:playlistContextId
     QString key
-        = buildStableTrackKey(QStringLiteral("youtubeMusic"), QStringLiteral("abc"), { }, QStringLiteral("PLxyz"));
+        = buildStableTrackKey(QStringLiteral("youtubeMusic"), QStringLiteral("abc"), {}, QStringLiteral("PLxyz"));
     QCOMPARE(key, QStringLiteral("youtubeMusic:abc:PLxyz"));
 
     // YouTube without playlistContextId
