@@ -503,6 +503,66 @@ target_compile_definitions(TestPlayerStateRepository PRIVATE
 )
 add_test(NAME TestPlayerStateRepository COMMAND TestPlayerStateRepository)
 
+# Player tests
+add_executable(TestPlayQueue
+    tests/player/TestPlayQueue.cpp
+    src/player/PlayQueue.cpp
+)
+target_include_directories(TestPlayQueue PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(TestPlayQueue PRIVATE
+    Qt6::Core
+    Qt6::Test
+)
+target_compile_definitions(TestPlayQueue PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestPlayQueue COMMAND TestPlayQueue)
+
+add_executable(TestPlaybackController
+    tests/player/TestPlaybackController.cpp
+    src/player/PlaybackController.cpp
+    src/player/PlayQueue.cpp
+    src/player/backends/QtMultimediaBackend.cpp
+    src/player/IPlayerBackend.h
+    src/api/common/ApiError.cpp
+)
+target_include_directories(TestPlaybackController PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${NERIPLAYER_QCORO_INCLUDE_DIRS}
+)
+target_link_libraries(TestPlaybackController PRIVATE
+    Qt6::Core
+    Qt6::Multimedia
+    Qt6::Test
+    ${NERIPLAYER_QCORO_LIBRARIES}
+)
+target_compile_definitions(TestPlaybackController PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestPlaybackController COMMAND TestPlaybackController)
+
+add_executable(TestQtMultimediaBackend
+    tests/player/TestQtMultimediaBackend.cpp
+    src/player/backends/QtMultimediaBackend.cpp
+    src/player/IPlayerBackend.h
+)
+target_include_directories(TestQtMultimediaBackend PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${NERIPLAYER_QCORO_INCLUDE_DIRS}
+)
+target_link_libraries(TestQtMultimediaBackend PRIVATE
+    Qt6::Core
+    Qt6::Multimedia
+    Qt6::Test
+    ${NERIPLAYER_QCORO_LIBRARIES}
+)
+target_compile_definitions(TestQtMultimediaBackend PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestQtMultimediaBackend COMMAND TestQtMultimediaBackend)
+
 # Shared library for Netease API + core infra (used by E2E tests and CLI tools)
 set(NETEASE_E2E_SOURCES
     src/api/netease/NeteaseClient.h

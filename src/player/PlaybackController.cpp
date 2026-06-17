@@ -14,10 +14,8 @@
 
 namespace NeriPlayerQt {
 
-PlaybackController::PlaybackController(std::unique_ptr<IPlayerBackend> backend,
-                                       IMusicPlatformPlugin *plugin,
-                                       IPlayerStateRepository *playerStateRepo,
-                                       ISettingsRepository *settingsRepo,
+PlaybackController::PlaybackController(std::unique_ptr<IPlayerBackend> backend, IMusicPlatformPlugin *plugin,
+                                       IPlayerStateRepository *playerStateRepo, ISettingsRepository *settingsRepo,
                                        QObject *parent)
     : QObject(parent)
     , m_backend(std::move(backend))
@@ -130,8 +128,7 @@ void PlaybackController::setVolume(double normalized)
 {
     m_backend->setVolume(qBound(0.0, normalized, 1.0));
     if (m_settingsRepo) {
-        m_settingsRepo->set(QStringLiteral("player/volume"),
-                            QString::number(m_backend->volume(), 'f', 2));
+        m_settingsRepo->set(QStringLiteral("player/volume"), QString::number(m_backend->volume(), 'f', 2));
     }
 }
 
@@ -180,14 +177,17 @@ void PlaybackController::preResolveUrl(const Song &song)
         return; // Already cached and not expired
     }
 
+    if (!m_plugin) {
+        return; // No platform plugin available
+    }
+
     // Fire-and-forget background resolution
     auto task = [](PlaybackController *self, Song s) -> QCoro::Task<void> {
         try {
             auto result = co_await self->m_plugin->getSongUrl(s.id);
             if (result.isSuccess()) {
                 self->m_urlCache.insert(s.id, result.data().url);
-                self->m_urlCacheExpiry.insert(s.id,
-                    QDateTime::currentMSecsSinceEpoch() + URL_CACHE_TTL_MS);
+                self->m_urlCacheExpiry.insert(s.id, QDateTime::currentMSecsSinceEpoch() + URL_CACHE_TTL_MS);
             } else {
                 qWarning() << "Pre-resolve failed for" << s.name << ":" << result.error().message();
             }

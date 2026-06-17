@@ -59,10 +59,10 @@
 
 ## 9. Tests
 
-- [ ] 9.1 Create `tests/player/TestPlayQueue.cpp`: next/prev, shuffle, repeat modes, edge cases (empty queue, single song, remove current)
-- [ ] 9.2 Create `tests/player/TestPlaybackController.cpp`: mock IPlayerBackend, verify play/pause/auto-advance/URL resolution flow
-- [ ] 9.3 Create `tests/player/TestQtMultimediaBackend.cpp`: integration test with local audio file (load, play, pause, seek, volume)
-- [ ] 9.4 Add test targets to CMakeLists.txt
+- [x] 9.1 Create `tests/player/TestPlayQueue.cpp`: next/prev, shuffle, repeat modes, edge cases (empty queue, single song, remove current)
+- [x] 9.2 Create `tests/player/TestPlaybackController.cpp`: mock IPlayerBackend, verify play/pause/auto-advance/URL resolution flow
+- [x] 9.3 Create `tests/player/TestQtMultimediaBackend.cpp`: integration test with local audio file (load, play, pause, seek, volume)
+- [x] 9.4 Add test targets to CMakeLists.txt
 
 ## 10. Integration
 
