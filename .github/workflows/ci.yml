@@ -5,9 +5,19 @@ permissions:
 
 on:
   push:
-    branches: [main, 'feat/**']
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/ci.yml'
 
 jobs:
   build-test:
@@ -22,7 +32,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.8'
-          modules: 'qtwebsockets'
+          modules: 'qtwebsockets qtmultimedia'
 
       - name: Install system dependencies
         run: scripts/install-deps.sh

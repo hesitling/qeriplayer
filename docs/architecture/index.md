@@ -25,7 +25,7 @@ NeriPlayer Qt is a cross-platform desktop music player client developed using th
 | **UI Framework** | Qt 6 Widgets / QML | Native desktop UI |
 | **Build System** | CMake 3.16+ | Modern C++ build |
 | **C++ Standard** | C++20 | Coroutine support |
-| **Multimedia** | Qt Multimedia / VLC | Audio playback |
+| **Multimedia** | Qt Multimedia / mpv | Audio playback |
 | **Network** | Qt Network / QCoro | HTTP requests (coroutine-based) |
 | **Database** | SQLite (sqlite3 C API) | Local data storage |
 | **Serialization** | nlohmann/json | JSON processing |

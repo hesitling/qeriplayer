@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(GNUInstallDirs)
 
 # Qt 6
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets Multimedia)
 
 # QCoro
 set(NERIPLAYER_QCORO_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/qcoro" CACHE PATH
@@ -97,6 +97,10 @@ set(SOURCES
     src/api/netease/NeteaseClientAuth.cpp
     src/api/netease/NeteaseClientContent.cpp
     src/api/netease/NeteaseClientUser.cpp
+    src/player/backends/QtMultimediaBackend.cpp
+    src/player/PlayQueue.cpp
+    src/player/PlaybackController.cpp
+    src/player/BackendFactory.cpp
 )
 
 # 头文件
@@ -149,6 +153,11 @@ set(HEADERS
     src/api/netease/NeteaseCrypto.h
     src/api/netease/NeteaseParser.h
     src/api/netease/NeteaseClient.h
+    src/player/IPlayerBackend.h
+    src/player/backends/QtMultimediaBackend.h
+    src/player/PlayQueue.h
+    src/player/PlaybackController.h
+    src/player/BackendFactory.h
     src/mainwindow.h
 )
 
@@ -165,6 +174,7 @@ target_link_libraries(NeriPlayerQt PRIVATE
     Qt6::Widgets
     Qt6::Network
     Qt6::WebSockets
+    Qt6::Multimedia
     ${NERIPLAYER_QCORO_LIBRARIES}
     ${SQLITE3_LIBRARIES}
     ${SPDLOG_LIBRARIES}
@@ -492,6 +502,75 @@ target_compile_definitions(TestPlayerStateRepository PRIVATE
     QT_NO_KEYWORDS
 )
 add_test(NAME TestPlayerStateRepository COMMAND TestPlayerStateRepository)
+
+# Player tests
+add_executable(TestPlayQueue
+    tests/player/TestPlayQueue.cpp
+    src/player/PlayQueue.cpp
+)
+target_include_directories(TestPlayQueue PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(TestPlayQueue PRIVATE
+    Qt6::Core
+    Qt6::Test
+)
+target_compile_definitions(TestPlayQueue PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestPlayQueue COMMAND TestPlayQueue)
+
+add_executable(TestPlaybackController
+    tests/player/TestPlaybackController.cpp
+    src/player/PlaybackController.cpp
+    src/player/PlayQueue.cpp
+    src/player/backends/QtMultimediaBackend.cpp
+    src/player/IPlayerBackend.h
+    src/api/common/ApiError.cpp
+    src/core/logger/Logger.cpp
+)
+target_include_directories(TestPlaybackController PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${NERIPLAYER_QCORO_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
+)
+target_link_libraries(TestPlaybackController PRIVATE
+    Qt6::Core
+    Qt6::Multimedia
+    Qt6::Test
+    ${NERIPLAYER_QCORO_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
+)
+target_compile_definitions(TestPlaybackController PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestPlaybackController COMMAND TestPlaybackController)
+set_tests_properties(TestPlaybackController PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+)
+
+add_executable(TestQtMultimediaBackend
+    tests/player/TestQtMultimediaBackend.cpp
+    src/player/backends/QtMultimediaBackend.cpp
+    src/player/IPlayerBackend.h
+)
+target_include_directories(TestQtMultimediaBackend PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${NERIPLAYER_QCORO_INCLUDE_DIRS}
+)
+target_link_libraries(TestQtMultimediaBackend PRIVATE
+    Qt6::Core
+    Qt6::Multimedia
+    Qt6::Test
+    ${NERIPLAYER_QCORO_LIBRARIES}
+)
+target_compile_definitions(TestQtMultimediaBackend PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestQtMultimediaBackend COMMAND TestQtMultimediaBackend)
+set_tests_properties(TestQtMultimediaBackend PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+)
 
 # Shared library for Netease API + core infra (used by E2E tests and CLI tools)
 set(NETEASE_E2E_SOURCES
