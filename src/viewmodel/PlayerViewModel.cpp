@@ -97,6 +97,20 @@ QCoro::Task<void> PlayerViewModel::play(const Song &song)
     co_await m_controller->play(song);
 }
 
+void PlayerViewModel::loadQueueAndPlay(const QVector<Song> &songs, int startIndex)
+{
+    m_controller->queue()->clear();
+    for (const Song &song : songs) {
+        m_controller->queue()->addSong(song);
+    }
+    m_controller->queue()->setCurrentIndex(startIndex);
+    updateQueueModel();
+
+    if (startIndex >= 0 && startIndex < songs.size()) {
+        play(songs.at(startIndex));
+    }
+}
+
 void PlayerViewModel::pause()
 {
     m_controller->pause();

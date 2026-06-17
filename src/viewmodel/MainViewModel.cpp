@@ -68,6 +68,7 @@ void MainViewModel::openLocalPlaylist(const QString &id)
     // TODO: get repos from ServiceLocator or inject
     // For now, create with nullptr repos (will be wired properly in integration)
     m_localPlaylistDetail = new LocalPlaylistDetailViewModel(nullptr, nullptr, this);
+    wireDetailVmSignals();
     m_localPlaylistDetail->loadPlaylist(id);
     Q_EMIT localPlaylistDetailChanged();
 
@@ -80,6 +81,7 @@ void MainViewModel::openNeteasePlaylist(const PlaylistSummary &summary)
 
     // TODO: get repos from ServiceLocator or inject
     m_neteasePlaylistDetail = new NeteasePlaylistDetailViewModel(nullptr, nullptr, nullptr, this);
+    wireDetailVmSignals();
     m_neteasePlaylistDetail->loadPlaylist(summary.id);
     Q_EMIT neteasePlaylistDetailChanged();
 
@@ -91,6 +93,7 @@ void MainViewModel::openNeteaseAlbum(const AlbumSummary &summary)
     deleteDetailViewModels();
 
     m_neteasePlaylistDetail = new NeteasePlaylistDetailViewModel(nullptr, nullptr, nullptr, this);
+    wireDetailVmSignals();
     m_neteasePlaylistDetail->loadAlbum(summary.id);
     Q_EMIT neteasePlaylistDetailChanged();
 
@@ -127,6 +130,26 @@ void MainViewModel::connectSignals()
     connect(m_playlistVm, &PlaylistViewModel::localPlaylistSelected, this, &MainViewModel::openLocalPlaylist);
     connect(m_playlistVm, &PlaylistViewModel::neteasePlaylistSelected, this, &MainViewModel::openNeteasePlaylist);
     connect(m_playlistVm, &PlaylistViewModel::neteaseAlbumSelected, this, &MainViewModel::openNeteaseAlbum);
+}
+
+void MainViewModel::wireDetailVmSignals()
+{
+    if (m_localPlaylistDetail) {
+        connect(m_localPlaylistDetail, &LocalPlaylistDetailViewModel::requestPlay, m_playerVm,
+                [this](const Song &song) { m_playerVm->play(song); });
+        connect(m_localPlaylistDetail, &LocalPlaylistDetailViewModel::requestPlayPlaylist, m_playerVm,
+                [this](const QVector<Song> &songs, int startIndex) {
+                    m_playerVm->loadQueueAndPlay(songs, startIndex);
+                });
+    }
+    if (m_neteasePlaylistDetail) {
+        connect(m_neteasePlaylistDetail, &NeteasePlaylistDetailViewModel::requestPlay, m_playerVm,
+                [this](const Song &song) { m_playerVm->play(song); });
+        connect(m_neteasePlaylistDetail, &NeteasePlaylistDetailViewModel::requestPlayPlaylist, m_playerVm,
+                [this](const QVector<Song> &songs, int startIndex) {
+                    m_playerVm->loadQueueAndPlay(songs, startIndex);
+                });
+    }
 }
 
 } // namespace NeriPlayerQt

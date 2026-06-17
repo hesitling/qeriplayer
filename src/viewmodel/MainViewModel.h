@@ -58,6 +58,7 @@ Q_SIGNALS:
 private:
     void deleteDetailViewModels();
     void connectSignals();
+    void wireDetailVmSignals();
 
     View m_currentView = View::Home;
     PlayerViewModel *m_playerVm;

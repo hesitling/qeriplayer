@@ -64,6 +64,7 @@ public:
 
     // --- Playback control ---
     Q_INVOKABLE QCoro::Task<void> play(const NeriPlayerQt::Song &song);
+    Q_INVOKABLE void loadQueueAndPlay(const QVector<NeriPlayerQt::Song> &songs, int startIndex);
     Q_INVOKABLE void pause();
     Q_INVOKABLE void resume();
     Q_INVOKABLE void stop();
