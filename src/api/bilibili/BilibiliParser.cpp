@@ -10,29 +10,36 @@
 
 namespace NeriPlayerQt {
 
-static QJsonObject extractData(const QByteArray &json, int *outCode = nullptr)
+static QJsonObject extractData(const QByteArray &json, int *outCode = nullptr, QString *outMessage = nullptr)
 {
     QJsonParseError err;
     auto doc = QJsonDocument::fromJson(json, &err);
-    if (err.error != QJsonParseError::NoError)
+    if (err.error != QJsonParseError::NoError) {
+        if (outCode) *outCode = -1;
+        if (outMessage) *outMessage = QStringLiteral("JSON parse error");
         return {};
+    }
     auto root = doc.object();
-    if (outCode)
-        *outCode = root.value("code").toInt(-1);
-    if (root.value("code").toInt(-1) != 0)
+    int code = root.value("code").toInt(-1);
+    if (outCode) *outCode = code;
+    if (outMessage) *outMessage = root.value("message").toString();
+    if (code != 0)
         return {};
     return root.value("data").toObject();
 }
 
-static QJsonObject extractRoot(const QByteArray &json, int *outCode = nullptr)
+static QJsonObject extractRoot(const QByteArray &json, int *outCode = nullptr, QString *outMessage = nullptr)
 {
     QJsonParseError err;
     auto doc = QJsonDocument::fromJson(json, &err);
-    if (err.error != QJsonParseError::NoError)
+    if (err.error != QJsonParseError::NoError) {
+        if (outCode) *outCode = -1;
+        if (outMessage) *outMessage = QStringLiteral("JSON parse error");
         return {};
+    }
     auto root = doc.object();
-    if (outCode)
-        *outCode = root.value("code").toInt(-1);
+    if (outCode) *outCode = root.value("code").toInt(-1);
+    if (outMessage) *outMessage = root.value("message").toString();
     return root;
 }
 

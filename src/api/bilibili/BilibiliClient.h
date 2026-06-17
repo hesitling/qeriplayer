@@ -76,6 +76,10 @@ private:
     QString extractFilenameStem(const QString &url);
     static QString md5Hex(const QByteArray &data);
 
+    // Cookie persistence
+    void loadCookies();
+    void saveCookies();
+
     // Request helpers
     QNetworkRequest buildRequest(const QUrl &url) const;
     QCoro::Task<HttpResponse> apiGet(const QString &baseUrl,

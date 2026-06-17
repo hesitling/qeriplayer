@@ -5,6 +5,8 @@
 #include "api/bilibili/BilibiliParser.h"
 #include "core/network/HttpClient.h"
 
+#include "core/crypto/SecureStorage.h"
+
 #include <QCoroNetworkReply>
 #include <QCryptographicHash>
 #include <QJsonArray>
@@ -15,6 +17,21 @@
 #include <QUrl>
 
 namespace NeriPlayerQt {
+
+/// Extract error code and message from a Bilibili API response body
+static ApiError extractApiError(const QByteArray &body, int httpStatus)
+{
+    QJsonParseError err;
+    auto doc = QJsonDocument::fromJson(body, &err);
+    if (err.error != QJsonParseError::NoError)
+        return ApiError{httpStatus, QStringLiteral("HTTP %1").arg(httpStatus)};
+    auto root = doc.object();
+    int code = root.value("code").toInt(httpStatus);
+    QString msg = root.value("message").toString();
+    if (msg.isEmpty())
+        msg = QStringLiteral("HTTP %1").arg(httpStatus);
+    return ApiError{code, msg};
+}
 
 static const QString BASE_API = "https://api.bilibili.com";
 static const QString PASSPORT_API = "https://passport.bilibili.com";
@@ -49,8 +66,37 @@ static const int MIXIN_INDEX[] = {
 BilibiliClient::BilibiliClient(HttpClient *httpClient, SecureStorage *secureStorage, QObject *parent)
     : QObject(parent), m_httpClient(httpClient), m_secureStorage(secureStorage)
 {
-    // TODO: load cookies from SecureStorage
-    m_authenticated = m_cookies.contains("SESSDATA");
+    loadCookies();
+}
+
+// ==================== Cookie Persistence ====================
+
+void BilibiliClient::loadCookies()
+{
+    if (!m_secureStorage)
+        return;
+    auto json = m_secureStorage->get(QStringLiteral("bilibili_cookies"));
+    if (!json.has_value() || json->isEmpty())
+        return;
+    QJsonParseError err;
+    auto doc = QJsonDocument::fromJson(json->toUtf8(), &err);
+    if (err.error != QJsonParseError::NoError)
+        return;
+    auto obj = doc.object();
+    for (auto it = obj.constBegin(); it != obj.constEnd(); ++it)
+        m_cookies[it.key()] = it.value().toString();
+    m_authenticated = m_cookies.contains("SESSDATA") && !m_cookies["SESSDATA"].isEmpty();
+}
+
+void BilibiliClient::saveCookies()
+{
+    if (!m_secureStorage)
+        return;
+    QJsonObject obj;
+    for (auto it = m_cookies.constBegin(); it != m_cookies.constEnd(); ++it)
+        obj[it.key()] = it.value();
+    m_secureStorage->set(QStringLiteral("bilibili_cookies"),
+                         QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Compact)));
 }
 
 // ==================== Request Helpers ====================
@@ -76,7 +122,7 @@ QNetworkRequest BilibiliClient::buildRequest(const QUrl &url) const
 QCoro::Task<HttpResponse> BilibiliClient::apiGet(const QString &baseUrl, const QUrlQuery &params, bool wbiSign)
 {
     if (!m_fingerprintLoaded) {
-        auto fpResp = co_await m_httpClient->get(QUrl(URL_FINGER_SPI));
+        auto fpResp = co_await m_httpClient->get(buildRequest(QUrl(URL_FINGER_SPI)));
         auto spi = BilibiliParser::parseFingerSpi(fpResp.body);
         if (spi) {
             m_cookies["buvid3"] = spi->buvid3;
@@ -129,13 +175,17 @@ QCoro::Task<QString> BilibiliClient::getMixinKey()
 {
     if (!m_mixinKey.isEmpty() && QDateTime::currentDateTime() < m_mixinKeyExpiry)
         co_return m_mixinKey;
-    auto resp = co_await m_httpClient->get(QUrl(URL_NAV));
+    auto resp = co_await m_httpClient->get(buildRequest(QUrl(URL_NAV)));
     auto wbi = BilibiliParser::parseWbiImg(resp.body);
     QString rawKey;
     if (wbi)
         rawKey = extractFilenameStem(wbi->imgUrl) + extractFilenameStem(wbi->subUrl);
-    if (rawKey.length() < 32)
+    if (rawKey.length() < 32) {
+        // WBI key derivation failed — log and use fallback
+        // Signed requests will likely get -412 errors
+        qWarning() << "BilibiliClient: WBI mixin key derivation failed, using fallback";
         rawKey = QString(64, '0');
+    }
     QString key;
     for (int i = 0; i < 32; ++i)
         key.append(rawKey[MIXIN_INDEX[i]]);
@@ -252,7 +302,7 @@ QString BilibiliClient::platformName() const
 
 QCoro::Task<ApiResult<QrCodeData>> BilibiliClient::generateQrCode()
 {
-    auto resp = co_await m_httpClient->get(QUrl(URL_QR_LOGIN));
+    auto resp = co_await m_httpClient->get(buildRequest(QUrl(URL_QR_LOGIN)));
     if (!resp.isSuccess())
         co_return ApiResult<QrCodeData>(ApiError{resp.statusCode, QStringLiteral("获取二维码失败")});
     auto qr = BilibiliParser::parseQrCodeData(resp.body);
@@ -267,16 +317,34 @@ QCoro::Task<ApiResult<BiliLoginPollResult>> BilibiliClient::checkQrCodeStatus(co
     params.addQueryItem("qrcode_key", key);
     QUrl url(URL_QR_POLL);
     url.setQuery(params);
-    auto resp = co_await m_httpClient->get(url);
+    auto resp = co_await m_httpClient->get(buildRequest(url));
     if (!resp.isSuccess())
         co_return ApiResult<BiliLoginPollResult>(ApiError{resp.statusCode, QStringLiteral("查询登录状态失败")});
     auto result = BilibiliParser::parseLoginPollResult(resp.body);
     if (!result)
         co_return ApiResult<BiliLoginPollResult>(ApiError{-1, QStringLiteral("解析登录结果失败")});
     if (result->status == BiliQrCodeStatus::Confirmed) {
-        // TODO: extract cookies from response and save
-        m_authenticated = true;
-        emit loginStateChanged(true);
+        // Extract cookies from Set-Cookie headers
+        for (const auto &header : resp.headers) {
+            if (header.first.toLower() == "set-cookie") {
+                QString cookieStr = QString::fromUtf8(header.second);
+                // Parse "name=value; ..." format
+                QString nameValue = cookieStr.split(';').first().trimmed();
+                int eqIdx = nameValue.indexOf('=');
+                if (eqIdx > 0) {
+                    QString name = nameValue.left(eqIdx).trimmed();
+                    QString value = nameValue.mid(eqIdx + 1).trimmed();
+                    if (name == "SESSDATA" || name == "bili_jct" ||
+                        name == "DedeUserID" || name == "DedeUserID__ckMd5") {
+                        m_cookies[name] = value;
+                    }
+                }
+            }
+        }
+        m_authenticated = m_cookies.contains("SESSDATA");
+        if (m_authenticated)
+            saveCookies();
+        emit loginStateChanged(m_authenticated);
     }
     co_return ApiResult<BiliLoginPollResult>(*result);
 }
@@ -285,6 +353,7 @@ QCoro::Task<ApiResult<VoidResult>> BilibiliClient::logout()
 {
     m_cookies.clear();
     m_authenticated = false;
+    saveCookies(); // Clear persisted cookies
     emit loginStateChanged(false);
     co_return ApiResult<VoidResult>(VoidResult{});
 }
@@ -320,7 +389,7 @@ QCoro::Task<ApiResult<BiliSearchVideoPage>> BilibiliClient::searchVideos(const Q
 
 QCoro::Task<ApiResult<QStringList>> BilibiliClient::getHotSearches()
 {
-    auto resp = co_await m_httpClient->get(QUrl(URL_HOT_SEARCH));
+    auto resp = co_await m_httpClient->get(buildRequest(QUrl(URL_HOT_SEARCH)));
     if (!resp.isSuccess())
         co_return ApiResult<QStringList>(ApiError{resp.statusCode, QStringLiteral("获取热搜失败")});
     auto hot = BilibiliParser::parseHotSearches(resp.body);
@@ -397,7 +466,14 @@ QCoro::Task<ApiResult<BiliAudioStream>> BilibiliClient::getAudioStream(const QSt
     const auto &stream = streamResult.data();
     if (stream.audios.isEmpty())
         co_return ApiResult<BiliAudioStream>(ApiError{404, QStringLiteral("无可用音频流")});
-    co_return ApiResult<BiliAudioStream>(stream.audios.first());
+    // Sort by quality (highest first), then by bandwidth
+    auto audios = stream.audios;
+    std::sort(audios.begin(), audios.end(), [](const BiliAudioStream &a, const BiliAudioStream &b) {
+        if (a.quality != b.quality)
+            return static_cast<int>(a.quality) > static_cast<int>(b.quality);
+        return a.bandwidth > b.bandwidth;
+    });
+    co_return ApiResult<BiliAudioStream>(audios.first());
 }
 
 // ==================== Favorites ====================
