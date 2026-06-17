@@ -56,8 +56,10 @@ void TestPlaylistRepository::create_makesPlaylist()
     QCOMPARE(pl.songCount, 0);
 
     // Verify in DB
-    auto rows = db->exec("SELECT name FROM playlists WHERE id = ?", { pl.id });
+    auto rows = db->exec("SELECT name, platform FROM playlists WHERE id = ?", { pl.id });
     QCOMPARE(rows.size(), 1);
+    QCOMPARE(rows[0][0].toString(), pl.name);
+    QCOMPARE(rows[0][1].toString(), QStringLiteral("Unknown"));
 }
 
 void TestPlaylistRepository::findAll_returnsAll()
