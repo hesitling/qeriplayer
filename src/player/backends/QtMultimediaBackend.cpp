@@ -25,14 +25,27 @@ QCoro::Task<void> QtMultimediaBackend::load(const QUrl &url)
 {
     m_player->setSource(url);
 
-    // Wait for the media to reach LoadedMedia or BufferedMedia status
-    // or report an error via InvalidMedia
+    // Check if already loaded (signal won't fire again)
+    auto currentStatus = m_player->mediaStatus();
+    if (currentStatus == QMediaPlayer::LoadedMedia || currentStatus == QMediaPlayer::BufferedMedia) {
+        co_return;
+    }
+    if (currentStatus == QMediaPlayer::InvalidMedia) {
+        throw std::runtime_error(
+            QStringLiteral("Failed to load media: %1").arg(m_player->errorString()).toStdString());
+    }
+
+    // Wait for the media to reach a terminal status with timeout
+    constexpr auto kLoadTimeout = std::chrono::seconds(30);
     while (true) {
-        auto status = co_await qCoro(m_player.get(), &QMediaPlayer::mediaStatusChanged);
-        if (status == QMediaPlayer::LoadedMedia || status == QMediaPlayer::BufferedMedia) {
+        auto status = co_await qCoro(m_player.get(), &QMediaPlayer::mediaStatusChanged, kLoadTimeout);
+        if (!status.has_value()) {
+            throw std::runtime_error("Timed out waiting for media to load");
+        }
+        if (*status == QMediaPlayer::LoadedMedia || *status == QMediaPlayer::BufferedMedia) {
             break;
         }
-        if (status == QMediaPlayer::InvalidMedia) {
+        if (*status == QMediaPlayer::InvalidMedia) {
             throw std::runtime_error(
                 QStringLiteral("Failed to load media: %1").arg(m_player->errorString()).toStdString());
         }
