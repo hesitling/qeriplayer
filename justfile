@@ -63,7 +63,7 @@ test-list:
 format:
     #!/usr/bin/env bash
     set -euo pipefail
-    files=$(git diff --name-only --diff-filter=ACMR HEAD -- '*.h' '*.cpp' || true)
+    files=$(git diff --name-only --diff-filter=ACMR HEAD -- '*.h' '*.hpp' '*.cpp' '*.cc' || true)
     if [ -z "$files" ]; then
         echo "No changed files to format."
         exit 0
@@ -82,7 +82,7 @@ format-against ref='HEAD~1':
         echo "Error: ref '$base_ref' not found." >&2
         exit 1
     fi
-    files=$(git diff --name-only --diff-filter=ACMR "$base_ref" -- '*.h' '*.cpp' || true)
+    files=$(git diff --name-only --diff-filter=ACMR "$base_ref" -- '*.h' '*.hpp' '*.cpp' '*.cc' || true)
     if [ -z "$files" ]; then
         echo "No changed C++ files since $base_ref."
         exit 0
@@ -96,7 +96,7 @@ format-against ref='HEAD~1':
 check:
     #!/usr/bin/env bash
     set -euo pipefail
-    files=$(git diff --name-only --diff-filter=ACMR HEAD -- '*.h' '*.cpp' || true)
+    files=$(git diff --name-only --diff-filter=ACMR HEAD -- '*.h' '*.hpp' '*.cpp' '*.cc' || true)
     if [ -z "$files" ]; then
         echo "No changed files to check."
         exit 0
