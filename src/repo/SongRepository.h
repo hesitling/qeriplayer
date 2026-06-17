@@ -6,6 +6,8 @@
 
 #include "repo/ISongRepository.h"
 
+#include <optional>
+
 namespace NeriPlayerQt {
 
 class DatabaseManager;
