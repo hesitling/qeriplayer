@@ -26,9 +26,9 @@ private Q_SLOTS:
     void close_releasesFileHandle();
 
     // Schema versioning
-    void firstTimeCreation_setsVersion1();
+    void firstTimeCreation_setsVersion2();
     void alreadyAtCurrentVersion_noMigration();
-    void sequentialMigrations();
+    void sequentialMigrations_fromV2();
 
     // Query execution
     void exec_selectWithPositionalParams();
@@ -95,13 +95,13 @@ void TestDatabase::close_releasesFileHandle()
     db2.close();
 }
 
-void TestDatabase::firstTimeCreation_setsVersion1()
+void TestDatabase::firstTimeCreation_setsVersion2()
 {
-    QString path = m_tempDir.filePath("test_version1.db");
+    QString path = m_tempDir.filePath("test_version2.db");
 
     DatabaseManager db;
     QVERIFY(db.open(path));
-    QCOMPARE(db.schemaVersion(), 1);
+    QCOMPARE(db.schemaVersion(), 2);
     db.close();
 }
 
@@ -111,29 +111,29 @@ void TestDatabase::alreadyAtCurrentVersion_noMigration()
 
     DatabaseManager db;
     QVERIFY(db.open(path));
-    QCOMPARE(db.schemaVersion(), 1);
+    QCOMPARE(db.schemaVersion(), 2);
 
-    // Open again — should stay at version 1
+    // Open again — should stay at version 2
     db.close();
     DatabaseManager db2;
     QVERIFY(db2.open(path));
-    QCOMPARE(db2.schemaVersion(), 1);
+    QCOMPARE(db2.schemaVersion(), 2);
     db2.close();
 }
 
-void TestDatabase::sequentialMigrations()
+void TestDatabase::sequentialMigrations_fromV2()
 {
     QString path = m_tempDir.filePath("test_migrations.db");
 
     DatabaseManager db;
-    // Register an extra migration before opening
-    db.registerMigration(2, [](sqlite3 *handle) {
+    // Register an extra migration before opening (on top of v2 base)
+    db.registerMigration(3, [](sqlite3 *handle) {
         const char *sql = "CREATE TABLE IF NOT EXISTS test_table (id INTEGER PRIMARY KEY);";
         return sqlite3_exec(handle, sql, nullptr, nullptr, nullptr) == SQLITE_OK;
     });
 
     QVERIFY(db.open(path));
-    QCOMPARE(db.schemaVersion(), 2);
+    QCOMPARE(db.schemaVersion(), 3);
     db.close();
 }
 
@@ -257,6 +257,7 @@ void TestDatabase::initialSchema_createsAllTables()
     QVERIFY(tables.contains("playlist_songs"));
     QVERIFY(tables.contains("settings"));
     QVERIFY(tables.contains("play_history"));
+    QVERIFY(tables.contains("player_state"));
     QVERIFY(tables.contains("schema_version"));
 
     db.close();

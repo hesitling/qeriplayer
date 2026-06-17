@@ -309,6 +309,27 @@ if(UNIX)
 endif()
 add_test(NAME TestNeteaseParser COMMAND TestNeteaseParser)
 
+add_executable(TestSchemaV2
+    tests/repo/TestSchemaV2.cpp
+    src/core/database/DatabaseManager.cpp
+)
+target_include_directories(TestSchemaV2 PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+)
+target_link_libraries(TestSchemaV2 PRIVATE
+    Qt6::Core
+    Qt6::Test
+    ${SQLITE3_LIBRARIES}
+)
+if(UNIX)
+    target_link_libraries(TestSchemaV2 PRIVATE dl pthread)
+endif()
+target_compile_definitions(TestSchemaV2 PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestSchemaV2 COMMAND TestSchemaV2)
+
 # Shared library for Netease API + core infra (used by E2E tests and CLI tools)
 set(NETEASE_E2E_SOURCES
     src/api/netease/NeteaseClient.h
