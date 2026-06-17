@@ -108,6 +108,8 @@ private:
     SongListModel *m_queueModel;
     ViewModelError m_error;
     bool m_hasError = false;
+    qint64 m_positionMs = 0;
+    qint64 m_durationMs = 0;
 };
 
 } // namespace NeriPlayerQt

@@ -47,12 +47,12 @@ bool PlayerViewModel::isLoading() const
 
 qint64 PlayerViewModel::positionMs() const
 {
-    return 0; // Will be updated via signal
+    return m_positionMs;
 }
 
 qint64 PlayerViewModel::durationMs() const
 {
-    return 0; // Will be updated via signal
+    return m_durationMs;
 }
 
 double PlayerViewModel::volume() const
@@ -237,9 +237,15 @@ void PlayerViewModel::connectControllerSignals()
     connect(m_controller, &PlaybackController::playbackStateChanged, this,
             [this](PlaybackState) { Q_EMIT playbackStateChanged(); });
 
-    connect(m_controller, &PlaybackController::positionChanged, this, [this](qint64) { Q_EMIT positionChanged(); });
+    connect(m_controller, &PlaybackController::positionChanged, this, [this](qint64 positionMs) {
+        m_positionMs = positionMs;
+        Q_EMIT positionChanged();
+    });
 
-    connect(m_controller, &PlaybackController::durationChanged, this, [this](qint64) { Q_EMIT durationChanged(); });
+    connect(m_controller, &PlaybackController::durationChanged, this, [this](qint64 durationMs) {
+        m_durationMs = durationMs;
+        Q_EMIT durationChanged();
+    });
 
     connect(m_controller, &PlaybackController::errorOccurred, this, [this](const QString &message) {
         m_error = ViewModelError(ViewModelError::ErrorType::Api, message);
