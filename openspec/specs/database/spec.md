@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the SQLite database schema, migration system, and query execution layer. Provides `DatabaseManager` for schema lifecycle, parameterized queries, and transaction support.
+
+## Requirements
 
 ### Requirement: Schema v2 migration
 The system SHALL provide a migration from schema version 1 to version 2. The migration SHALL recreate the `songs_cache` table with renamed and new columns, preserving existing data. The migration SHALL be wrapped in a transaction.

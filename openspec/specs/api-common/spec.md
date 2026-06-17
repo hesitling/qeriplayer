@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the common API types shared across all platform integrations: `ApiError` for error handling, `ApiResult`/`VoidResult`/`LoginResult` for typed operation results, `QrCodeData` for login flows, `PlayHistory` for history entries, and `IMusicPlatformPlugin` as the abstract plugin interface.
+
+## Requirements
 
 ### Requirement: ApiError type
 The system SHALL provide an `ApiError` class with an integer error code, a human-readable message string, and an optional details string. `ApiError` SHALL expose convenience methods: `isNetworkError()`, `isAuthError()`, `isRateLimitError()`, `isNotFoundError()` that classify the error based on the code. `ApiError` SHALL provide a `userMessage()` method returning a localized, user-facing description.

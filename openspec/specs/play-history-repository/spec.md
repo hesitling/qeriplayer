@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the play history repository for recording and querying song playback events. Tracks per-song play counts and recent play order, joining with `songs_cache` for offline display.
+
+## Requirements
 
 ### Requirement: Record play event
 The system SHALL provide a method to record that a song was played. The method SHALL insert a row into `play_history` with the song ID and current timestamp. It SHALL also update the `last_played_at` timestamp on the corresponding `songs_cache` row.

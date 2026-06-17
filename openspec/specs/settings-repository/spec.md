@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the settings repository for persisting application preferences as key-value pairs. Provides typed accessors for boolean and integer settings with default fallbacks.
+
+## Requirements
 
 ### Requirement: Get setting value
 The system SHALL provide a method to retrieve a setting value by key. If the key does not exist, an empty optional SHALL be returned.

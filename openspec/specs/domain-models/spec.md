@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the core domain value types shared across all layers: `Song`, `Playlist`, `PlaylistSummary`, `Album`, `Artist`, `Lyrics`, `PersistedPlayerState`, and supporting enums (`MusicPlatform`, `RepeatMode`, `PlaybackState`, etc.).
+
+## Requirements
 
 ### Requirement: Song model
 The system SHALL provide a `Song` struct containing:

@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the playlist repository for managing user playlists and their song membership. Supports CRUD operations, song add/remove/reorder, and normalized song-to-playlist associations via a join table.
+
+## Requirements
 
 ### Requirement: Playlist list
 The system SHALL provide a method to list all playlists as lightweight `PlaylistSummary` objects (without songs). Results SHALL be ordered by `modified_at` descending.

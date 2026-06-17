@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the song repository for CRUD operations on the `songs_cache` offline cache table. Supports upsert, batch save, platform filtering, and text search across name/artist/album fields.
+
+## Requirements
 
 ### Requirement: Song upsert
 The system SHALL provide a method to insert or update a song in the `songs_cache` table. If a song with the same `id` already exists, all fields SHALL be updated. The method SHALL serialize `Lyrics` to JSON in the `lyrics_json` column and `QVariantMap` to JSON in the `extra_json` column.

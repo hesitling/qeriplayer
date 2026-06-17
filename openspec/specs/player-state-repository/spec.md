@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the player state repository for persisting and restoring playback state across sessions. Uses a singleton table to store the queue, current position, repeat/shuffle modes, and resume state.
+
+## Requirements
 
 ### Requirement: Save player state
 The system SHALL provide a method to persist the current player state. The state SHALL be stored in a singleton `player_state` table (only one row ever exists). The playlist (`QVector<Song>`) SHALL be serialized as JSON. The save operation SHALL use `INSERT OR REPLACE` to always update the single row.

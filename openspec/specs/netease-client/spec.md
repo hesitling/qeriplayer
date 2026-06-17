@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Defines the Netease Cloud Music API client: authentication (QR code, captcha, cookie persistence), content browsing (playlists, albums, search, song details, lyrics, URLs), user data, and crypto request signing.
+
+## Requirements
 
 ### Requirement: NeteaseClient construction
 The system SHALL provide a `NeteaseClient` class that takes an `HttpClient*` and an optional `SecureStorage*` in its constructor. On construction, it SHALL attempt to load saved cookies from `SecureStorage`. It SHALL implement `IMusicPlatformPlugin`.
