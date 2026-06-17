@@ -40,8 +40,7 @@ struct Song {
     QString matchedSongId;
     qint64 userLyricOffsetMs = 0;
 
-    // Parsed lyrics with timing
-    Lyrics lyrics;
+    Lyrics lyrics; ///< Parsed lyrics with word-level timing
 
     // User customizations (overrides)
     QString customCoverUrl;
