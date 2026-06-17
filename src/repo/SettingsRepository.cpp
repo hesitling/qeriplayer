@@ -45,7 +45,12 @@ bool SettingsRepository::getBool(const QString &key, bool defaultValue)
     auto val = get(key);
     if (!val.has_value())
         return defaultValue;
-    return val->toLower() == "true" || *val == "1";
+    QString lower = val->toLower();
+    if (lower == "true" || lower == "1")
+        return true;
+    if (lower == "false" || lower == "0")
+        return false;
+    return defaultValue;
 }
 
 int SettingsRepository::getInt(const QString &key, int defaultValue)
