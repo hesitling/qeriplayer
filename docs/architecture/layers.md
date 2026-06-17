@@ -141,7 +141,7 @@ IPlayerBackend::play(url)
     ↓
 Audio playback
     ↓
-PlaybackController emits stateChanged signal
+PlaybackController emits playbackStateChanged signal
     ↓
 PlayerViewModel::updateState()
     ↓
@@ -208,7 +208,7 @@ connect(m_neteaseClient, &NeteaseClient::requestFinished,
         this, &SearchViewModel::onResultsReady);
 
 // PlaybackController notifies ViewModel
-connect(m_playbackController, &PlaybackController::stateChanged,
+connect(m_playbackController, &PlaybackController::playbackStateChanged,
         this, &PlayerViewModel::onStateChanged);
 ```
 
@@ -240,7 +240,7 @@ Note: Multi-platform search aggregation lives in the ViewModel, not in a dedicat
    - If online song, call IMusicPlatformPlugin::getSongUrl()
 5. PlaybackController calls IPlayerBackend::play()
 6. Audio backend starts playback
-7. PlaybackController emits stateChanged signal
+7. PlaybackController emits playbackStateChanged signal
 8. PlayerViewModel updates UI
 9. PlayerControlBar displays playback state
 ```
