@@ -4,7 +4,7 @@ Phase 4 of the implementation roadmap: the ViewModel layer bridges the data/play
 
 ## What Changes
 
-- New `src/viewmodel/` module with 8 classes: `MainViewModel`, `PlayerViewModel`, `SearchViewModel`, `PlaylistViewModel`, `LocalPlaylistDetailViewModel`, `NeteasePlaylistDetailViewModel`, `SettingsViewModel`, plus shared types `ViewModelError` and `SongListModel`.
+- New `src/viewmodel/` module with 9 items: `MainViewModel`, `PlayerViewModel`, `SearchViewModel`, `PlaylistViewModel`, `LocalPlaylistDetailViewModel`, `NeteasePlaylistDetailViewModel`, `SettingsViewModel`, plus shared types `ViewModelError` and `SongListModel`.
 - All ViewModels expose state via `Q_PROPERTY` + signals, methods via `Q_INVOKABLE` — QML-friendly contract.
 - `ViewModelError` Q_GADGET provides structured error reporting across all ViewModels (wraps `ApiError` + adds database/validation categories).
 - `SongListModel` QAbstractListModel adapts `QVector<Song>` for QML `ListView` binding.
