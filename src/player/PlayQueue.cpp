@@ -311,7 +311,17 @@ void PlayQueue::rebuildShuffleArray()
         }
     }
 
-    m_shuffleCursor = 0;
+    // Keep shuffle cursor aligned with current index if possible
+    int newCursor = 0;
+    if (m_shuffleEnabled && m_currentIndex >= 0 && m_currentIndex < m_songs.size()) {
+        for (int i = 0; i < m_shuffledOrder.size(); ++i) {
+            if (m_shuffledOrder[i] == m_currentIndex) {
+                newCursor = i;
+                break;
+            }
+        }
+    }
+    m_shuffleCursor = newCursor;
 }
 
 int PlayQueue::advanceIndex(int index) const
