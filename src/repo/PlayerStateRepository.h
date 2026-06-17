@@ -6,6 +6,8 @@
 
 #include "repo/IPlayerStateRepository.h"
 
+#include <optional>
+
 namespace NeriPlayerQt {
 
 class DatabaseManager;
