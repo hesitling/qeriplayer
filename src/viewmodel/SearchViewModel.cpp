@@ -219,11 +219,15 @@ IMusicPlatformPlugin *SearchViewModel::currentPlugin() const
     // Find plugin matching selectedPlatform
     if (m_selectedPlatform != MusicPlatform::Unknown) {
         for (auto *plugin : m_plugins) {
-            // Match by platform name
             if (m_selectedPlatform == MusicPlatform::NetEase && plugin->platformName() == QStringLiteral("NetEase")) {
                 return plugin;
             }
-            // Add more platform matches as needed
+            if (m_selectedPlatform == MusicPlatform::Bilibili && plugin->platformName() == QStringLiteral("Bilibili")) {
+                return plugin;
+            }
+            if (m_selectedPlatform == MusicPlatform::YouTube && plugin->platformName() == QStringLiteral("YouTube")) {
+                return plugin;
+            }
         }
     }
 
