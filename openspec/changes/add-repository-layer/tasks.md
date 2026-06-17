@@ -42,8 +42,8 @@
 
 ## 8. PlayerStateRepository Implementation
 
-- [ ] 8.1 Create `src/repo/PlayerStateRepository.h` — class declaration inheriting IPlayerStateRepository
-- [ ] 8.2 Create `src/repo/PlayerStateRepository.cpp` — implement save (INSERT OR REPLACE), load, clear with JSON serialization
+- [x] 8.1 Create `src/repo/PlayerStateRepository.h` — class declaration inheriting IPlayerStateRepository
+- [x] 8.2 Create `src/repo/PlayerStateRepository.cpp` — implement save (INSERT OR REPLACE), load, clear with JSON serialization
 
 ## 9. Service Wiring
 
