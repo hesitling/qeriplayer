@@ -36,9 +36,9 @@
 
 ## 7. PlaylistRepository Implementation
 
-- [ ] 7.1 Create `src/repo/PlaylistRepository.h` — class declaration inheriting IPlaylistRepository
-- [ ] 7.2 Create `src/repo/PlaylistRepository.cpp` — implement findAll, findById (with JOIN), create, updateMetadata, remove
-- [ ] 7.3 Implement addSong, removeSong, reorderSongs, songCount in PlaylistRepository.cpp
+- [x] 7.1 Create `src/repo/PlaylistRepository.h` — class declaration inheriting IPlaylistRepository
+- [x] 7.2 Create `src/repo/PlaylistRepository.cpp` — implement findAll, findById (with JOIN), create, updateMetadata, remove
+- [x] 7.3 Implement addSong, removeSong, reorderSongs, songCount in PlaylistRepository.cpp
 
 ## 8. PlayerStateRepository Implementation
 

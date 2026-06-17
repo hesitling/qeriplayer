@@ -311,6 +311,7 @@ QVariantMap SqlRowMapper::playerStateToJson(const PersistedPlayerState &state)
     for (const auto &song : state.playlist) {
         QJsonObject obj;
         obj["id"] = song.id;
+        obj["plat"] = platformToString(song.platform);
         obj["name"] = song.name;
         obj["art"] = song.artist;
         obj["alb"] = song.album;
@@ -360,6 +361,7 @@ PersistedPlayerState SqlRowMapper::playerStateFromJson(const QVariantMap &map)
                 QJsonObject obj = v.toObject();
                 Song song;
                 song.id = obj["id"].toString();
+                song.platform = stringToPlatform(obj["plat"].toString());
                 song.name = obj["name"].toString();
                 song.artist = obj["art"].toString();
                 song.album = obj["alb"].toString();
