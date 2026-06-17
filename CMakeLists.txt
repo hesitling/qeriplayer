@@ -374,15 +374,18 @@ add_executable(TestSongRepository
     src/repo/SongRepository.cpp
     src/repo/SqlRowMapper.cpp
     src/core/database/DatabaseManager.cpp
+    src/core/logger/Logger.cpp
 )
 target_include_directories(TestSongRepository PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${SQLITE3_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
 )
 target_link_libraries(TestSongRepository PRIVATE
     Qt6::Core
     Qt6::Test
     ${SQLITE3_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
 )
 if(UNIX)
     target_link_libraries(TestSongRepository PRIVATE dl pthread)
@@ -419,15 +422,18 @@ add_executable(TestPlayHistoryRepository
     src/repo/PlayHistoryRepository.cpp
     src/repo/SqlRowMapper.cpp
     src/core/database/DatabaseManager.cpp
+    src/core/logger/Logger.cpp
 )
 target_include_directories(TestPlayHistoryRepository PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${SQLITE3_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
 )
 target_link_libraries(TestPlayHistoryRepository PRIVATE
     Qt6::Core
     Qt6::Test
     ${SQLITE3_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
 )
 if(UNIX)
     target_link_libraries(TestPlayHistoryRepository PRIVATE dl pthread)
@@ -443,15 +449,18 @@ add_executable(TestPlaylistRepository
     src/repo/SongRepository.cpp
     src/repo/SqlRowMapper.cpp
     src/core/database/DatabaseManager.cpp
+    src/core/logger/Logger.cpp
 )
 target_include_directories(TestPlaylistRepository PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${SQLITE3_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
 )
 target_link_libraries(TestPlaylistRepository PRIVATE
     Qt6::Core
     Qt6::Test
     ${SQLITE3_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
 )
 if(UNIX)
     target_link_libraries(TestPlaylistRepository PRIVATE dl pthread)

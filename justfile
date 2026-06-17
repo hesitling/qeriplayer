@@ -9,8 +9,9 @@
 #   just check        # format check (CI-friendly, no writes)
 #   just ci           # build + test + format check
 
-# Default build directory
-build_dir := "build"
+# Default build directory (override with: just build_dir=/tmp/neriplayer-build build)
+# Or set JUST_BUILD_DIR env var for the session.
+build_dir := env_var_or_default("JUST_BUILD_DIR", "build")
 
 # ─── Build ────────────────────────────────────────────────────────
 
