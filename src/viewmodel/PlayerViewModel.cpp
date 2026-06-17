@@ -230,7 +230,11 @@ void PlayerViewModel::connectControllerSignals()
         // Record play history
         const Song &song = m_controller->currentSong();
         if (!song.id.isEmpty() && m_historyRepo) {
-            m_historyRepo->record(song.id);
+            try {
+                m_historyRepo->record(song.id);
+            } catch (const std::exception &ex) {
+                qWarning() << "Failed to record play history:" << ex.what();
+            }
         }
     });
 
