@@ -542,6 +542,9 @@ target_compile_definitions(TestPlaybackController PRIVATE
     QT_NO_KEYWORDS
 )
 add_test(NAME TestPlaybackController COMMAND TestPlaybackController)
+set_tests_properties(TestPlaybackController PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+)
 
 add_executable(TestQtMultimediaBackend
     tests/player/TestQtMultimediaBackend.cpp
@@ -562,6 +565,9 @@ target_compile_definitions(TestQtMultimediaBackend PRIVATE
     QT_NO_KEYWORDS
 )
 add_test(NAME TestQtMultimediaBackend COMMAND TestQtMultimediaBackend)
+set_tests_properties(TestQtMultimediaBackend PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+)
 
 # Shared library for Netease API + core infra (used by E2E tests and CLI tools)
 set(NETEASE_E2E_SOURCES
