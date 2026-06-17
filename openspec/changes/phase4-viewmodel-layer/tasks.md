@@ -10,9 +10,9 @@
 
 ## 2. PlayerViewModel
 
-- [ ] 2.1 Create `src/viewmodel/PlayerViewModel.h` — Q_PROPERTYs (currentSong, playbackState, isPlaying, isPaused, isLoading, positionMs, durationMs, volume, isMuted, repeatMode, isShuffleEnabled, queue, hasError, error), Q_INVOKABLEs (play, pause, resume, stop, seek, next, prev, toggleMute, cycleRepeatMode, toggleShuffle, addToQueue, removeFromQueue, moveInQueue, clearQueue)
-- [ ] 2.2 Create `src/viewmodel/PlayerViewModel.cpp` — connect PlaybackController signals to property updates, implement play/pause/resume/stop/seek/next/prev delegation, implement volume/mute/shuffle/repeat via PlaybackController, implement queue management via PlayQueue, record play history via IPlayHistoryRepository on song change, map PlaybackController errors to ViewModelError
-- [ ] 2.3 Write `tests/viewmodel/TestPlayerViewModel.cpp` — mock PlaybackController and IPlayHistoryRepository, test property signal propagation, test play/pause/seek delegation, test volume/mute/shuffle/repeat, test queue management, test play history recording, test error mapping
+- [x] 2.1 Create `src/viewmodel/PlayerViewModel.h` — Q_PROPERTYs (currentSong, playbackState, isPlaying, isPaused, isLoading, positionMs, durationMs, volume, isMuted, repeatMode, isShuffleEnabled, queue, hasError, error), Q_INVOKABLEs (play, pause, resume, stop, seek, next, prev, toggleMute, cycleRepeatMode, toggleShuffle, addToQueue, removeFromQueue, moveInQueue, clearQueue)
+- [x] 2.2 Create `src/viewmodel/PlayerViewModel.cpp` — connect PlaybackController signals to property updates, implement play/pause/resume/stop/seek/next/prev delegation, implement volume/mute/shuffle/repeat via PlaybackController, implement queue management via PlayQueue, record play history via IPlayHistoryRepository on song change, map PlaybackController errors to ViewModelError
+- [x] 2.3 Write `tests/viewmodel/TestPlayerViewModel.cpp` — mock PlaybackController and IPlayHistoryRepository, test property signal propagation, test play/pause/seek delegation, test volume/mute/shuffle/repeat, test queue management, test play history recording, test error mapping
 
 ## 3. SettingsViewModel
 

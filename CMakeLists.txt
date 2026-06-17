@@ -576,10 +576,12 @@ set_tests_properties(TestQtMultimediaBackend PROPERTIES
 set(VIEWMODEL_SOURCES
     src/viewmodel/ViewModelError.cpp
     src/viewmodel/SongListModel.cpp
+    src/viewmodel/PlayerViewModel.cpp
 )
 set(VIEWMODEL_HEADERS
     src/viewmodel/ViewModelError.h
     src/viewmodel/SongListModel.h
+    src/viewmodel/PlayerViewModel.h
 )
 add_library(neriplayer_viewmodel STATIC ${VIEWMODEL_SOURCES} ${VIEWMODEL_HEADERS})
 target_include_directories(neriplayer_viewmodel PUBLIC
@@ -587,6 +589,7 @@ target_include_directories(neriplayer_viewmodel PUBLIC
 )
 target_link_libraries(neriplayer_viewmodel PUBLIC
     Qt6::Core
+    ${NERIPLAYER_QCORO_LIBRARIES}
 )
 target_compile_definitions(neriplayer_viewmodel PRIVATE
     QT_NO_KEYWORDS
@@ -625,6 +628,36 @@ target_compile_definitions(TestSongListModel PRIVATE
     QT_NO_KEYWORDS
 )
 add_test(NAME TestSongListModel COMMAND TestSongListModel)
+
+add_executable(TestPlayerViewModel
+    tests/viewmodel/TestPlayerViewModel.cpp
+    src/viewmodel/PlayerViewModel.cpp
+    src/viewmodel/ViewModelError.cpp
+    src/viewmodel/SongListModel.cpp
+    src/player/PlaybackController.cpp
+    src/player/PlayQueue.cpp
+    src/player/IPlayerBackend.h
+    src/api/common/ApiError.cpp
+    src/core/logger/Logger.cpp
+)
+target_include_directories(TestPlayerViewModel PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SPDLOG_INCLUDE_DIRS}
+)
+target_link_libraries(TestPlayerViewModel PRIVATE
+    Qt6::Core
+    Qt6::Multimedia
+    Qt6::Test
+    ${NERIPLAYER_QCORO_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
+)
+target_compile_definitions(TestPlayerViewModel PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestPlayerViewModel COMMAND TestPlayerViewModel)
+set_tests_properties(TestPlayerViewModel PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+)
 
 # Shared library for Netease API + core infra (used by E2E tests and CLI tools)
 set(NETEASE_E2E_SOURCES
