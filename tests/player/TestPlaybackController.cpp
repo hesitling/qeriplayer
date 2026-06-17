@@ -420,9 +420,9 @@ private Q_SLOTS:
         QCOMPARE(m_controller->playbackState(), PlaybackState::Stopped);
         QCOMPARE(finishedSpy.count(), 1);
 
-        // State should be persisted
+        // State should be persisted (shouldResumePlayback is false since playback stopped)
         QVERIFY(m_playerStateRepo->m_savedState.has_value());
-        QVERIFY(m_playerStateRepo->m_savedState->shouldResumePlayback);
+        QVERIFY(!m_playerStateRepo->m_savedState->shouldResumePlayback);
     }
 
     // --- Backend name ---

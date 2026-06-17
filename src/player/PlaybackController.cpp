@@ -270,7 +270,7 @@ void PlaybackController::persistState()
 
     PersistedPlayerState state = m_queue->toPersistedState();
     state.positionMs = m_backend->positionMs();
-    state.shouldResumePlayback = true;
+    state.shouldResumePlayback = (m_state == PlaybackState::Playing || m_state == PlaybackState::Paused);
     m_playerStateRepo->save(state);
 }
 
