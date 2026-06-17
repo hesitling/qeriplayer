@@ -20,9 +20,9 @@
 
 ## 4. SongRepository Implementation
 
-- [ ] 4.1 Create `src/repo/SongRepository.h` — class declaration inheriting ISongRepository, holding DatabaseManager pointer
-- [ ] 4.2 Create `src/repo/SongRepository.cpp` — implement save (INSERT OR REPLACE), findById, findByIds, remove, exists
-- [ ] 4.3 Implement findByPlatform and search (LIKE queries on name/artist/album) in SongRepository.cpp
+- [x] 4.1 Create `src/repo/SongRepository.h` — class declaration inheriting ISongRepository, holding DatabaseManager pointer
+- [x] 4.2 Create `src/repo/SongRepository.cpp` — implement save (INSERT OR REPLACE), findById, findByIds, remove, exists
+- [x] 4.3 Implement findByPlatform and search (LIKE queries on name/artist/album) in SongRepository.cpp
 
 ## 5. SettingsRepository Implementation
 
