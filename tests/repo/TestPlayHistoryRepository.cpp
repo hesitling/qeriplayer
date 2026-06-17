@@ -85,6 +85,14 @@ void TestPlayHistoryRepository::recent_returnsDistinctSongs()
 
     auto recent = repo.recent(10);
     QCOMPARE(recent.size(), 2);
+
+    // Verify the returned songs are the expected distinct ones
+    QStringList ids;
+    for (const auto &s : recent) {
+        ids << s.id;
+    }
+    QVERIFY(ids.contains("s1"));
+    QVERIFY(ids.contains("s2"));
 }
 
 void TestPlayHistoryRepository::recent_orderedByMostRecent()
