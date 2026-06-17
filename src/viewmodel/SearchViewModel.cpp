@@ -185,11 +185,18 @@ QCoro::Task<void> SearchViewModel::loadMoreImpl()
         co_return;
     }
 
-    m_currentPage++;
+    const int nextPage = m_currentPage + 1;
+    const quint64 version = m_searchRequestVersion;
+
     m_isLoading = true;
     Q_EMIT isLoadingChanged();
 
-    auto result = co_await plugin->search(m_query, SearchType::Song, PAGE_SIZE, m_currentPage * PAGE_SIZE);
+    auto result = co_await plugin->search(m_query, SearchType::Song, PAGE_SIZE, nextPage * PAGE_SIZE);
+
+    // Discard if a new search started while we were waiting
+    if (version != m_searchRequestVersion) {
+        co_return;
+    }
 
     m_isLoading = false;
     Q_EMIT isLoadingChanged();
@@ -201,6 +208,7 @@ QCoro::Task<void> SearchViewModel::loadMoreImpl()
         co_return;
     }
 
+    m_currentPage = nextPage;
     const auto &searchResult = result.data();
     m_results->appendSongs(searchResult.songs);
     m_hasMore = searchResult.hasMore;
