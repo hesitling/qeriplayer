@@ -39,7 +39,7 @@ Build the core infrastructure that all other modules depend on.
 - [x] **Crypto Module** (`src/core/crypto/`)
   - [x] `Encryptor` — AES-256-GCM encrypt/decrypt for credentials
   - [x] `SecureStorage` — store API tokens, cookies encrypted on disk
-  - [x] `HashUtils` — SHA-256 for cache keys, request signing
+  - [x] `CryptoUtils` — SHA-256 for cache keys, request signing
 
 - [x] **App Bootstrap Updates** (`src/app/`)
   - [x] Register all core services in `ServiceLocator`
@@ -85,12 +85,12 @@ Implement API clients for each music platform and the repository layer.
   - [ ] Search, song detail, playback URL
   - [ ] Lyrics, playlist support
 
-- [ ] **Repository Layer** (`src/repository/`)
-  - [ ] `IMusicRepository` — abstract interface for song/album/artist data
-  - [ ] `CachedMusicRepository` — API calls with SQLite cache
-  - [ ] `PlaylistRepository` — local playlist CRUD
-  - [ ] `SettingsRepository` — app settings persistence
-  - [ ] `HistoryRepository` — play history tracking
+- [x] **Repository Layer** (`src/repo/`)
+  - [x] `ISongRepository` / `SongRepository` — song CRUD on songs_cache
+  - [x] `IPlaylistRepository` / `PlaylistRepository` — playlist CRUD + song membership
+  - [x] `IPlayerStateRepository` / `PlayerStateRepository` — singleton player state
+  - [x] `ISettingsRepository` / `SettingsRepository` — key-value settings
+  - [x] `IPlayHistoryRepository` / `PlayHistoryRepository` — play event tracking
 
 ---
 

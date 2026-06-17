@@ -1,61 +1,52 @@
 # Core Infrastructure Module (core/)
 
-## 1. Overview
+## Overview
 
-The core infrastructure module provides the fundamental services required for the application to run, including network communication, data persistence, file operations, data encryption, and logging.
+The core infrastructure module provides the fundamental services required by all other modules: network communication, database access, file operations, cryptography, and logging.
 
-## 2. Module Composition
+## Module Composition
 
 ```
 src/core/
-├── network/          # Network module
-├── database/         # Database module
-├── filesystem/       # File system module
-├── crypto/           # Crypto module
-└── logger/           # Logger module
+├── network/     # HTTP client, WebSocket, network monitoring
+├── database/    # SQLite wrapper with schema migrations
+├── filesystem/  # App paths, safe file I/O, file watcher
+├── crypto/      # AES-256-GCM encryption, secure storage, hashing
+└── logger/      # spdlog-based logging with daily rotation
 ```
 
-## 3. Submodule Documents
+## Submodule Documents
 
-- [Network Module (network/)](network.md) - HTTP requests, WebSocket connections, network status monitoring
-- [Database Module (database/)](database.md) - SQLite operations, query building, data migration
-- [File System Module (filesystem/)](filesystem.md) - File operations, path handling, file monitoring
-- [Crypto Module (crypto/)](crypto.md) - Data encryption, secure storage, hash computation
-- [Logger Module (logger/)](logger.md) - Log recording, file management, log rotation
+- [Network Module](network.md) — HttpClient (QCoro), WebSocketClient, NetworkManager, NetworkMonitor
+- [Database Module](database.md) — DatabaseManager (sqlite3), parameterized queries, transactions, migrations
+- [Filesystem Module](filesystem.md) — AppPaths, FileUtils (atomic writes), FileWatcher
+- [Crypto Module](crypto.md) — Encryptor/Decryptor (AES-256-GCM), SecureStorage, CryptoUtils (SHA-256)
+- [Logger Module](logger.md) — spdlog wrapper with named loggers, daily file rotation, colored console
 
-> Each submodule document has been split into separate files for easy reference and maintenance.
-
-## 4. Module Dependencies
+## Module Dependencies
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Application Module (app/)                 │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                       Core Module (core/)                    │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐        │
-│  │ Network  │ │ Database │ │FileSystem│ │  Crypto  │        │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘        │
-│                      ┌──────────┐                           │
-│                      │  Logger  │                           │
-│                      └──────────┘                           │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│              Application Module (app/)        │
+└──────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────┐
+│               Core Module (core/)             │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐      │
+│  │ Network  │ │ Database │ │FileSystem│      │
+│  └──────────┘ └──────────┘ └──────────┘      │
+│  ┌──────────┐ ┌──────────┐                   │
+│  │  Crypto  │ │  Logger  │                   │
+│  └──────────┘ └──────────┘                   │
+└──────────────────────────────────────────────┘
 ```
 
-## 5. Design Principles
+## Technology Stack
 
-- **Single Responsibility**: Each submodule is responsible for only one specific foundational function
-- **Unified Interface**: Provides a consistent API design style
-- **Testability**: Supports dependency injection and mocking
-- **Cross-Platform**: Compatible with Windows, macOS, Linux
-
-## 6. Technology Stack
-
-| Module | Technology | Description |
-|--------|-----------|-------------|
-| Network | Qt Network | HTTP/WebSocket |
-| Database | SQLite | Local persistence |
-| File System | Qt Core | File operations |
-| Crypto | OpenSSL/QCA | Data encryption |
-| Logging | spdlog/Qt | Log recording |
+| Module | Technology |
+|--------|-----------|
+| Network | Qt Network + QCoro |
+| Database | sqlite3 C API |
+| Filesystem | Qt Core (QDir, QFile, QFileSystemWatcher) |
+| Crypto | OpenSSL (AES-256-GCM, SHA-256) |
+| Logging | spdlog (daily_file_sink_mt, stdout_color_sink_mt) |

@@ -64,12 +64,13 @@ The data layer is responsible for data retrieval, storage, and management.
 - Data synchronization
 
 **Key Components**:
-- `MusicRepository`: Music repository
-- `PlaylistRepository`: Playlist repository
-- `SettingsRepository`: Settings repository
-- `NeteaseClient`: NetEase client
-- `BilibiliClient`: Bilibili client
-- `YouTubeMusicClient`: YouTube Music client
+- `ISongRepository` / `SongRepository`: Song CRUD on songs_cache
+- `IPlaylistRepository` / `PlaylistRepository`: Playlist CRUD + song membership
+- `IPlayerStateRepository` / `PlayerStateRepository`: Player state persistence
+- `ISettingsRepository` / `SettingsRepository`: Key-value settings
+- `IPlayHistoryRepository` / `PlayHistoryRepository`: Play history
+- `NeteaseClient`: NetEase Cloud Music client
+- `IMusicPlatformPlugin`: Abstract platform interface
 
 **Design Principles**:
 - Use Repository pattern
@@ -89,11 +90,11 @@ The infrastructure layer provides low-level technical support.
 - Logging
 
 **Key Components**:
-- `NetworkManager`: Network manager
-- `DatabaseManager`: Database manager
-- `FileSystemManager`: File system manager
-- `CryptoManager`: Crypto manager
-- `LogManager`: Log manager
+- `NetworkManager`: Network manager (HttpClient, WebSocketClient, NetworkMonitor)
+- `DatabaseManager`: Database manager (sqlite3 C API)
+- `AppPaths` / `FileUtils` / `FileWatcher`: Filesystem utilities
+- `Encryptor` / `Decryptor` / `SecureStorage` / `CryptoUtils`: Cryptography
+- `Logger`: spdlog-based logging with named loggers
 
 **Design Principles**:
 - Provide common foundational services
@@ -166,11 +167,11 @@ Using the service locator pattern for dependency injection:
 
 ```cpp
 // Register service
-ServiceLocator::instance()->registerService<NetworkManager>(
+app.services()->registerService<NetworkManager>(
     std::make_unique<NetworkManager>());
 
 // Get service
-auto *network = ServiceLocator::instance()->service<NetworkManager>();
+auto *network = app.services()->service<NetworkManager>();
 ```
 
 ## 5. Inter-Layer Communication
@@ -247,7 +248,7 @@ connect(m_playerService, &PlayerService::stateChanged,
 // Model
 struct Song {
     QString id;
-    QString title;
+    QString name;
     QString artist;
 };
 
@@ -256,7 +257,7 @@ class PlayerViewModel : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString currentTitle READ currentTitle NOTIFY currentSongChanged)
 public:
-    QString currentTitle() const { return m_currentSong.title; }
+    QString currentTitle() const { return m_currentSong.name; }
 signals:
     void currentSongChanged();
 private:
