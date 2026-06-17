@@ -46,7 +46,7 @@ void TestPlayerStateRepository::save_andLoad()
     song.id = "s1";
     song.name = "Song 1";
     song.durationMs = 120000;
-    state.playlist = { song };
+    state.playlist = {song};
 
     repo.save(state);
 
@@ -128,7 +128,7 @@ void TestPlayerStateRepository::roundTrip_allFields()
     song2.id = "s2";
     song2.name = "Song 2";
     song2.durationMs = 180000;
-    state.playlist = { song1, song2 };
+    state.playlist = {song1, song2};
     state.currentIndex = 1;
     state.mediaUrl = "https://example.com/play.mp3";
     state.positionMs = 30000;

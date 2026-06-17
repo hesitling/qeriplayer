@@ -39,7 +39,7 @@ void TestPlayHistoryRepository::insertSong(DatabaseManager *db, const QString &i
 {
     db->exec("INSERT OR REPLACE INTO songs_cache (id, platform, name, artist, album, duration_ms) "
              "VALUES (?, 'NetEase', ?, 'Artist', 'Album', 180000)",
-             { id, name });
+             {id, name});
 }
 
 void TestPlayHistoryRepository::record_insertsHistory()
@@ -103,8 +103,8 @@ void TestPlayHistoryRepository::recent_orderedByMostRecent()
     PlayHistoryRepository repo(db.get());
 
     // Use explicit timestamps to ensure ordering
-    db->exec("INSERT INTO play_history (song_id, played_at) VALUES (?, '2020-01-01 10:00:00')", { "s1" });
-    db->exec("INSERT INTO play_history (song_id, played_at) VALUES (?, '2020-01-01 11:00:00')", { "s2" });
+    db->exec("INSERT INTO play_history (song_id, played_at) VALUES (?, '2020-01-01 10:00:00')", {"s1"});
+    db->exec("INSERT INTO play_history (song_id, played_at) VALUES (?, '2020-01-01 11:00:00')", {"s2"});
 
     auto recent = repo.recent(10);
     QCOMPARE(recent.size(), 2);
@@ -154,7 +154,7 @@ void TestPlayHistoryRepository::remove_specificSongs()
     repo.record("s2");
     repo.record("s3");
 
-    repo.remove({ "s1", "s3" });
+    repo.remove({"s1", "s3"});
 
     auto rows = db->exec("SELECT song_id FROM play_history");
     QCOMPARE(rows.size(), 1);

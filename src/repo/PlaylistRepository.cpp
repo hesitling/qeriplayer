@@ -34,7 +34,7 @@ std::optional<Playlist> PlaylistRepository::findById(const QString &id)
     auto plRows = m_db->exec("SELECT id, platform, name, description, cover_url, song_count, owner, "
                              "custom_cover_url, modified_at "
                              "FROM playlists WHERE id = ?",
-                             { id });
+                             {id});
 
     if (plRows.isEmpty())
         return std::nullopt;
@@ -62,7 +62,7 @@ std::optional<Playlist> PlaylistRepository::findById(const QString &id)
                                "INNER JOIN playlist_songs ps ON sc.id = ps.song_id "
                                "WHERE ps.playlist_id = ? "
                                "ORDER BY ps.position",
-                               { id });
+                               {id});
 
     for (const auto &srow : songRows) {
         pl.songs.append(SqlRowMapper::toSong(srow));
@@ -80,7 +80,7 @@ Playlist PlaylistRepository::create(const QString &name, MusicPlatform platform)
     pl.modifiedAt = QDateTime::currentMSecsSinceEpoch();
 
     m_db->exec("INSERT INTO playlists (id, platform, name, modified_at) VALUES (?, ?, ?, ?)",
-               { pl.id, SqlRowMapper::platformToString(platform), pl.name, pl.modifiedAt });
+               {pl.id, SqlRowMapper::platformToString(platform), pl.name, pl.modifiedAt});
 
     return pl;
 }
@@ -90,20 +90,20 @@ void PlaylistRepository::updateMetadata(const QString &id, const QString &name, 
 {
     qint64 now = QDateTime::currentMSecsSinceEpoch();
     m_db->exec("UPDATE playlists SET name = ?, description = ?, cover_url = ?, modified_at = ? WHERE id = ?",
-               { name, description, coverUrl, now, id });
+               {name, description, coverUrl, now, id});
 }
 
 void PlaylistRepository::remove(const QString &id)
 {
     // ON DELETE CASCADE handles playlist_songs cleanup
-    m_db->exec("DELETE FROM playlists WHERE id = ?", { id });
+    m_db->exec("DELETE FROM playlists WHERE id = ?", {id});
 }
 
 bool PlaylistRepository::addSong(const QString &playlistId, const QString &songId, int position)
 {
     // Check for duplicate
     auto existing
-        = m_db->exec("SELECT 1 FROM playlist_songs WHERE playlist_id = ? AND song_id = ?", { playlistId, songId });
+        = m_db->exec("SELECT 1 FROM playlist_songs WHERE playlist_id = ? AND song_id = ?", {playlistId, songId});
     if (!existing.isEmpty())
         return false;
 
@@ -112,17 +112,17 @@ bool PlaylistRepository::addSong(const QString &playlistId, const QString &songI
         if (position < 0) {
             // Append at end
             auto countRows = m_db->exec("SELECT COALESCE(MAX(position), -1) FROM playlist_songs WHERE playlist_id = ?",
-                                        { playlistId });
+                                        {playlistId});
             position = countRows[0][0].toInt() + 1;
         } else {
             // Shift existing songs at position >= insert position
             m_db->exec("UPDATE playlist_songs SET position = position + 1 "
                        "WHERE playlist_id = ? AND position >= ?",
-                       { playlistId, position });
+                       {playlistId, position});
         }
 
         m_db->exec("INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES (?, ?, ?)",
-                   { playlistId, songId, position });
+                   {playlistId, songId, position});
 
         updateSongCount(playlistId);
         m_db->commitTransaction();
@@ -140,8 +140,8 @@ bool PlaylistRepository::addSong(const QString &playlistId, const QString &songI
 void PlaylistRepository::removeSong(const QString &playlistId, const QString &songId)
 {
     // Get the position of the song being removed
-    auto posRows = m_db->exec("SELECT position FROM playlist_songs WHERE playlist_id = ? AND song_id = ?",
-                              { playlistId, songId });
+    auto posRows
+        = m_db->exec("SELECT position FROM playlist_songs WHERE playlist_id = ? AND song_id = ?", {playlistId, songId});
 
     if (posRows.isEmpty())
         return;
@@ -150,12 +150,12 @@ void PlaylistRepository::removeSong(const QString &playlistId, const QString &so
 
     m_db->beginTransaction();
     try {
-        m_db->exec("DELETE FROM playlist_songs WHERE playlist_id = ? AND song_id = ?", { playlistId, songId });
+        m_db->exec("DELETE FROM playlist_songs WHERE playlist_id = ? AND song_id = ?", {playlistId, songId});
 
         // Shift down songs that were after the removed one
         m_db->exec("UPDATE playlist_songs SET position = position - 1 "
                    "WHERE playlist_id = ? AND position > ?",
-                   { playlistId, removedPos });
+                   {playlistId, removedPos});
 
         updateSongCount(playlistId);
         m_db->commitTransaction();
@@ -175,7 +175,7 @@ void PlaylistRepository::reorderSongs(const QString &playlistId, const QStringLi
     try {
         for (int i = 0; i < songIds.size(); ++i) {
             m_db->exec("UPDATE playlist_songs SET position = ? WHERE playlist_id = ? AND song_id = ?",
-                       { i, playlistId, songIds[i] });
+                       {i, playlistId, songIds[i]});
         }
         m_db->commitTransaction();
     } catch (...) {
@@ -190,7 +190,7 @@ void PlaylistRepository::reorderSongs(const QString &playlistId, const QStringLi
 
 int PlaylistRepository::songCount(const QString &playlistId)
 {
-    auto rows = m_db->exec("SELECT song_count FROM playlists WHERE id = ?", { playlistId });
+    auto rows = m_db->exec("SELECT song_count FROM playlists WHERE id = ?", {playlistId});
 
     if (rows.isEmpty())
         return 0;
@@ -202,7 +202,7 @@ void PlaylistRepository::updateSongCount(const QString &playlistId)
     m_db->exec("UPDATE playlists SET song_count = "
                "(SELECT COUNT(*) FROM playlist_songs WHERE playlist_id = ?) "
                "WHERE id = ?",
-               { playlistId, playlistId });
+               {playlistId, playlistId});
 }
 
 } // namespace NeriPlayerQt

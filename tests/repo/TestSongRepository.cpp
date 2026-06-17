@@ -82,7 +82,7 @@ void TestSongRepository::findByIds_partialMatch()
     repo.save(makeSong("s1"));
     repo.save(makeSong("s2"));
 
-    auto results = repo.findByIds({ "s1", "s2", "s3" });
+    auto results = repo.findByIds({"s1", "s2", "s3"});
     QCOMPARE(results.size(), 2);
 }
 
@@ -97,7 +97,7 @@ void TestSongRepository::saveBatch_insertsAll()
     }
     repo.saveBatch(songs);
 
-    auto results = repo.findByIds(QStringList { "batch_0", "batch_50", "batch_99" });
+    auto results = repo.findByIds(QStringList {"batch_0", "batch_50", "batch_99"});
     QCOMPARE(results.size(), 3);
 }
 

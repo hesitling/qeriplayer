@@ -72,7 +72,7 @@ void TestSqlRowMapper::toSong_mapsAllColumns()
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             params);
 
-    auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", { original.id });
+    auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", {original.id});
     QCOMPARE(rows.size(), 1);
 
     Song loaded = SqlRowMapper::toSong(rows[0]);
@@ -134,7 +134,7 @@ void TestSqlRowMapper::roundTrip_songThroughDB()
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             params);
 
-    auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", { original.id });
+    auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", {original.id});
     QVERIFY(!rows.isEmpty());
     Song loaded = SqlRowMapper::toSong(rows[0]);
 
@@ -167,12 +167,12 @@ void TestSqlRowMapper::roundTrip_songWithLyrics()
     w2.text = "world";
     w2.startTimeMs = 2500;
     w2.endTimeMs = 5000;
-    line1.words = { w1, w2 };
+    line1.words = {w1, w2};
     LyricLine line2;
     line2.startTimeMs = 5000;
     line2.endTimeMs = 10000;
     line2.text = "Second line";
-    lyrics.lines = { line1, line2 };
+    lyrics.lines = {line1, line2};
     song.lyrics = lyrics;
 
     auto params = SqlRowMapper::songToInsertParams(song);
@@ -184,7 +184,7 @@ void TestSqlRowMapper::roundTrip_songWithLyrics()
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             params);
 
-    auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", { song.id });
+    auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", {song.id});
     QVERIFY(!rows.isEmpty());
     Song loaded = SqlRowMapper::toSong(rows[0]);
 
@@ -222,7 +222,7 @@ void TestSqlRowMapper::roundTrip_songWithExtra()
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             params);
 
-    auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", { song.id });
+    auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", {song.id});
     QVERIFY(!rows.isEmpty());
     Song loaded = SqlRowMapper::toSong(rows[0]);
 
@@ -238,7 +238,7 @@ void TestSqlRowMapper::toPlaylistSummary_mapsColumns()
     QVERIFY(db.open(QString(":memory:")));
 
     db.exec("INSERT INTO playlists (id, name, cover_url, song_count) VALUES (?, ?, ?, ?)",
-            { "pl-1", "My Playlist", "https://cover.url", 5 });
+            {"pl-1", "My Playlist", "https://cover.url", 5});
 
     auto rows = db.exec("SELECT * FROM playlists WHERE id = 'pl-1'");
     QCOMPARE(rows.size(), 1);
@@ -266,7 +266,7 @@ void TestSqlRowMapper::playerStateJson_roundTrip()
     song1.name = "Song 1";
     song1.artist = "Artist 1";
     song1.durationMs = 120000;
-    state.playlist = { song1 };
+    state.playlist = {song1};
 
     QVariantMap json = SqlRowMapper::playerStateToJson(state);
     PersistedPlayerState restored = SqlRowMapper::playerStateFromJson(json);

@@ -89,7 +89,7 @@ public:
      * @return Rows for SELECT queries, empty for others
      * @throws DatabaseError on failure
      */
-    QVector<QueryRow> exec(const QString &sql, const QVariantList &params = { });
+    QVector<QueryRow> exec(const QString &sql, const QVariantList &params = {});
 
     /**
      * @brief Execute a SQL statement with named parameters

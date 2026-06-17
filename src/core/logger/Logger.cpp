@@ -113,7 +113,7 @@ void Logger::initialize(const LoggerConfig &config)
     spdlog::set_default_logger(defaultLogger);
 
     // Pre-create standard loggers
-    for (const auto &name : { "app", "network", "player", "api", "ui" }) {
+    for (const auto &name : {"app", "network", "player", "api", "ui"}) {
         auto logger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
         logger->set_level(toSpdlogLevel(config.level));
         logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v");

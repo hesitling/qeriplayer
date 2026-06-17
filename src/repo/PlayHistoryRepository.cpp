@@ -18,8 +18,8 @@ void PlayHistoryRepository::record(const QString &songId)
 {
     m_db->beginTransaction();
     try {
-        m_db->exec("INSERT INTO play_history (song_id) VALUES (?)", { songId });
-        m_db->exec("UPDATE songs_cache SET last_played_at = CURRENT_TIMESTAMP WHERE id = ?", { songId });
+        m_db->exec("INSERT INTO play_history (song_id) VALUES (?)", {songId});
+        m_db->exec("UPDATE songs_cache SET last_played_at = CURRENT_TIMESTAMP WHERE id = ?", {songId});
         m_db->commitTransaction();
     } catch (...) {
         try {
@@ -47,7 +47,7 @@ QVector<Song> PlayHistoryRepository::recent(int limit)
                            ") ph ON sc.id = ph.song_id "
                            "ORDER BY ph.latest DESC "
                            "LIMIT ?",
-                           { limit });
+                           {limit});
 
     QVector<Song> result;
     for (const auto &row : rows) {
@@ -83,7 +83,7 @@ void PlayHistoryRepository::remove(const QStringList &songIds)
 
 int PlayHistoryRepository::playCount(const QString &songId)
 {
-    auto rows = m_db->exec("SELECT COUNT(*) FROM play_history WHERE song_id = ?", { songId });
+    auto rows = m_db->exec("SELECT COUNT(*) FROM play_history WHERE song_id = ?", {songId});
 
     if (rows.isEmpty())
         return 0;

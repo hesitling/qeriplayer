@@ -14,7 +14,7 @@ SettingsRepository::SettingsRepository(DatabaseManager *db)
 
 std::optional<QString> SettingsRepository::get(const QString &key)
 {
-    auto rows = m_db->exec("SELECT value FROM settings WHERE key = ?", { key });
+    auto rows = m_db->exec("SELECT value FROM settings WHERE key = ?", {key});
     if (rows.isEmpty())
         return std::nullopt;
     return rows[0][0].toString();
@@ -22,12 +22,12 @@ std::optional<QString> SettingsRepository::get(const QString &key)
 
 void SettingsRepository::set(const QString &key, const QString &value)
 {
-    m_db->exec("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", { key, value });
+    m_db->exec("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", {key, value});
 }
 
 void SettingsRepository::remove(const QString &key)
 {
-    m_db->exec("DELETE FROM settings WHERE key = ?", { key });
+    m_db->exec("DELETE FROM settings WHERE key = ?", {key});
 }
 
 QVariantMap SettingsRepository::getAll()

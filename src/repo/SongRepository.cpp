@@ -23,7 +23,7 @@ std::optional<Song> SongRepository::findById(const QString &id)
                            "user_lyric_offset_ms, lyrics_json, channel_id, audio_id, sub_audio_id, "
                            "extra_json, cached_at, last_played_at "
                            "FROM songs_cache WHERE id = ?",
-                           { id });
+                           {id});
 
     if (rows.isEmpty())
         return std::nullopt;
@@ -33,7 +33,7 @@ std::optional<Song> SongRepository::findById(const QString &id)
 QVector<Song> SongRepository::findByIds(const QStringList &ids)
 {
     if (ids.isEmpty())
-        return { };
+        return {};
 
     QVector<Song> result;
     // Process in chunks to avoid overly long SQL
@@ -105,12 +105,12 @@ void SongRepository::saveBatch(const QVector<Song> &songs)
 
 void SongRepository::remove(const QString &id)
 {
-    m_db->exec("DELETE FROM songs_cache WHERE id = ?", { id });
+    m_db->exec("DELETE FROM songs_cache WHERE id = ?", {id});
 }
 
 bool SongRepository::exists(const QString &id)
 {
-    auto rows = m_db->exec("SELECT 1 FROM songs_cache WHERE id = ?", { id });
+    auto rows = m_db->exec("SELECT 1 FROM songs_cache WHERE id = ?", {id});
     return !rows.isEmpty();
 }
 
@@ -123,7 +123,7 @@ QVector<Song> SongRepository::findByPlatform(MusicPlatform platform)
                            "user_lyric_offset_ms, lyrics_json, channel_id, audio_id, sub_audio_id, "
                            "extra_json, cached_at, last_played_at "
                            "FROM songs_cache WHERE platform = ?",
-                           { SqlRowMapper::platformToString(platform) });
+                           {SqlRowMapper::platformToString(platform)});
 
     QVector<Song> result;
     for (const auto &row : rows) {
@@ -144,7 +144,7 @@ QVector<Song> SongRepository::search(const QString &query, int limit)
                            "user_lyric_offset_ms, lyrics_json, channel_id, audio_id, sub_audio_id, "
                            "extra_json, cached_at, last_played_at "
                            "FROM songs_cache WHERE name LIKE ? OR artist LIKE ? OR album LIKE ? LIMIT ?",
-                           { pattern, pattern, pattern, limit });
+                           {pattern, pattern, pattern, limit});
 
     QVector<Song> result;
     for (const auto &row : rows) {

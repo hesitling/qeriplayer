@@ -42,7 +42,7 @@ void TestPlaylistRepository::insertSong(DatabaseManager *db, const QString &id, 
 {
     db->exec("INSERT OR REPLACE INTO songs_cache (id, platform, name, artist, album, duration_ms) "
              "VALUES (?, 'NetEase', ?, 'Artist', 'Album', 180000)",
-             { id, name });
+             {id, name});
 }
 
 void TestPlaylistRepository::create_makesPlaylist()
@@ -56,7 +56,7 @@ void TestPlaylistRepository::create_makesPlaylist()
     QCOMPARE(pl.songCount, 0);
 
     // Verify in DB
-    auto rows = db->exec("SELECT name, platform FROM playlists WHERE id = ?", { pl.id });
+    auto rows = db->exec("SELECT name, platform FROM playlists WHERE id = ?", {pl.id});
     QCOMPARE(rows.size(), 1);
     QCOMPARE(rows[0][0].toString(), pl.name);
     QCOMPARE(rows[0][1].toString(), QStringLiteral("Unknown"));
@@ -81,8 +81,8 @@ void TestPlaylistRepository::findById_withSongs()
     PlaylistRepository repo(db.get());
     SongRepository songRepo(db.get());
 
-    songRepo.save(Song { .id = "s1", .name = "Song 1", .durationMs = 120000 });
-    songRepo.save(Song { .id = "s2", .name = "Song 2", .durationMs = 180000 });
+    songRepo.save(Song {.id = "s1", .name = "Song 1", .durationMs = 120000});
+    songRepo.save(Song {.id = "s2", .name = "Song 2", .durationMs = 180000});
 
     auto pl = repo.create("Test PL");
     repo.addSong(pl.id, "s1");
@@ -112,7 +112,7 @@ void TestPlaylistRepository::updateMetadata_updatesFields()
     auto pl = repo.create("Original");
     repo.updateMetadata(pl.id, "New Name", "A description", "https://cover.url");
 
-    auto rows = db->exec("SELECT name, description, cover_url FROM playlists WHERE id = ?", { pl.id });
+    auto rows = db->exec("SELECT name, description, cover_url FROM playlists WHERE id = ?", {pl.id});
     QCOMPARE(rows[0][0].toString(), QStringLiteral("New Name"));
     QCOMPARE(rows[0][1].toString(), QStringLiteral("A description"));
     QCOMPARE(rows[0][2].toString(), QStringLiteral("https://cover.url"));
@@ -126,7 +126,7 @@ void TestPlaylistRepository::remove_deletesPlaylist()
     auto pl = repo.create("To Delete");
     repo.remove(pl.id);
 
-    auto rows = db->exec("SELECT id FROM playlists WHERE id = ?", { pl.id });
+    auto rows = db->exec("SELECT id FROM playlists WHERE id = ?", {pl.id});
     QCOMPARE(rows.size(), 0);
 }
 
@@ -136,7 +136,7 @@ void TestPlaylistRepository::addSong_appendsSong()
     PlaylistRepository repo(db.get());
     SongRepository songRepo(db.get());
 
-    songRepo.save(Song { .id = "s1", .name = "Song", .durationMs = 120000 });
+    songRepo.save(Song {.id = "s1", .name = "Song", .durationMs = 120000});
 
     auto pl = repo.create("Test");
     bool added = repo.addSong(pl.id, "s1");
@@ -151,9 +151,9 @@ void TestPlaylistRepository::addSong_atSpecificPosition()
     PlaylistRepository repo(db.get());
     SongRepository songRepo(db.get());
 
-    songRepo.save(Song { .id = "s1", .name = "Song 1", .durationMs = 120000 });
-    songRepo.save(Song { .id = "s2", .name = "Song 2", .durationMs = 120000 });
-    songRepo.save(Song { .id = "s3", .name = "Song 3", .durationMs = 120000 });
+    songRepo.save(Song {.id = "s1", .name = "Song 1", .durationMs = 120000});
+    songRepo.save(Song {.id = "s2", .name = "Song 2", .durationMs = 120000});
+    songRepo.save(Song {.id = "s3", .name = "Song 3", .durationMs = 120000});
 
     auto pl = repo.create("Test");
     repo.addSong(pl.id, "s1");
@@ -174,7 +174,7 @@ void TestPlaylistRepository::addSong_duplicate_noOp()
     PlaylistRepository repo(db.get());
     SongRepository songRepo(db.get());
 
-    songRepo.save(Song { .id = "s1", .name = "Song", .durationMs = 120000 });
+    songRepo.save(Song {.id = "s1", .name = "Song", .durationMs = 120000});
 
     auto pl = repo.create("Test");
     repo.addSong(pl.id, "s1");
@@ -189,9 +189,9 @@ void TestPlaylistRepository::removeSong_removesAndAdjustsPositions()
     PlaylistRepository repo(db.get());
     SongRepository songRepo(db.get());
 
-    songRepo.save(Song { .id = "s1", .name = "Song 1", .durationMs = 120000 });
-    songRepo.save(Song { .id = "s2", .name = "Song 2", .durationMs = 120000 });
-    songRepo.save(Song { .id = "s3", .name = "Song 3", .durationMs = 120000 });
+    songRepo.save(Song {.id = "s1", .name = "Song 1", .durationMs = 120000});
+    songRepo.save(Song {.id = "s2", .name = "Song 2", .durationMs = 120000});
+    songRepo.save(Song {.id = "s3", .name = "Song 3", .durationMs = 120000});
 
     auto pl = repo.create("Test");
     repo.addSong(pl.id, "s1");
@@ -213,16 +213,16 @@ void TestPlaylistRepository::reorderSongs_reorders()
     PlaylistRepository repo(db.get());
     SongRepository songRepo(db.get());
 
-    songRepo.save(Song { .id = "s1", .name = "Song 1", .durationMs = 120000 });
-    songRepo.save(Song { .id = "s2", .name = "Song 2", .durationMs = 120000 });
-    songRepo.save(Song { .id = "s3", .name = "Song 3", .durationMs = 120000 });
+    songRepo.save(Song {.id = "s1", .name = "Song 1", .durationMs = 120000});
+    songRepo.save(Song {.id = "s2", .name = "Song 2", .durationMs = 120000});
+    songRepo.save(Song {.id = "s3", .name = "Song 3", .durationMs = 120000});
 
     auto pl = repo.create("Test");
     repo.addSong(pl.id, "s1");
     repo.addSong(pl.id, "s2");
     repo.addSong(pl.id, "s3");
 
-    repo.reorderSongs(pl.id, { "s3", "s1", "s2" });
+    repo.reorderSongs(pl.id, {"s3", "s1", "s2"});
 
     auto found = repo.findById(pl.id);
     QVERIFY(found.has_value());
@@ -237,8 +237,8 @@ void TestPlaylistRepository::songCount_returnsCorrectly()
     PlaylistRepository repo(db.get());
     SongRepository songRepo(db.get());
 
-    songRepo.save(Song { .id = "s1", .name = "Song 1", .durationMs = 120000 });
-    songRepo.save(Song { .id = "s2", .name = "Song 2", .durationMs = 120000 });
+    songRepo.save(Song {.id = "s1", .name = "Song 1", .durationMs = 120000});
+    songRepo.save(Song {.id = "s2", .name = "Song 2", .durationMs = 120000});
 
     auto pl = repo.create("Test");
     QCOMPARE(repo.songCount(pl.id), 0);

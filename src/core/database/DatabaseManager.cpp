@@ -269,7 +269,7 @@ void DatabaseManager::ensureSchemaVersionTable()
 
     auto rows = exec("SELECT version FROM schema_version");
     if (rows.isEmpty()) {
-        exec("INSERT INTO schema_version (version) VALUES (?)", { QVariant(0) });
+        exec("INSERT INTO schema_version (version) VALUES (?)", {QVariant(0)});
         m_currentVersion = 0;
     } else {
         m_currentVersion = rows[0][0].toInt();
@@ -283,7 +283,7 @@ void DatabaseManager::runMigrations()
         beginTransaction();
         try {
             applyInitialSchema(m_db);
-            exec("UPDATE schema_version SET version = ?", { QVariant(2) });
+            exec("UPDATE schema_version SET version = ?", {QVariant(2)});
             commitTransaction();
             m_currentVersion = 2;
         } catch (...) {
@@ -306,7 +306,7 @@ void DatabaseManager::runMigrations()
                 if (!fn(m_db)) {
                     throw DatabaseError("Migration to version " + std::to_string(version) + " failed");
                 }
-                exec("UPDATE schema_version SET version = ?", { QVariant(version) });
+                exec("UPDATE schema_version SET version = ?", {QVariant(version)});
                 commitTransaction();
                 m_currentVersion = version;
             } catch (...) {

@@ -28,7 +28,7 @@ QCoro::Task<ApiResult<VoidResult>> NeteaseClient::likeSong(const QString &songId
         co_return ApiResult<VoidResult>(result.error());
     }
 
-    co_return ApiResult<VoidResult>(VoidResult { });
+    co_return ApiResult<VoidResult>(VoidResult {});
 }
 
 QCoro::Task<ApiResult<VoidResult>> NeteaseClient::unlikeSong(const QString &songId)
@@ -42,7 +42,7 @@ QCoro::Task<ApiResult<VoidResult>> NeteaseClient::unlikeSong(const QString &song
         co_return ApiResult<VoidResult>(result.error());
     }
 
-    co_return ApiResult<VoidResult>(VoidResult { });
+    co_return ApiResult<VoidResult>(VoidResult {});
 }
 
 QCoro::Task<ApiResult<QStringList>> NeteaseClient::getLikedSongIds(const QString &userId)

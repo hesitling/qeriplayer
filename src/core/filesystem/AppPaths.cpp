@@ -58,7 +58,7 @@ QString AppPaths::ensureCreated(const QString &path)
     if (!dir.exists()) {
         if (!dir.mkpath(".")) {
             qWarning() << "AppPaths: failed to create directory:" << path;
-            return { };
+            return {};
         }
     }
     return dir.absolutePath();

@@ -169,10 +169,10 @@ static QString extraToJson(const QVariantMap &extra)
 static QVariantMap jsonToExtra(const QString &json)
 {
     if (json.isEmpty())
-        return { };
+        return {};
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     if (!doc.isObject())
-        return { };
+        return {};
     return doc.object().toVariantMap();
 }
 
@@ -196,7 +196,7 @@ static QVariantMap jsonToExtra(const QString &json)
 Song SqlRowMapper::toSong(const QueryRow &row)
 {
     if (row.size() < 25)
-        return { };
+        return {};
 
     Song s;
     s.id = row[0].toString();
