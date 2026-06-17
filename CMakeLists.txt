@@ -572,6 +572,60 @@ set_tests_properties(TestQtMultimediaBackend PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
 )
 
+# ViewModel library
+set(VIEWMODEL_SOURCES
+    src/viewmodel/ViewModelError.cpp
+    src/viewmodel/SongListModel.cpp
+)
+set(VIEWMODEL_HEADERS
+    src/viewmodel/ViewModelError.h
+    src/viewmodel/SongListModel.h
+)
+add_library(neriplayer_viewmodel STATIC ${VIEWMODEL_SOURCES} ${VIEWMODEL_HEADERS})
+target_include_directories(neriplayer_viewmodel PUBLIC
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(neriplayer_viewmodel PUBLIC
+    Qt6::Core
+)
+target_compile_definitions(neriplayer_viewmodel PRIVATE
+    QT_NO_KEYWORDS
+)
+
+# ViewModel tests
+add_executable(TestViewModelError
+    tests/viewmodel/TestViewModelError.cpp
+    src/viewmodel/ViewModelError.cpp
+    src/api/common/ApiError.cpp
+)
+target_include_directories(TestViewModelError PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(TestViewModelError PRIVATE
+    Qt6::Core
+    Qt6::Test
+)
+target_compile_definitions(TestViewModelError PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestViewModelError COMMAND TestViewModelError)
+
+add_executable(TestSongListModel
+    tests/viewmodel/TestSongListModel.cpp
+    src/viewmodel/SongListModel.cpp
+)
+target_include_directories(TestSongListModel PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(TestSongListModel PRIVATE
+    Qt6::Core
+    Qt6::Test
+)
+target_compile_definitions(TestSongListModel PRIVATE
+    QT_NO_KEYWORDS
+)
+add_test(NAME TestSongListModel COMMAND TestSongListModel)
+
 # Shared library for Netease API + core infra (used by E2E tests and CLI tools)
 set(NETEASE_E2E_SOURCES
     src/api/netease/NeteaseClient.h
