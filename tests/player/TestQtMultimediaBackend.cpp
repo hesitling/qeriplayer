@@ -65,7 +65,7 @@ private Q_SLOTS:
 
     // --- Signals ---
 
-    void stateChanged_onStop()
+    void stateChanged_onStop_doesNotCrash()
     {
         QtMultimediaBackend backend;
         QSignalSpy spy(&backend, &IPlayerBackend::stateChanged);
@@ -77,7 +77,7 @@ private Q_SLOTS:
 
     // --- Seek ---
 
-    void seek_updatesPosition()
+    void seek_doesNotCrash()
     {
         QtMultimediaBackend backend;
         backend.seek(5000);
