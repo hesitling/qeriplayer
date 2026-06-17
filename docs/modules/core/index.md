@@ -6,7 +6,7 @@ The core infrastructure module provides the fundamental services required by all
 
 ## Module Composition
 
-```
+```text
 src/core/
 ├── network/     # HTTP client, WebSocket, network monitoring
 ├── database/    # SQLite wrapper with schema migrations
@@ -25,7 +25,7 @@ src/core/
 
 ## Module Dependencies
 
-```
+```text
 ┌──────────────────────────────────────────────┐
 │              Application Module (app/)        │
 └──────────────────────────────────────────────┘

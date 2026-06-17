@@ -6,7 +6,7 @@ The filesystem module provides platform-specific application directory paths, sa
 
 ## Source Files
 
-```
+```text
 src/core/filesystem/
 ├── AppPaths.h / .cpp      # Platform-specific directory paths
 ├── FileUtils.h / .cpp     # Safe file read/write, atomic writes

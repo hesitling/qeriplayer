@@ -138,7 +138,7 @@ git commit -m "docs: update docs for <feature>"
 
 ## Output
 
-```
+```text
 ## Feature Complete
 
 **Change:** <name>

@@ -6,7 +6,7 @@ The domain layer contains all shared value types used across API clients, reposi
 
 ## Source Files
 
-```
+```text
 src/domain/
 ├── Domain.h                # Umbrella header
 ├── Enums.h                 # MusicPlatform, SearchType, PlaybackState, RepeatMode, AudioQuality, etc.

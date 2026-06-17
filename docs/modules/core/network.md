@@ -6,7 +6,7 @@ The network module provides HTTP client, WebSocket client, and network status mo
 
 ## Source Files
 
-```
+```text
 src/core/network/
 ├── HttpClient.h / .cpp        # Coroutine-based HTTP client
 ├── WebSocketClient.h / .cpp   # WebSocket client

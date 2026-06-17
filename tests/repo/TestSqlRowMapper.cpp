@@ -135,6 +135,7 @@ void TestSqlRowMapper::roundTrip_songThroughDB()
             params);
 
     auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", { original.id });
+    QVERIFY(!rows.isEmpty());
     Song loaded = SqlRowMapper::toSong(rows[0]);
 
     QCOMPARE(loaded.id, original.id);
@@ -184,6 +185,7 @@ void TestSqlRowMapper::roundTrip_songWithLyrics()
             params);
 
     auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", { song.id });
+    QVERIFY(!rows.isEmpty());
     Song loaded = SqlRowMapper::toSong(rows[0]);
 
     QCOMPARE(loaded.lyrics.rawText, lyrics.rawText);
@@ -221,6 +223,7 @@ void TestSqlRowMapper::roundTrip_songWithExtra()
             params);
 
     auto rows = db.exec("SELECT * FROM songs_cache WHERE id = ?", { song.id });
+    QVERIFY(!rows.isEmpty());
     Song loaded = SqlRowMapper::toSong(rows[0]);
 
     QCOMPARE(loaded.extra["foo"].toString(), QStringLiteral("bar"));

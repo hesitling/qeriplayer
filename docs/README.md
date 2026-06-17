@@ -4,7 +4,7 @@ This directory contains architecture design and module design documents for the 
 
 ## Document Structure
 
-```
+```text
 docs/
 ├── README.md              # This document
 ├── TODO.md                # Implementation roadmap

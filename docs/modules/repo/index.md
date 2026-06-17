@@ -6,7 +6,7 @@ The repository layer provides SQLite-backed persistence for songs, playlists, pl
 
 ## Source Files
 
-```
+```text
 src/repo/
 ├── ISongRepository.h          # Song CRUD interface
 ├── SongRepository.h / .cpp    # SQLite implementation

@@ -6,7 +6,7 @@ NeriPlayer Qt is a multi-platform music player built with Qt 6, C++20, and QCoro
 
 ## Module Structure
 
-```
+```text
 src/
 ├── app/                    # Application entry, ServiceLocator
 ├── core/                   # Infrastructure
@@ -53,7 +53,7 @@ src/
 
 ## Architecture Layers
 
-```
+```text
 ┌──────────────────────────────────────┐
 │              UI Layer                 │  (planned)
 ├──────────────────────────────────────┤

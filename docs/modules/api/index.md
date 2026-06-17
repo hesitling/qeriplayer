@@ -6,7 +6,7 @@ The API module contains platform-specific API clients that implement `IMusicPlat
 
 ## Module Structure
 
-```
+```text
 src/api/
 ├── common/                  # Shared types and interfaces
 │   ├── ApiError.h           # Error classification

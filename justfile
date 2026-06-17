@@ -4,7 +4,7 @@
 #   just              # show available commands
 #   just build        # configure + build
 #   just test         # build + run all tests
-#   just test Foo     # run tests matching "Foo"
+#   just test-match Foo  # run tests matching "Foo"
 #   just format       # format changed files
 #   just check        # format check (CI-friendly, no writes)
 #   just ci           # build + test + format check

@@ -6,7 +6,7 @@ The logger module wraps spdlog to provide named loggers with daily file rotation
 
 ## Source Files
 
-```
+```text
 src/core/logger/
 ├── Logger.h
 └── Logger.cpp
@@ -79,7 +79,7 @@ public:
 
 ## Log Format
 
-```
+```text
 [2024-01-15 10:30:45.123] [info] [network] Connection established
 [2024-01-15 10:30:45.456] [error] [api] Request failed: timeout
 ```
