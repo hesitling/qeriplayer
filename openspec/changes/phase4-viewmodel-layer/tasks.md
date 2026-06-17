@@ -16,9 +16,9 @@
 
 ## 3. SettingsViewModel
 
-- [ ] 3.1 Create `src/viewmodel/SettingsViewModel.h` — Q_PROPERTYs (theme, audioQuality, downloadPath, isNeteaseLoggedIn, neteaseUsername, hasError, error), Q_INVOKABLEs (loadSettings, setTheme, setAudioQuality, setDownloadPath, loginNetease, logoutNetease, clearPlayHistory, clearError)
-- [ ] 3.2 Create `src/viewmodel/SettingsViewModel.cpp` — implement settings read/write via ISettingsRepository, implement NeteaseClient login/logout/auth status, implement loadSettings hydration, map errors to ViewModelError
-- [ ] 3.3 Write `tests/viewmodel/TestSettingsViewModel.cpp` — mock ISettingsRepository, NeteaseClient, IPlayHistoryRepository, test settings persistence round-trip, test login/logout flow, test error mapping
+- [x] 3.1 Create `src/viewmodel/SettingsViewModel.h` — Q_PROPERTYs (theme, audioQuality, downloadPath, isNeteaseLoggedIn, neteaseUsername, hasError, error), Q_INVOKABLEs (loadSettings, setTheme, setAudioQuality, setDownloadPath, loginNetease, logoutNetease, clearPlayHistory, clearError)
+- [x] 3.2 Create `src/viewmodel/SettingsViewModel.cpp` — implement settings read/write via ISettingsRepository, implement NeteaseClient login/logout/auth status, implement loadSettings hydration, map errors to ViewModelError
+- [x] 3.3 Write `tests/viewmodel/TestSettingsViewModel.cpp` — mock ISettingsRepository, NeteaseClient, IPlayHistoryRepository, test settings persistence round-trip, test login/logout flow, test error mapping
 
 ## 4. SearchViewModel
 

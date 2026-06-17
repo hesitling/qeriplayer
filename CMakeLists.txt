@@ -577,11 +577,13 @@ set(VIEWMODEL_SOURCES
     src/viewmodel/ViewModelError.cpp
     src/viewmodel/SongListModel.cpp
     src/viewmodel/PlayerViewModel.cpp
+    src/viewmodel/SettingsViewModel.cpp
 )
 set(VIEWMODEL_HEADERS
     src/viewmodel/ViewModelError.h
     src/viewmodel/SongListModel.h
     src/viewmodel/PlayerViewModel.h
+    src/viewmodel/SettingsViewModel.h
 )
 add_library(neriplayer_viewmodel STATIC ${VIEWMODEL_SOURCES} ${VIEWMODEL_HEADERS})
 target_include_directories(neriplayer_viewmodel PUBLIC
@@ -656,6 +658,53 @@ target_compile_definitions(TestPlayerViewModel PRIVATE
 )
 add_test(NAME TestPlayerViewModel COMMAND TestPlayerViewModel)
 set_tests_properties(TestPlayerViewModel PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+)
+
+add_executable(TestSettingsViewModel
+    tests/viewmodel/TestSettingsViewModel.cpp
+    src/viewmodel/SettingsViewModel.cpp
+    src/viewmodel/ViewModelError.cpp
+    src/api/common/ApiError.cpp
+    src/api/netease/NeteaseClientCore.cpp
+    src/api/netease/NeteaseClientAuth.cpp
+    src/api/netease/NeteaseClientContent.cpp
+    src/api/netease/NeteaseClientUser.cpp
+    src/api/netease/NeteaseCrypto.cpp
+    src/api/netease/NeteaseParser.cpp
+    src/api/netease/NeteaseClient.h
+    src/core/network/HttpClient.cpp
+    src/core/network/HttpClient.h
+    src/core/crypto/CryptoUtils.cpp
+    src/core/crypto/Encryptor.cpp
+    src/core/crypto/Decryptor.cpp
+    src/core/crypto/SecureStorage.cpp
+    src/core/filesystem/AppPaths.cpp
+    src/core/filesystem/FileUtils.cpp
+    src/core/filesystem/FileWatcher.cpp
+    src/core/database/DatabaseManager.cpp
+    src/core/logger/Logger.cpp
+)
+target_include_directories(TestSettingsViewModel PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIRS}
+)
+target_link_libraries(TestSettingsViewModel PRIVATE
+    Qt6::Core
+    Qt6::Network
+    Qt6::WebSockets
+    Qt6::Test
+    ${NERIPLAYER_QCORO_LIBRARIES}
+    ${SQLITE3_LIBRARIES}
+    ${SPDLOG_LIBRARIES}
+    OpenSSL::Crypto
+)
+if(UNIX)
+    target_link_libraries(TestSettingsViewModel PRIVATE dl pthread)
+endif()
+add_test(NAME TestSettingsViewModel COMMAND TestSettingsViewModel)
+set_tests_properties(TestSettingsViewModel PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
 )
 
