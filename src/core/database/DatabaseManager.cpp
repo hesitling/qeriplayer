@@ -25,6 +25,7 @@ bool DatabaseManager::open(const QString &path)
 
     int rc = sqlite3_open(path.toUtf8().constData(), &m_db);
     if (rc != SQLITE_OK) {
+        qWarning() << "DatabaseManager: failed to open" << path << ":" << sqlite3_errmsg(m_db);
         m_db = nullptr;
         return false;
     }

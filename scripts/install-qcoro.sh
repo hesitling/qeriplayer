@@ -3,7 +3,7 @@
 # Clone QCoro into lib/qcoro for the CMake local-build fallback.
 set -euo pipefail
 
-qcoro_version="${1:-v0.11.0}"
+qcoro_version="${1:-v0.13.0}"
 target_dir="lib/qcoro"
 
 if [ -d "$target_dir/.git" ]; then
