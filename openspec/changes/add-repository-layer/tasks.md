@@ -26,8 +26,8 @@
 
 ## 5. SettingsRepository Implementation
 
-- [ ] 5.1 Create `src/repo/SettingsRepository.h` — class declaration inheriting ISettingsRepository
-- [ ] 5.2 Create `src/repo/SettingsRepository.cpp` — implement get, set, remove, getAll, getBool, getInt
+- [x] 5.1 Create `src/repo/SettingsRepository.h` — class declaration inheriting ISettingsRepository
+- [x] 5.2 Create `src/repo/SettingsRepository.cpp` — implement get, set, remove, getAll, getBool, getInt
 
 ## 6. PlayHistoryRepository Implementation
 
