@@ -100,6 +100,7 @@ set(SOURCES
     src/player/backends/QtMultimediaBackend.cpp
     src/player/PlayQueue.cpp
     src/player/PlaybackController.cpp
+    src/player/BackendFactory.cpp
 )
 
 # 头文件
@@ -156,6 +157,7 @@ set(HEADERS
     src/player/backends/QtMultimediaBackend.h
     src/player/PlayQueue.h
     src/player/PlaybackController.h
+    src/player/BackendFactory.h
     src/mainwindow.h
 )
 

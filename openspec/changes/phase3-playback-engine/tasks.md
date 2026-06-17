@@ -47,9 +47,9 @@
 
 ## 7. Backend Selection
 
-- [ ] 7.1 Create `src/player/BackendFactory.h/cpp` with createBackend(type) factory method
-- [ ] 7.2 Implement auto-detect logic (check libmpv availability at runtime)
-- [ ] 7.3 Register backend setting key `player/backend` in settings
+- [x] 7.1 Create `src/player/BackendFactory.h/cpp` with createBackend(type) factory method
+- [x] 7.2 Implement auto-detect logic (check libmpv availability at runtime)
+- [x] 7.3 Register backend setting key `player/backend` in settings
 
 ## 8. Persistence
 
