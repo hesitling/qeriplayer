@@ -126,6 +126,11 @@ void SongListModel::setPlayingIndex(int index)
         return;
     }
 
+    // Validate index range (-1 means no song playing)
+    if (index < -1 || index >= m_songs.size()) {
+        return;
+    }
+
     const int oldIndex = m_playingIndex;
     m_playingIndex = index;
 
