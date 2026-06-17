@@ -143,7 +143,7 @@ void TestCrypto::secureStorage_getNonExistent()
     QVERIFY(tempDir.isValid());
 
     SecureStorage storage(tempDir.filePath("secrets.dat"));
-    QCOMPARE(storage.get("nonexistent"), QString());
+    QCOMPARE(storage.get("nonexistent"), std::nullopt);
 }
 
 void TestCrypto::secureStorage_overwrite()
@@ -165,7 +165,7 @@ void TestCrypto::secureStorage_remove()
     SecureStorage storage(tempDir.filePath("secrets.dat"));
     storage.set("key", "value");
     storage.remove("key");
-    QCOMPARE(storage.get("key"), QString());
+    QCOMPARE(storage.get("key"), std::nullopt);
 }
 
 void TestCrypto::secureStorage_encryptedAtRest()
@@ -197,9 +197,9 @@ void TestCrypto::secureStorage_malformedFileGraceful()
     file.write("this is not json");
     file.close();
 
-    // Should not crash, should return empty for any key
+    // Should not crash, should return nullopt for any key
     SecureStorage storage(filePath);
-    QCOMPARE(storage.get("any_key"), QString());
+    QCOMPARE(storage.get("any_key"), std::nullopt);
 }
 
 void TestCrypto::secureStorage_corruptedSingleValueIsIsolated()
@@ -238,10 +238,10 @@ void TestCrypto::secureStorage_corruptedSingleValueIsIsolated()
         writeFile.close();
     }
 
-    // Re-open: good_key should work, bad_key should return empty
+    // Re-open: good_key should work, bad_key should return nullopt
     SecureStorage storage(filePath);
     QCOMPARE(storage.get("good_key"), QString("good_value"));
-    QCOMPARE(storage.get("bad_key"), QString());
+    QCOMPARE(storage.get("bad_key"), std::nullopt);
 }
 
 QTEST_MAIN(TestCrypto)
