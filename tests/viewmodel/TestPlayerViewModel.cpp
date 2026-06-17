@@ -1,12 +1,12 @@
 /// @file TestPlayerViewModel.cpp
 /// @brief Unit tests for PlayerViewModel with mocked dependencies
 
-#include "viewmodel/PlayerViewModel.h"
 #include "domain/Enums.h"
 #include "domain/Song.h"
-#include "player/PlaybackController.h"
 #include "player/PlayQueue.h"
+#include "player/PlaybackController.h"
 #include "repo/IPlayHistoryRepository.h"
+#include "viewmodel/PlayerViewModel.h"
 
 #include <QCoroTask>
 #include <QSignalSpy>
@@ -54,21 +54,47 @@ public:
         m_position = positionMs;
         Q_EMIT positionChanged(positionMs);
     }
-    void setVolume(double normalized) override { m_volume = normalized; }
-    void setMuted(bool muted) override { m_muted = muted; }
+    void setVolume(double normalized) override
+    {
+        m_volume = normalized;
+    }
+    void setMuted(bool muted) override
+    {
+        m_muted = muted;
+    }
 
     PlaybackState state() const override
     {
-        if (m_playing && !m_paused) return PlaybackState::Playing;
-        if (m_paused) return PlaybackState::Paused;
+        if (m_playing && !m_paused)
+            return PlaybackState::Playing;
+        if (m_paused)
+            return PlaybackState::Paused;
         return PlaybackState::Stopped;
     }
-    qint64 positionMs() const override { return m_position; }
-    qint64 durationMs() const override { return 180000; }
-    bool isSeekable() const override { return true; }
-    double volume() const override { return m_volume; }
-    bool isMuted() const override { return m_muted; }
-    QString backendName() const override { return "Mock"; }
+    qint64 positionMs() const override
+    {
+        return m_position;
+    }
+    qint64 durationMs() const override
+    {
+        return 180000;
+    }
+    bool isSeekable() const override
+    {
+        return true;
+    }
+    double volume() const override
+    {
+        return m_volume;
+    }
+    bool isMuted() const override
+    {
+        return m_muted;
+    }
+    QString backendName() const override
+    {
+        return "Mock";
+    }
 
     bool m_playing = false;
     bool m_paused = false;
@@ -84,11 +110,11 @@ class MockPlugin : public IMusicPlatformPlugin {
 public:
     QCoro::Task<ApiResult<SearchResult>> search(const QString &, SearchType, int, int) override
     {
-        co_return ApiResult<SearchResult>(SearchResult{});
+        co_return ApiResult<SearchResult>(SearchResult {});
     }
     QCoro::Task<ApiResult<Song>> getSongDetail(const QString &) override
     {
-        co_return ApiResult<Song>(Song{});
+        co_return ApiResult<Song>(Song {});
     }
     QCoro::Task<ApiResult<SongUrlResult>> getSongUrl(const QString &, AudioQuality) override
     {
@@ -99,19 +125,31 @@ public:
     }
     QCoro::Task<ApiResult<Lyrics>> getLyrics(const QString &) override
     {
-        co_return ApiResult<Lyrics>(Lyrics{});
+        co_return ApiResult<Lyrics>(Lyrics {});
     }
-    bool isAuthenticated() const override { return true; }
-    QString platformName() const override { return "Mock"; }
+    bool isAuthenticated() const override
+    {
+        return true;
+    }
+    QString platformName() const override
+    {
+        return "Mock";
+    }
 };
 
 // --- Mock IPlayerStateRepository ---
 
 class MockPlayerStateRepo : public IPlayerStateRepository {
 public:
-    void save(const PersistedPlayerState &) override { m_saved = true; }
-    std::optional<PersistedPlayerState> load() override { return std::nullopt; }
-    void clear() override {}
+    void save(const PersistedPlayerState &) override
+    {
+        m_saved = true;
+    }
+    std::optional<PersistedPlayerState> load() override
+    {
+        return std::nullopt;
+    }
+    void clear() override { }
     bool m_saved = false;
 };
 
@@ -122,22 +160,34 @@ public:
     std::optional<QString> get(const QString &key) override
     {
         auto it = m_settings.find(key);
-        if (it != m_settings.end()) return it.value().toString();
+        if (it != m_settings.end())
+            return it.value().toString();
         return std::nullopt;
     }
-    void set(const QString &key, const QString &value) override { m_settings[key] = value; }
-    void remove(const QString &key) override { m_settings.remove(key); }
-    QVariantMap getAll() override { return m_settings; }
+    void set(const QString &key, const QString &value) override
+    {
+        m_settings[key] = value;
+    }
+    void remove(const QString &key) override
+    {
+        m_settings.remove(key);
+    }
+    QVariantMap getAll() override
+    {
+        return m_settings;
+    }
     bool getBool(const QString &key, bool defaultValue) override
     {
         auto it = m_settings.find(key);
-        if (it != m_settings.end()) return it.value() == "true";
+        if (it != m_settings.end())
+            return it.value() == "true";
         return defaultValue;
     }
     int getInt(const QString &key, int defaultValue) override
     {
         auto it = m_settings.find(key);
-        if (it != m_settings.end()) return it.value().toInt();
+        if (it != m_settings.end())
+            return it.value().toInt();
         return defaultValue;
     }
 
@@ -148,11 +198,20 @@ public:
 
 class MockPlayHistoryRepo : public IPlayHistoryRepository {
 public:
-    void record(const QString &songId) override { m_recordedIds.append(songId); }
-    QVector<Song> recent(int) override { return {}; }
-    void clear() override {}
-    void remove(const QStringList &) override {}
-    int playCount(const QString &) override { return 0; }
+    void record(const QString &songId) override
+    {
+        m_recordedIds.append(songId);
+    }
+    QVector<Song> recent(int) override
+    {
+        return {};
+    }
+    void clear() override { }
+    void remove(const QStringList &) override { }
+    int playCount(const QString &) override
+    {
+        return 0;
+    }
 
     QStringList m_recordedIds;
 };
@@ -182,8 +241,7 @@ private:
     std::unique_ptr<PlaybackController> createController()
     {
         auto backend = std::make_unique<MockPlayerBackend>();
-        return std::make_unique<PlaybackController>(std::move(backend), &m_plugin, &m_stateRepo,
-                                                    &m_settingsRepo);
+        return std::make_unique<PlaybackController>(std::move(backend), &m_plugin, &m_stateRepo, &m_settingsRepo);
     }
 
 private Q_SLOTS:

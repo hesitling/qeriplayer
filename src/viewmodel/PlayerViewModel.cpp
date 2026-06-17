@@ -5,8 +5,7 @@
 
 namespace NeriPlayerQt {
 
-PlayerViewModel::PlayerViewModel(PlaybackController *controller, IPlayHistoryRepository *historyRepo,
-                                 QObject *parent)
+PlayerViewModel::PlayerViewModel(PlaybackController *controller, IPlayHistoryRepository *historyRepo, QObject *parent)
     : QObject(parent)
     , m_controller(controller)
     , m_historyRepo(historyRepo)
@@ -161,15 +160,15 @@ void PlayerViewModel::cycleRepeatMode()
 {
     PlayQueue *q = m_controller->queue();
     switch (q->repeatMode()) {
-    case RepeatMode::Off:
-        q->setRepeatMode(RepeatMode::One);
-        break;
-    case RepeatMode::One:
-        q->setRepeatMode(RepeatMode::All);
-        break;
-    case RepeatMode::All:
-        q->setRepeatMode(RepeatMode::Off);
-        break;
+        case RepeatMode::Off:
+            q->setRepeatMode(RepeatMode::One);
+            break;
+        case RepeatMode::One:
+            q->setRepeatMode(RepeatMode::All);
+            break;
+        case RepeatMode::All:
+            q->setRepeatMode(RepeatMode::Off);
+            break;
     }
     // Signal emitted via PlayQueue::repeatChanged connection
 }
@@ -224,11 +223,9 @@ void PlayerViewModel::connectControllerSignals()
     connect(m_controller, &PlaybackController::playbackStateChanged, this,
             [this](PlaybackState) { Q_EMIT playbackStateChanged(); });
 
-    connect(m_controller, &PlaybackController::positionChanged, this,
-            [this](qint64) { Q_EMIT positionChanged(); });
+    connect(m_controller, &PlaybackController::positionChanged, this, [this](qint64) { Q_EMIT positionChanged(); });
 
-    connect(m_controller, &PlaybackController::durationChanged, this,
-            [this](qint64) { Q_EMIT durationChanged(); });
+    connect(m_controller, &PlaybackController::durationChanged, this, [this](qint64) { Q_EMIT durationChanged(); });
 
     connect(m_controller, &PlaybackController::errorOccurred, this, [this](const QString &message) {
         m_error = ViewModelError(ViewModelError::ErrorType::Api, message);

@@ -29,39 +29,37 @@ QVariant SongListModel::data(const QModelIndex &index, int role) const
     const Song &song = m_songs.at(index.row());
 
     switch (role) {
-    case IdRole:
-        return song.id;
-    case NameRole:
-        return song.name;
-    case ArtistRole:
-        return song.artist;
-    case AlbumRole:
-        return song.album;
-    case DurationMsRole:
-        return song.durationMs;
-    case CoverUrlRole:
-        return song.coverUrl;
-    case PlatformRole:
-        return QVariant::fromValue(song.platform);
-    case IsPlayingRole:
-        return index.row() == m_playingIndex;
-    default:
-        return {};
+        case IdRole:
+            return song.id;
+        case NameRole:
+            return song.name;
+        case ArtistRole:
+            return song.artist;
+        case AlbumRole:
+            return song.album;
+        case DurationMsRole:
+            return song.durationMs;
+        case CoverUrlRole:
+            return song.coverUrl;
+        case PlatformRole:
+            return QVariant::fromValue(song.platform);
+        case IsPlayingRole:
+            return index.row() == m_playingIndex;
+        default:
+            return {};
     }
 }
 
 QHash<int, QByteArray> SongListModel::roleNames() const
 {
-    return {
-        {IdRole, "id"},
-        {NameRole, "name"},
-        {ArtistRole, "artist"},
-        {AlbumRole, "album"},
-        {DurationMsRole, "durationMs"},
-        {CoverUrlRole, "coverUrl"},
-        {PlatformRole, "platform"},
-        {IsPlayingRole, "isPlaying"}
-    };
+    return {{IdRole, "id"},
+            {NameRole, "name"},
+            {ArtistRole, "artist"},
+            {AlbumRole, "album"},
+            {DurationMsRole, "durationMs"},
+            {CoverUrlRole, "coverUrl"},
+            {PlatformRole, "platform"},
+            {IsPlayingRole, "isPlaying"}};
 }
 
 // --- Data management ---

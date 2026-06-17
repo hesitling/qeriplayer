@@ -28,14 +28,14 @@ public:
      * @brief Model roles for song data
      */
     enum Roles {
-        IdRole = Qt::UserRole + 1,  ///< Song.id (QString)
-        NameRole,                    ///< Song.name (QString)
-        ArtistRole,                  ///< Song.artist (QString)
-        AlbumRole,                   ///< Song.album (QString)
-        DurationMsRole,              ///< Song.durationMs (qint64)
-        CoverUrlRole,                ///< Song.coverUrl (QUrl)
-        PlatformRole,                ///< Song.platform (MusicPlatform)
-        IsPlayingRole                ///< Whether this row is the currently playing song (bool)
+        IdRole = Qt::UserRole + 1, ///< Song.id (QString)
+        NameRole,                  ///< Song.name (QString)
+        ArtistRole,                ///< Song.artist (QString)
+        AlbumRole,                 ///< Song.album (QString)
+        DurationMsRole,            ///< Song.durationMs (qint64)
+        CoverUrlRole,              ///< Song.coverUrl (QUrl)
+        PlatformRole,              ///< Song.platform (MusicPlatform)
+        IsPlayingRole              ///< Whether this row is the currently playing song (bool)
     };
 
     explicit SongListModel(QObject *parent = nullptr);

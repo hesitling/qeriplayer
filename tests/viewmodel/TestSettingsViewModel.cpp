@@ -1,10 +1,10 @@
 /// @file TestSettingsViewModel.cpp
 /// @brief Unit tests for SettingsViewModel
 
-#include "viewmodel/SettingsViewModel.h"
 #include "domain/Enums.h"
 #include "repo/IPlayHistoryRepository.h"
 #include "repo/ISettingsRepository.h"
+#include "viewmodel/SettingsViewModel.h"
 
 #include <QCoroTask>
 #include <QSignalSpy>
@@ -19,22 +19,34 @@ public:
     std::optional<QString> get(const QString &key) override
     {
         auto it = m_settings.find(key);
-        if (it != m_settings.end()) return it.value().toString();
+        if (it != m_settings.end())
+            return it.value().toString();
         return std::nullopt;
     }
-    void set(const QString &key, const QString &value) override { m_settings[key] = value; }
-    void remove(const QString &key) override { m_settings.remove(key); }
-    QVariantMap getAll() override { return m_settings; }
+    void set(const QString &key, const QString &value) override
+    {
+        m_settings[key] = value;
+    }
+    void remove(const QString &key) override
+    {
+        m_settings.remove(key);
+    }
+    QVariantMap getAll() override
+    {
+        return m_settings;
+    }
     bool getBool(const QString &key, bool defaultValue) override
     {
         auto it = m_settings.find(key);
-        if (it != m_settings.end()) return it.value() == "true";
+        if (it != m_settings.end())
+            return it.value() == "true";
         return defaultValue;
     }
     int getInt(const QString &key, int defaultValue) override
     {
         auto it = m_settings.find(key);
-        if (it != m_settings.end()) return it.value().toInt();
+        if (it != m_settings.end())
+            return it.value().toInt();
         return defaultValue;
     }
 
@@ -45,11 +57,20 @@ public:
 
 class MockPlayHistoryRepo : public IPlayHistoryRepository {
 public:
-    void record(const QString &) override {}
-    QVector<Song> recent(int) override { return {}; }
-    void clear() override { m_cleared = true; }
-    void remove(const QStringList &) override {}
-    int playCount(const QString &) override { return 0; }
+    void record(const QString &) override { }
+    QVector<Song> recent(int) override
+    {
+        return {};
+    }
+    void clear() override
+    {
+        m_cleared = true;
+    }
+    void remove(const QStringList &) override { }
+    int playCount(const QString &) override
+    {
+        return 0;
+    }
 
     bool m_cleared = false;
 };

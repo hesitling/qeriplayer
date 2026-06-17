@@ -104,18 +104,18 @@ void SettingsViewModel::setAudioQuality(AudioQuality quality)
 
     QString qualityStr;
     switch (quality) {
-    case AudioQuality::Low:
-        qualityStr = QStringLiteral("Low");
-        break;
-    case AudioQuality::Standard:
-        qualityStr = QStringLiteral("Standard");
-        break;
-    case AudioQuality::High:
-        qualityStr = QStringLiteral("High");
-        break;
-    case AudioQuality::Lossless:
-        qualityStr = QStringLiteral("Lossless");
-        break;
+        case AudioQuality::Low:
+            qualityStr = QStringLiteral("Low");
+            break;
+        case AudioQuality::Standard:
+            qualityStr = QStringLiteral("Standard");
+            break;
+        case AudioQuality::High:
+            qualityStr = QStringLiteral("High");
+            break;
+        case AudioQuality::Lossless:
+            qualityStr = QStringLiteral("Lossless");
+            break;
     }
     m_settingsRepo->set(QStringLiteral("audioQuality"), qualityStr);
     Q_EMIT audioQualityChanged();

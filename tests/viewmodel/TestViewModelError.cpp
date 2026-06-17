@@ -1,8 +1,8 @@
 /// @file TestViewModelError.cpp
 /// @brief Unit tests for ViewModelError
 
-#include "viewmodel/ViewModelError.h"
 #include "api/common/ApiError.h"
+#include "viewmodel/ViewModelError.h"
 
 #include <QTest>
 

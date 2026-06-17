@@ -66,16 +66,16 @@ const QString &ViewModelError::details() const
 bool ViewModelError::canRetry() const
 {
     switch (m_type) {
-    case ErrorType::Network:
-    case ErrorType::RateLimit:
-    case ErrorType::Api:
-        return true;
-    case ErrorType::Auth:
-    case ErrorType::NotFound:
-    case ErrorType::Database:
-    case ErrorType::Validation:
-    case ErrorType::Unknown:
-        return false;
+        case ErrorType::Network:
+        case ErrorType::RateLimit:
+        case ErrorType::Api:
+            return true;
+        case ErrorType::Auth:
+        case ErrorType::NotFound:
+        case ErrorType::Database:
+        case ErrorType::Validation:
+        case ErrorType::Unknown:
+            return false;
     }
     return false;
 }

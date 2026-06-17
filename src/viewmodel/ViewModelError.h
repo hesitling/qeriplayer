@@ -30,14 +30,14 @@ public:
      * @brief Error type classification
      */
     enum class ErrorType : quint8 {
-        Network = 0,    ///< Connectivity issues
-        Auth,           ///< Login expired, not authenticated
-        RateLimit,      ///< Too many requests
-        NotFound,       ///< Resource doesn't exist
-        Api,            ///< Other API errors
-        Database,       ///< SQLite errors
-        Validation,     ///< User input invalid
-        Unknown         ///< Unclassified
+        Network = 0, ///< Connectivity issues
+        Auth,        ///< Login expired, not authenticated
+        RateLimit,   ///< Too many requests
+        NotFound,    ///< Resource doesn't exist
+        Api,         ///< Other API errors
+        Database,    ///< SQLite errors
+        Validation,  ///< User input invalid
+        Unknown      ///< Unclassified
     };
     Q_ENUM(ErrorType)
 

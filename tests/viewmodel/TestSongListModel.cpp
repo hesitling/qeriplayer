@@ -1,8 +1,8 @@
 /// @file TestSongListModel.cpp
 /// @brief Unit tests for SongListModel
 
-#include "viewmodel/SongListModel.h"
 #include "domain/Song.h"
+#include "viewmodel/SongListModel.h"
 
 #include <QSignalSpy>
 #include <QTest>
