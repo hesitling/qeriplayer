@@ -47,6 +47,8 @@ private Q_SLOTS:
     void setPlayingIndex();
     void setPlayingIndex_emitsDataChanged();
     void setPlayingIndex_sameIndex();
+    void setSongs_resetsPlayingIndex();
+    void setPlayingIndex_invalidIndex();
 };
 
 void TestSongListModel::emptyModel()
@@ -284,6 +286,45 @@ void TestSongListModel::setPlayingIndex_sameIndex()
     model.setPlayingIndex(1); // Same index
 
     QCOMPARE(spy.count(), 0); // No signal
+}
+
+void TestSongListModel::setSongs_resetsPlayingIndex()
+{
+    SongListModel model;
+    model.setSongs({makeSong("1", "A"), makeSong("2", "B"), makeSong("3", "C")});
+
+    // Set playing index to 1
+    model.setPlayingIndex(1);
+    QCOMPARE(model.data(model.index(1, 0), SongListModel::IsPlayingRole).toBool(), true);
+
+    // Replace songs — playing index should reset
+    model.setSongs({makeSong("4", "D"), makeSong("5", "E")});
+
+    // No item should be playing
+    QCOMPARE(model.data(model.index(0, 0), SongListModel::IsPlayingRole).toBool(), false);
+    QCOMPARE(model.data(model.index(1, 0), SongListModel::IsPlayingRole).toBool(), false);
+}
+
+void TestSongListModel::setPlayingIndex_invalidIndex()
+{
+    SongListModel model;
+    model.setSongs({makeSong("1", "A"), makeSong("2", "B")});
+
+    // Set valid index first
+    model.setPlayingIndex(0);
+    QCOMPARE(model.data(model.index(0, 0), SongListModel::IsPlayingRole).toBool(), true);
+
+    // Try invalid indices — should be rejected
+    model.setPlayingIndex(-2);
+    QCOMPARE(model.data(model.index(0, 0), SongListModel::IsPlayingRole).toBool(), true); // unchanged
+
+    model.setPlayingIndex(5);
+    QCOMPARE(model.data(model.index(0, 0), SongListModel::IsPlayingRole).toBool(), true); // unchanged
+
+    // Valid index should still work
+    model.setPlayingIndex(1);
+    QCOMPARE(model.data(model.index(1, 0), SongListModel::IsPlayingRole).toBool(), true);
+    QCOMPARE(model.data(model.index(0, 0), SongListModel::IsPlayingRole).toBool(), false);
 }
 
 QTEST_MAIN(TestSongListModel)
