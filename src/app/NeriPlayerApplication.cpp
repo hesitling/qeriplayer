@@ -10,6 +10,8 @@
 #include "core/logger/Logger.h"
 #include "core/network/NetworkManager.h"
 #include "mainwindow.h"
+#include "player/BackendFactory.h"
+#include "player/PlaybackController.h"
 #include "repo/PlayHistoryRepository.h"
 #include "repo/PlayerStateRepository.h"
 #include "repo/PlaylistRepository.h"
@@ -128,6 +130,23 @@ void NeriPlayerApplication::initializeCoreServices()
     auto *secStorage = m_services.service<SecureStorage>();
     m_services.registerService<NeteaseClient>(std::make_unique<NeteaseClient>(netMgr->httpClient(), secStorage));
     log->info("NeteaseClient registered");
+
+    // 7. Playback Engine
+    if (m_services.hasService<SettingsRepository>() && m_services.hasService<PlayerStateRepository>()) {
+        auto *settingsRepo = m_services.service<SettingsRepository>();
+        auto *playerStateRepo = m_services.service<PlayerStateRepository>();
+
+        // Read backend preference from settings
+        auto backendType = settingsRepo->get(QStringLiteral("player/backend")).value_or(QStringLiteral("auto"));
+        auto backend = BackendFactory::createBackend(backendType);
+        log->info("Audio backend: {}", backend->backendName().toStdString());
+
+        auto *neteaseClient = m_services.service<NeteaseClient>();
+        auto playbackCtrl
+            = std::make_unique<PlaybackController>(std::move(backend), neteaseClient, playerStateRepo, settingsRepo);
+        m_services.registerService<PlaybackController>(std::move(playbackCtrl));
+        log->info("PlaybackController registered");
+    }
 
     log->info("Core services initialized");
 }

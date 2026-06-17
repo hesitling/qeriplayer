@@ -98,20 +98,20 @@ Implement API clients for each music platform and the repository layer.
 
 Integrate audio playback with the platform APIs.
 
-- [ ] **Player Module** (`src/player/`)
-  - [ ] `PlayerBackend` — abstract interface for audio backends
-  - [ ] `QtMultimediaBackend` — Qt Multimedia implementation
+- [x] **Player Module** (`src/player/`)
+  - [x] `IPlayerBackend` — abstract interface for audio backends
+  - [x] `QtMultimediaBackend` — Qt Multimedia implementation (QMediaPlayer + QAudioOutput)
   - [ ] `MpvBackend` — libmpv implementation (optional, for format support)
-  - [ ] `PlaybackController` — play/pause/stop/next/prev/seek
-  - [ ] `AudioOutput` — volume control, device selection
+  - [x] `PlaybackController` — play/pause/stop/next/prev/seek with URL resolution, pre-resolve, persistence
+  - [x] `BackendFactory` — backend selection with auto-detect (qt/mpv/auto)
   - [ ] Gapless playback support
   - [ ] Audio buffer management
 
-- [ ] **Playback Queue** (`src/player/`)
-  - [ ] `PlayQueue` — ordered list of songs to play
-  - [ ] Repeat modes: off, one, all
-  - [ ] Shuffle mode with Fisher-Yates
-  - [ ] Queue manipulation: add, remove, reorder
+- [x] **Playback Queue** (`src/player/`)
+  - [x] `PlayQueue` — ordered list of songs to play
+  - [x] Repeat modes: off, one, all
+  - [x] Shuffle mode with Fisher-Yates
+  - [x] Queue manipulation: add, remove, reorder, move
 
 ---
 
