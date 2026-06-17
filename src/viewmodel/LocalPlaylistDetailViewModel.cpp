@@ -48,6 +48,10 @@ void LocalPlaylistDetailViewModel::loadPlaylist(const QString &id)
 
     auto playlist = m_playlistRepo->findById(id);
     if (!playlist.has_value()) {
+        m_playlistName.clear();
+        Q_EMIT playlistNameChanged();
+        m_songs->setSongs({});
+
         m_error = ViewModelError(ViewModelError::ErrorType::NotFound, "Playlist not found");
         m_hasError = true;
         Q_EMIT errorChanged();
