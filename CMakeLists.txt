@@ -99,6 +99,7 @@ set(SOURCES
     src/api/netease/NeteaseClientUser.cpp
     src/player/backends/QtMultimediaBackend.cpp
     src/player/PlayQueue.cpp
+    src/player/PlaybackController.cpp
 )
 
 # 头文件
@@ -154,6 +155,7 @@ set(HEADERS
     src/player/IPlayerBackend.h
     src/player/backends/QtMultimediaBackend.h
     src/player/PlayQueue.h
+    src/player/PlaybackController.h
     src/mainwindow.h
 )
 

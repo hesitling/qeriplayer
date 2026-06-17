@@ -31,19 +31,19 @@
 
 ## 5. PlaybackController
 
-- [ ] 5.1 Create `src/player/PlaybackController.h` class declaration
-- [ ] 5.2 Implement constructor: accept IPlayerBackend, IMusicPlatformPlugin, IPlayerStateRepository, ISettingsRepository
-- [ ] 5.3 Implement play(song): URL resolution → backend load → backend play
-- [ ] 5.4 Implement pause(), resume(), stop(), seek() delegation
-- [ ] 5.5 Implement auto-advance: onMediaFinished() → queue.next() → play()
-- [ ] 5.6 Implement controller signal propagation from backend
-- [ ] 5.7 Implement volume/mute delegation with settings persistence
+- [x] 5.1 Create `src/player/PlaybackController.h` class declaration
+- [x] 5.2 Implement constructor: accept IPlayerBackend, IMusicPlatformPlugin, IPlayerStateRepository, ISettingsRepository
+- [x] 5.3 Implement play(song): URL resolution → backend load → backend play
+- [x] 5.4 Implement pause(), resume(), stop(), seek() delegation
+- [x] 5.5 Implement auto-advance: onMediaFinished() → queue.next() → play()
+- [x] 5.6 Implement controller signal propagation from backend
+- [x] 5.7 Implement volume/mute delegation with settings persistence
 
 ## 6. Pre-resolve URLs
 
-- [ ] 6.1 Add URL cache (QHash<QString, QString>) with TTL to PlaybackController
-- [ ] 6.2 Implement background URL resolution coroutine triggered on song add
-- [ ] 6.3 Integrate cache lookup into play() before falling back to on-demand resolution
+- [x] 6.1 Add URL cache (QHash<QString, QString>) with TTL to PlaybackController
+- [x] 6.2 Implement background URL resolution coroutine triggered on song add
+- [x] 6.3 Integrate cache lookup into play() before falling back to on-demand resolution
 
 ## 7. Backend Selection
 
@@ -53,9 +53,9 @@
 
 ## 8. Persistence
 
-- [ ] 8.1 Implement save: persist state to IPlayerStateRepository on song change, pause, stop
-- [ ] 8.2 Implement restore: load saved state on controller construction if shouldResumePlayback
-- [ ] 8.3 Implement debounced save for seek operations
+- [x] 8.1 Implement save: persist state to IPlayerStateRepository on song change, pause, stop
+- [x] 8.2 Implement restore: load saved state on controller construction if shouldResumePlayback
+- [x] 8.3 Implement debounced save for seek operations
 
 ## 9. Tests
 
