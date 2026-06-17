@@ -3,8 +3,8 @@
 
 #include "player/PlaybackController.h"
 
-#include "domain/SongUrlResult.h"
 #include "core/logger/Logger.h"
+#include "domain/SongUrlResult.h"
 
 #include <QCoroTask>
 #include <QDateTime>
@@ -198,7 +198,7 @@ void PlaybackController::preResolveUrl(const Song &song)
                 self->m_urlCacheExpiry.insert(s.id, QDateTime::currentMSecsSinceEpoch() + URL_CACHE_TTL_MS);
             } else {
                 Logger::get("player")->warn("Pre-resolve failed for {}: {}", s.name.toStdString(),
-                                             result.error().message().toStdString());
+                                            result.error().message().toStdString());
             }
         } catch (const std::exception &ex) {
             Logger::get("player")->warn("Pre-resolve exception for {}: {}", s.name.toStdString(), ex.what());

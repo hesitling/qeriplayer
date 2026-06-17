@@ -210,8 +210,8 @@ private Q_SLOTS:
         m_backend = new MockBackend();
         m_settingsRepo = std::make_unique<MockSettingsRepository>();
         m_playerStateRepo = std::make_unique<MockPlayerStateRepository>();
-        m_controller = std::make_unique<PlaybackController>(
-            std::unique_ptr<IPlayerBackend>(m_backend), nullptr, m_playerStateRepo.get(), m_settingsRepo.get());
+        m_controller = std::make_unique<PlaybackController>(std::unique_ptr<IPlayerBackend>(m_backend), nullptr,
+                                                            m_playerStateRepo.get(), m_settingsRepo.get());
     }
 
     void cleanup()
@@ -230,8 +230,8 @@ private Q_SLOTS:
         // Create a fresh controller to test constructor behavior
         auto backend = std::make_unique<MockBackend>();
         auto *backendPtr = backend.get();
-        auto controller = std::make_unique<PlaybackController>(std::move(backend), nullptr,
-                                                               m_playerStateRepo.get(), m_settingsRepo.get());
+        auto controller = std::make_unique<PlaybackController>(std::move(backend), nullptr, m_playerStateRepo.get(),
+                                                               m_settingsRepo.get());
 
         QCOMPARE(backendPtr->volume(), 0.75);
     }
@@ -242,8 +242,8 @@ private Q_SLOTS:
 
         auto backend = std::make_unique<MockBackend>();
         auto *backendPtr = backend.get();
-        auto controller = std::make_unique<PlaybackController>(std::move(backend), nullptr,
-                                                               m_playerStateRepo.get(), m_settingsRepo.get());
+        auto controller = std::make_unique<PlaybackController>(std::move(backend), nullptr, m_playerStateRepo.get(),
+                                                               m_settingsRepo.get());
 
         QVERIFY(backendPtr->isMuted());
     }
