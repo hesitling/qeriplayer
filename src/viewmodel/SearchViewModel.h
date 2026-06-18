@@ -11,6 +11,7 @@
 #include "viewmodel/SongListModel.h"
 #include "viewmodel/ViewModelError.h"
 
+#include <QCoroQmlTask>
 #include <QCoroTask>
 #include <QObject>
 #include <QTimer>
@@ -64,8 +65,8 @@ public:
     void setSelectedPlatform(QeriPlayerQt::MusicPlatform platform);
 
     // --- Actions ---
-    Q_INVOKABLE void search();
-    Q_INVOKABLE void loadMore();
+    Q_INVOKABLE QCoro::QmlTask search();
+    Q_INVOKABLE QCoro::QmlTask loadMore();
     Q_INVOKABLE void clearResults();
     Q_INVOKABLE void clearError();
 
@@ -95,6 +96,8 @@ private:
     bool m_hasMore = false;
     ViewModelError m_error;
     bool m_hasError = false;
+
+    QCoro::QmlTask m_pendingSearch;
 
     quint64 m_searchRequestVersion = 0;
     int m_currentPage = 0;

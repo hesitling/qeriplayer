@@ -61,7 +61,7 @@ void MainViewModel::navigateTo(View view)
     Q_EMIT currentViewChanged();
 }
 
-void MainViewModel::openLocalPlaylist(const QString &id)
+QCoro::QmlTask MainViewModel::openLocalPlaylist(const QString &id)
 {
     deleteDetailViewModels();
 
@@ -69,41 +69,44 @@ void MainViewModel::openLocalPlaylist(const QString &id)
     // For now, create with nullptr repos (will be wired properly in integration)
     m_localPlaylistDetail = new LocalPlaylistDetailViewModel(nullptr, nullptr, this);
     wireDetailVmSignals();
-    m_localPlaylistDetail->loadPlaylist(id);
+    auto task = m_localPlaylistDetail->loadPlaylist(id);
     Q_EMIT localPlaylistDetailChanged();
 
     navigateTo(View::LocalPlaylist);
+    return task;
 }
 
-void MainViewModel::openNeteasePlaylist(const PlaylistSummary &summary)
+QCoro::QmlTask MainViewModel::openNeteasePlaylist(const PlaylistSummary &summary)
 {
     deleteDetailViewModels();
 
     // TODO: get repos from ServiceLocator or inject
     m_neteasePlaylistDetail = new NeteasePlaylistDetailViewModel(nullptr, nullptr, nullptr, this);
     wireDetailVmSignals();
-    m_neteasePlaylistDetail->loadPlaylist(summary.id);
+    auto task = m_neteasePlaylistDetail->loadPlaylist(summary.id);
     Q_EMIT neteasePlaylistDetailChanged();
 
     navigateTo(View::NeteasePlaylist);
+    return task;
 }
 
-void MainViewModel::openNeteaseAlbum(const AlbumSummary &summary)
+QCoro::QmlTask MainViewModel::openNeteaseAlbum(const AlbumSummary &summary)
 {
     deleteDetailViewModels();
 
     m_neteasePlaylistDetail = new NeteasePlaylistDetailViewModel(nullptr, nullptr, nullptr, this);
     wireDetailVmSignals();
-    m_neteasePlaylistDetail->loadAlbum(summary.id);
+    auto task = m_neteasePlaylistDetail->loadAlbum(summary.id);
     Q_EMIT neteasePlaylistDetailChanged();
 
     navigateTo(View::NeteasePlaylist);
+    return task;
 }
 
-void MainViewModel::initialize()
+QCoro::QmlTask MainViewModel::initialize()
 {
     m_settingsVm->loadSettings();
-    m_playlistVm->loadLocalPlaylists();
+    return m_playlistVm->loadLocalPlaylists();
 }
 
 void MainViewModel::deleteDetailViewModels()
@@ -126,10 +129,13 @@ void MainViewModel::connectSignals()
     connect(m_searchVm, &SearchViewModel::requestPlay, m_playerVm,
             [this](const Song &song) { m_playerVm->play(song); });
 
-    // Playlist → Navigation
-    connect(m_playlistVm, &PlaylistViewModel::localPlaylistSelected, this, &MainViewModel::openLocalPlaylist);
-    connect(m_playlistVm, &PlaylistViewModel::neteasePlaylistSelected, this, &MainViewModel::openNeteasePlaylist);
-    connect(m_playlistVm, &PlaylistViewModel::neteaseAlbumSelected, this, &MainViewModel::openNeteaseAlbum);
+    // Playlist → Navigation (store QmlTask to keep coroutine alive)
+    connect(m_playlistVm, &PlaylistViewModel::localPlaylistSelected, this,
+            [this](const QString &id) { m_pendingTask = openLocalPlaylist(id); });
+    connect(m_playlistVm, &PlaylistViewModel::neteasePlaylistSelected, this,
+            [this](const PlaylistSummary &summary) { m_pendingTask = openNeteasePlaylist(summary); });
+    connect(m_playlistVm, &PlaylistViewModel::neteaseAlbumSelected, this,
+            [this](const AlbumSummary &summary) { m_pendingTask = openNeteaseAlbum(summary); });
 }
 
 void MainViewModel::wireDetailVmSignals()

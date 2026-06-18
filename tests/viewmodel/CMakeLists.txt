@@ -154,6 +154,9 @@ add_executable(TestPlaylistViewModel
     ${CMAKE_SOURCE_DIR}/src/core/filesystem/AppPaths.cpp
     ${CMAKE_SOURCE_DIR}/src/core/filesystem/FileUtils.cpp
     ${CMAKE_SOURCE_DIR}/src/core/filesystem/FileWatcher.cpp
+    ${CMAKE_SOURCE_DIR}/src/repo/PlaylistRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/repo/SongRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/repo/SqlRowMapper.cpp
     ${CMAKE_SOURCE_DIR}/src/core/database/DatabaseManager.cpp
     ${CMAKE_SOURCE_DIR}/src/core/logger/Logger.cpp
 )
@@ -186,15 +189,22 @@ add_executable(TestLocalPlaylistDetailViewModel
     ${CMAKE_SOURCE_DIR}/src/viewmodel/SongListModel.cpp
     ${CMAKE_SOURCE_DIR}/src/viewmodel/ViewModelError.cpp
     ${CMAKE_SOURCE_DIR}/src/api/common/ApiError.cpp
+    ${CMAKE_SOURCE_DIR}/src/repo/PlaylistRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/repo/SongRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/repo/SqlRowMapper.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/database/DatabaseManager.cpp
     ${CMAKE_SOURCE_DIR}/src/core/logger/Logger.cpp
 )
 target_include_directories(TestLocalPlaylistDetailViewModel PRIVATE
     ${CMAKE_SOURCE_DIR}/src
+    ${SQLITE3_INCLUDE_DIRS}
     ${SPDLOG_INCLUDE_DIRS}
 )
 target_link_libraries(TestLocalPlaylistDetailViewModel PRIVATE
     Qt6::Core
     Qt6::Test
+    ${QERIPLAYER_QCORO_LIBRARIES}
+    ${SQLITE3_LIBRARIES}
     ${SPDLOG_LIBRARIES}
 )
 target_compile_definitions(TestLocalPlaylistDetailViewModel PRIVATE

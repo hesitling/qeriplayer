@@ -53,7 +53,86 @@ ViewModelError PlaylistViewModel::error() const
 
 // --- Loading ---
 
-void PlaylistViewModel::loadLocalPlaylists()
+QCoro::QmlTask PlaylistViewModel::loadLocalPlaylists()
+{
+    return QCoro::QmlTask(loadLocalPlaylistsImpl());
+}
+
+QCoro::QmlTask PlaylistViewModel::loadNeteasePlaylists()
+{
+    return QCoro::QmlTask(loadNeteasePlaylistsImpl());
+}
+
+QCoro::QmlTask PlaylistViewModel::loadNeteaseAlbums()
+{
+    return QCoro::QmlTask(loadNeteaseAlbumsImpl());
+}
+
+// --- Local playlist CRUD ---
+
+QCoro::QmlTask PlaylistViewModel::createLocalPlaylist(const QString &name)
+{
+    return QCoro::QmlTask([this, name]() -> QCoro::Task<void> {
+        try {
+            m_playlistRepo->create(name);
+            co_await loadLocalPlaylistsImpl();
+        } catch (const std::exception &ex) {
+            Logger::get("viewmodel")->warn("Failed to create local playlist: {}", ex.what());
+            m_error = ViewModelError(ViewModelError::ErrorType::Database, QString::fromUtf8(ex.what()));
+            m_hasError = true;
+            Q_EMIT errorChanged();
+        }
+    }());
+}
+
+QCoro::QmlTask PlaylistViewModel::deleteLocalPlaylist(const QString &id)
+{
+    return QCoro::QmlTask([this, id]() -> QCoro::Task<void> {
+        try {
+            m_playlistRepo->remove(id);
+            co_await loadLocalPlaylistsImpl();
+        } catch (const std::exception &ex) {
+            Logger::get("viewmodel")->warn("Failed to delete local playlist: {}", ex.what());
+            m_error = ViewModelError(ViewModelError::ErrorType::Database, QString::fromUtf8(ex.what()));
+            m_hasError = true;
+            Q_EMIT errorChanged();
+        }
+    }());
+}
+
+QCoro::QmlTask PlaylistViewModel::renameLocalPlaylist(const QString &id, const QString &name)
+{
+    return QCoro::QmlTask([this, id, name]() -> QCoro::Task<void> {
+        try {
+            // Get existing playlist to preserve other metadata
+            auto playlist = m_playlistRepo->findById(id);
+            if (playlist.has_value()) {
+                m_playlistRepo->updateMetadata(id, name, playlist->description, playlist->coverUrl.toString());
+                co_await loadLocalPlaylistsImpl();
+            } else {
+                Logger::get("viewmodel")->warn("Cannot rename playlist: id {} not found", id.toStdString());
+            }
+        } catch (const std::exception &ex) {
+            Logger::get("viewmodel")->warn("Failed to rename local playlist: {}", ex.what());
+            m_error = ViewModelError(ViewModelError::ErrorType::Database, QString::fromUtf8(ex.what()));
+            m_hasError = true;
+            Q_EMIT errorChanged();
+        }
+    }());
+}
+
+// --- Error ---
+
+void PlaylistViewModel::clearError()
+{
+    m_hasError = false;
+    m_error = ViewModelError();
+    Q_EMIT errorChanged();
+}
+
+// --- Private ---
+
+QCoro::Task<void> PlaylistViewModel::loadLocalPlaylistsImpl()
 {
     try {
         auto summaries = m_playlistRepo->findAll();
@@ -68,64 +147,8 @@ void PlaylistViewModel::loadLocalPlaylists()
     } catch (const std::exception &ex) {
         Logger::get("viewmodel")->warn("Failed to load local playlists: {}", ex.what());
     }
+    co_return;
 }
-
-void PlaylistViewModel::loadNeteasePlaylists()
-{
-    loadNeteasePlaylistsImpl();
-}
-
-void PlaylistViewModel::loadNeteaseAlbums()
-{
-    loadNeteaseAlbumsImpl();
-}
-
-// --- Local playlist CRUD ---
-
-void PlaylistViewModel::createLocalPlaylist(const QString &name)
-{
-    try {
-        m_playlistRepo->create(name);
-        loadLocalPlaylists();
-    } catch (const std::exception &ex) {
-        Logger::get("viewmodel")->warn("Failed to create local playlist: {}", ex.what());
-    }
-}
-
-void PlaylistViewModel::deleteLocalPlaylist(const QString &id)
-{
-    try {
-        m_playlistRepo->remove(id);
-        loadLocalPlaylists();
-    } catch (const std::exception &ex) {
-        Logger::get("viewmodel")->warn("Failed to delete local playlist: {}", ex.what());
-    }
-}
-
-void PlaylistViewModel::renameLocalPlaylist(const QString &id, const QString &name)
-{
-    try {
-        // Get existing playlist to preserve other metadata
-        auto playlist = m_playlistRepo->findById(id);
-        if (playlist.has_value()) {
-            m_playlistRepo->updateMetadata(id, name, playlist->description, playlist->coverUrl.toString());
-            loadLocalPlaylists();
-        }
-    } catch (const std::exception &ex) {
-        Logger::get("viewmodel")->warn("Failed to rename local playlist: {}", ex.what());
-    }
-}
-
-// --- Error ---
-
-void PlaylistViewModel::clearError()
-{
-    m_hasError = false;
-    m_error = ViewModelError();
-    Q_EMIT errorChanged();
-}
-
-// --- Private ---
 
 QCoro::Task<void> PlaylistViewModel::loadNeteasePlaylistsImpl()
 {

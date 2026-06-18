@@ -11,6 +11,8 @@
 #include "viewmodel/SongListModel.h"
 #include "viewmodel/ViewModelError.h"
 
+#include <QCoroQmlTask>
+#include <QCoroTask>
 #include <QObject>
 #include <QStringList>
 #include <QVector>
@@ -38,12 +40,12 @@ public:
     bool hasError() const;
     ViewModelError error() const;
 
-    Q_INVOKABLE void loadPlaylist(const QString &id);
-    Q_INVOKABLE void addSong(const QString &songId);
-    Q_INVOKABLE void removeSong(const QString &songId);
-    Q_INVOKABLE void reorderSongs(const QStringList &songIds);
-    Q_INVOKABLE void rename(const QString &newName);
-    Q_INVOKABLE void deletePlaylist();
+    Q_INVOKABLE QCoro::QmlTask loadPlaylist(const QString &id);
+    Q_INVOKABLE QCoro::QmlTask addSong(const QString &songId);
+    Q_INVOKABLE QCoro::QmlTask removeSong(const QString &songId);
+    Q_INVOKABLE QCoro::QmlTask reorderSongs(const QStringList &songIds);
+    Q_INVOKABLE QCoro::QmlTask rename(const QString &newName);
+    Q_INVOKABLE QCoro::QmlTask deletePlaylist();
     Q_INVOKABLE void playSong(int index);
     Q_INVOKABLE void playAll();
 
@@ -57,6 +59,8 @@ Q_SIGNALS:
     void playlistDeleted();
 
 private:
+    QCoro::Task<void> loadPlaylistImpl(const QString &id);
+
     IPlaylistRepository *m_playlistRepo;
     ISongRepository *m_songRepo;
     SongListModel *m_songs;

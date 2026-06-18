@@ -11,6 +11,7 @@
 #include "viewmodel/SongListModel.h"
 #include "viewmodel/ViewModelError.h"
 
+#include <QCoroQmlTask>
 #include <QCoroTask>
 #include <QObject>
 #include <QString>
@@ -41,10 +42,10 @@ public:
     bool hasError() const;
     ViewModelError error() const;
 
-    Q_INVOKABLE void loadPlaylist(const QString &playlistId);
-    Q_INVOKABLE void loadAlbum(const QString &albumId);
-    Q_INVOKABLE void retry();
-    Q_INVOKABLE void saveToLocal();
+    Q_INVOKABLE QCoro::QmlTask loadPlaylist(const QString &playlistId);
+    Q_INVOKABLE QCoro::QmlTask loadAlbum(const QString &albumId);
+    Q_INVOKABLE QCoro::QmlTask retry();
+    Q_INVOKABLE QCoro::QmlTask saveToLocal();
     Q_INVOKABLE void playSong(int index);
     Q_INVOKABLE void playAll();
 
