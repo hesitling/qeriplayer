@@ -83,6 +83,16 @@ ApplicationWindow {
         }
     }
 
+    // Wire toast to search errors
+    Connections {
+        target: searchVm
+        function onErrorChanged() {
+            if (searchVm.hasError) {
+                toast.show(searchVm.error.message)
+            }
+        }
+    }
+
     // Placeholder pages
     Component {
         id: homePage
@@ -99,15 +109,7 @@ ApplicationWindow {
 
     Component {
         id: searchPage
-        Rectangle {
-            color: "transparent"
-            Label {
-                anchors.centerIn: parent
-                text: "Search (PR 3)"
-                font.pixelSize: 24
-                opacity: 0.5
-            }
-        }
+        SearchView {}
     }
 
     Component {

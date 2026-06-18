@@ -32,5 +32,5 @@
 
 ## 4. Wire into main.qml
 
-- [ ] 4.1 Replace `searchPage` Component in `main.qml` with `SearchView {}`
-- [ ] 4.2 Add `Connections` block in `main.qml` wiring `searchVm.errorChanged` to `toast.show()`
+- [x] 4.1 Replace `searchPage` Component in `main.qml` with `SearchView {}`
+- [x] 4.2 Add `Connections` block in `main.qml` wiring `searchVm.errorChanged` to `toast.show()`
