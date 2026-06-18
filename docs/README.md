@@ -1,6 +1,6 @@
-# NeriPlayer Qt Documentation
+# QeriPlayer Qt Documentation
 
-This directory contains architecture design and module design documents for the NeriPlayer Qt project.
+This directory contains architecture design and module design documents for the QeriPlayer Qt project.
 
 ## Document Structure
 
@@ -15,7 +15,7 @@ docs/
 │   └── porting-from-android.md
 └── modules/               # Module design documents
     ├── index.md           # Module overview & architecture layers
-    ├── app.md             # Application module (NeriPlayerApplication, ServiceLocator)
+    ├── app.md             # Application module (QeriPlayerApplication, ServiceLocator)
     ├── domain.md          # Domain models (Song, Playlist, Lyrics, enums, etc.)
     ├── core/              # Core infrastructure modules
     │   ├── index.md       # Core module overview
@@ -60,6 +60,6 @@ docs/
 
 ## References
 
-- [NeriPlayer Android](https://github.com/cwuom/NeriPlayer)
+- [QeriPlayer Android](https://github.com/cwuom/QeriPlayer)
 - [QCoro](https://github.com/qcoro/qcoro)
 - [Qt 6 Documentation](https://doc.qt.io/qt-6/)

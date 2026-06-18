@@ -12,7 +12,7 @@
 #include <QTemporaryDir>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestCrypto : public QObject {
     Q_OBJECT

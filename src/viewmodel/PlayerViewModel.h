@@ -1,8 +1,8 @@
 /// @file PlayerViewModel.h
 /// @brief ViewModel wrapping PlaybackController for QML binding
 
-#ifndef NERIPLAYERQT_PLAYERVIEWMODEL_H
-#define NERIPLAYERQT_PLAYERVIEWMODEL_H
+#ifndef QERIPLAYERQT_PLAYERVIEWMODEL_H
+#define QERIPLAYERQT_PLAYERVIEWMODEL_H
 
 #include "domain/Enums.h"
 #include "domain/Song.h"
@@ -14,7 +14,7 @@
 #include <QCoroTask>
 #include <QObject>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief ViewModel exposing PlaybackController state to QML
@@ -63,8 +63,8 @@ public:
     ViewModelError error() const;
 
     // --- Playback control ---
-    Q_INVOKABLE QCoro::Task<void> play(const NeriPlayerQt::Song &song);
-    Q_INVOKABLE void loadQueueAndPlay(const QVector<NeriPlayerQt::Song> &songs, int startIndex);
+    Q_INVOKABLE QCoro::Task<void> play(const QeriPlayerQt::Song &song);
+    Q_INVOKABLE void loadQueueAndPlay(const QVector<QeriPlayerQt::Song> &songs, int startIndex);
     Q_INVOKABLE void pause();
     Q_INVOKABLE void resume();
     Q_INVOKABLE void stop();
@@ -82,7 +82,7 @@ public:
     Q_INVOKABLE void toggleShuffle();
 
     // --- Queue management ---
-    Q_INVOKABLE void addToQueue(const NeriPlayerQt::Song &song);
+    Q_INVOKABLE void addToQueue(const QeriPlayerQt::Song &song);
     Q_INVOKABLE void removeFromQueue(int index);
     Q_INVOKABLE void moveInQueue(int from, int to);
     Q_INVOKABLE void clearQueue();
@@ -112,6 +112,6 @@ private:
     qint64 m_durationMs = 0;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_PLAYERVIEWMODEL_H
+#endif // QERIPLAYERQT_PLAYERVIEWMODEL_H

@@ -7,7 +7,7 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -23,7 +23,7 @@ MainWindow::~MainWindow() { }
 
 void MainWindow::setupUi()
 {
-    setWindowTitle(tr("NeriPlayer Qt"));
+    setWindowTitle(tr("QeriPlayer Qt"));
     resize(800, 600);
 }
 
@@ -44,8 +44,8 @@ void MainWindow::setupMenuBar()
     QAction *aboutAction = helpMenu->addAction(tr("&About"));
     connect(aboutAction, &QAction::triggered, this, [this]() {
         QString version = QCoreApplication::applicationVersion();
-        QMessageBox::about(this, tr("About NeriPlayer Qt"),
-                           tr("NeriPlayer Qt Desktop Client\nVersion %1").arg(version));
+        QMessageBox::about(this, tr("About QeriPlayer Qt"),
+                           tr("QeriPlayer Qt Desktop Client\nVersion %1").arg(version));
     });
 }
 
@@ -78,7 +78,7 @@ void MainWindow::setupCentralWidget()
     QWidget *centralWidget = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
-    QLabel *welcomeLabel = new QLabel(tr("Welcome to NeriPlayer Qt Desktop Client"), centralWidget);
+    QLabel *welcomeLabel = new QLabel(tr("Welcome to QeriPlayer Qt Desktop Client"), centralWidget);
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setStyleSheet("font-size: 24px; font-weight: bold; color: #333;");
 
@@ -100,4 +100,4 @@ void MainWindow::on_actionExit_triggered()
     close();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

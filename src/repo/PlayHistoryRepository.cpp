@@ -7,7 +7,7 @@
 #include "core/logger/Logger.h"
 #include "repo/SqlRowMapper.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 PlayHistoryRepository::PlayHistoryRepository(DatabaseManager *db)
     : m_db(db)
@@ -90,4 +90,4 @@ int PlayHistoryRepository::playCount(const QString &songId)
     return rows[0][0].toInt();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

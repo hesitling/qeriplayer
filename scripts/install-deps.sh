@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install system dependencies for building NeriPlayer Qt on Ubuntu.
+# Install system dependencies for building QeriPlayer Qt on Ubuntu.
 # Qt is installed separately via jurplel/install-qt-action in CI.
 set -euo pipefail
 

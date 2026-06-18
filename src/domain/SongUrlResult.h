@@ -1,20 +1,20 @@
 /// @file SongUrlResult.h
 /// @brief Song URL resolution result
 
-#ifndef NERIPLAYERQT_SONGURLRESULT_H
-#define NERIPLAYERQT_SONGURLRESULT_H
+#ifndef QERIPLAYERQT_SONGURLRESULT_H
+#define QERIPLAYERQT_SONGURLRESULT_H
 
 #include <QMetaType>
 #include <QString>
 
 #include <cstdint>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Audio metadata from URL resolution
  *
- * Aligned with Android NeriPlayer's PlaybackAudioInfo.
+ * Aligned with Android QeriPlayer's PlaybackAudioInfo.
  */
 struct AudioInfo {
     QString qualityKey;
@@ -30,7 +30,7 @@ struct AudioInfo {
 /**
  * @brief Result of resolving a song's playback URL
  *
- * Aligned with Android NeriPlayer's SongUrlResult sealed class.
+ * Aligned with Android QeriPlayer's SongUrlResult sealed class.
  */
 struct SongUrlResult {
     enum class Status : std::uint8_t { Success = 0, WaitingForAuthoritativeStream, RequiresLogin, Failure };
@@ -45,9 +45,9 @@ struct SongUrlResult {
     QString cacheKeyOverride;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::AudioInfo)
-Q_DECLARE_METATYPE(NeriPlayerQt::SongUrlResult)
+Q_DECLARE_METATYPE(QeriPlayerQt::AudioInfo)
+Q_DECLARE_METATYPE(QeriPlayerQt::SongUrlResult)
 
-#endif // NERIPLAYERQT_SONGURLRESULT_H
+#endif // QERIPLAYERQT_SONGURLRESULT_H

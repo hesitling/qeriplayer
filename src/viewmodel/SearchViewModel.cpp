@@ -5,7 +5,7 @@
 
 #include "core/logger/Logger.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 SearchViewModel::SearchViewModel(QVector<IMusicPlatformPlugin *> plugins, ISongRepository *songRepo, QObject *parent)
     : QObject(parent)
@@ -269,4 +269,4 @@ IMusicPlatformPlugin *SearchViewModel::currentPlugin() const
     return m_plugins.first();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

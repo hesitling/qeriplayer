@@ -1,11 +1,11 @@
-#ifndef NERIPLAYERQT_WEBSOCKETCLIENT_H
-#define NERIPLAYERQT_WEBSOCKETCLIENT_H
+#ifndef QERIPLAYERQT_WEBSOCKETCLIENT_H
+#define QERIPLAYERQT_WEBSOCKETCLIENT_H
 
 #include <QObject>
 #include <QUrl>
 #include <QWebSocket>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class WebSocketClient : public QObject {
     Q_OBJECT
@@ -28,6 +28,6 @@ private:
     QWebSocket m_socket;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_WEBSOCKETCLIENT_H
+#endif // QERIPLAYERQT_WEBSOCKETCLIENT_H

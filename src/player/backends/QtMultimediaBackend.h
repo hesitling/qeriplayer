@@ -1,8 +1,8 @@
 /// @file QtMultimediaBackend.h
 /// @brief Qt6 Multimedia implementation of IPlayerBackend
 
-#ifndef NERIPLAYERQT_QTMULTIMEDIABACKEND_H
-#define NERIPLAYERQT_QTMULTIMEDIABACKEND_H
+#ifndef QERIPLAYERQT_QTMULTIMEDIABACKEND_H
+#define QERIPLAYERQT_QTMULTIMEDIABACKEND_H
 
 #include "player/IPlayerBackend.h"
 
@@ -11,7 +11,7 @@
 
 #include <memory>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Qt6 Multimedia implementation of IPlayerBackend
@@ -53,6 +53,6 @@ private:
     PlaybackState m_cachedState = PlaybackState::Stopped;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_QTMULTIMEDIABACKEND_H
+#endif // QERIPLAYERQT_QTMULTIMEDIABACKEND_H

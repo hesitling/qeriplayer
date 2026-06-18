@@ -1,8 +1,8 @@
 /// @file SecureStorage.h
 /// @brief Encrypted key-value storage on disk
 
-#ifndef NERIPLAYERQT_SECURESTORAGE_H
-#define NERIPLAYERQT_SECURESTORAGE_H
+#ifndef QERIPLAYERQT_SECURESTORAGE_H
+#define QERIPLAYERQT_SECURESTORAGE_H
 
 #include <QByteArray>
 #include <QHash>
@@ -11,7 +11,7 @@
 
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Stores key-value pairs encrypted on disk using AES-256-GCM
@@ -64,6 +64,6 @@ private:
     mutable bool m_loaded = false;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_SECURESTORAGE_H
+#endif // QERIPLAYERQT_SECURESTORAGE_H

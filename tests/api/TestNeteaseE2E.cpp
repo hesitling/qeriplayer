@@ -17,7 +17,7 @@
 #include <QTest>
 #include <QThread>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 static void delay(int ms)
 {

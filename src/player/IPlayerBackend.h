@@ -1,8 +1,8 @@
 /// @file IPlayerBackend.h
 /// @brief Abstract interface for audio playback backends
 
-#ifndef NERIPLAYERQT_IPLAYERBACKEND_H
-#define NERIPLAYERQT_IPLAYERBACKEND_H
+#ifndef QERIPLAYERQT_IPLAYERBACKEND_H
+#define QERIPLAYERQT_IPLAYERBACKEND_H
 
 #include "domain/Enums.h"
 
@@ -11,7 +11,7 @@
 #include <QString>
 #include <QUrl>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Abstract interface for audio playback backends
@@ -83,13 +83,13 @@ public:
     [[nodiscard]] virtual QString backendName() const = 0;
 
 Q_SIGNALS:
-    void stateChanged(NeriPlayerQt::PlaybackState newState);
+    void stateChanged(QeriPlayerQt::PlaybackState newState);
     void positionChanged(qint64 positionMs);
     void durationChanged(qint64 durationMs);
     void mediaFinished();
     void errorOccurred(const QString &message);
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_IPLAYERBACKEND_H
+#endif // QERIPLAYERQT_IPLAYERBACKEND_H

@@ -232,7 +232,7 @@ NetEase API responses use a JSON body with a `code` field (e.g., `{"code": -10, 
 - **THEN** `isAuthError()` SHALL return true and `userMessage()` SHALL indicate the account may be restricted
 
 ### Requirement: NeteaseClient service registration
-`NeteaseClient` SHALL be registered in `ServiceLocator` during `NeriPlayerApplication::initializeCoreServices()`, after `NetworkManager` and `SecureStorage`.
+`NeteaseClient` SHALL be registered in `ServiceLocator` during `QeriPlayerApplication::initializeCoreServices()`, after `NetworkManager` and `SecureStorage`.
 
 #### Scenario: Retrieve NeteaseClient from ServiceLocator
 - **WHEN** `ServiceLocator::service<NeteaseClient>()` is called after application initialization

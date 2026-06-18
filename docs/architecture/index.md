@@ -1,8 +1,8 @@
-# NeriPlayer Qt Architecture Design Document
+# QeriPlayer Qt Architecture Design Document
 
 ## 1. Overview
 
-NeriPlayer Qt is a cross-platform desktop music player client developed using the Qt framework. It uses the Android version of NeriPlayer as a feature and behavior reference while adopting Qt-native layered architecture, module boundaries, and asynchronous patterns for multi-source music platform integration, local playback, playlist management, and other core features.
+QeriPlayer Qt is a cross-platform desktop music player client developed using the Qt framework. It uses the Android version of QeriPlayer as a feature and behavior reference while adopting Qt-native layered architecture, module boundaries, and asynchronous patterns for multi-source music platform integration, local playback, playlist management, and other core features.
 
 ## 2. Design Principles
 
@@ -35,7 +35,7 @@ NeriPlayer Qt is a cross-platform desktop music player client developed using th
 
 - [Layered Architecture](layers.md) — Detailed layered architecture design
 - [C++20 Coroutines & QCoro](coroutines.md) — Coroutine support and asynchronous programming
-- [Porting from Android NeriPlayer](porting-from-android.md) — Rules for using Android as a feature reference
+- [Porting from Android QeriPlayer](porting-from-android.md) — Rules for using Android as a feature reference
 
 See also: [Module Design Documents](../modules/index.md)
 
@@ -73,7 +73,7 @@ See also: [Module Design Documents](../modules/index.md)
 └─────────────────────────────────────────────────────────────┘
 ```
 
-Note: There is no dedicated service layer. ViewModels access repositories and API clients directly, following the Android NeriPlayer pattern. `PlaybackController` encapsulates playback orchestration (queue, URL resolution, state persistence) and lives in the `player/` module.
+Note: There is no dedicated service layer. ViewModels access repositories and API clients directly, following the Android QeriPlayer pattern. `PlaybackController` encapsulates playback orchestration (queue, URL resolution, state persistence) and lives in the `player/` module.
 
 ## 6. Module Dependencies
 

@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -408,4 +408,4 @@ PersistedPlayerState SqlRowMapper::playerStateFromJson(const QVariantMap &map)
     return state;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

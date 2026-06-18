@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidelines for AI agents working on NeriPlayer Qt.
+Guidelines for AI agents working on QeriPlayer Qt.
 
 ## Tech Stack
 
@@ -32,14 +32,14 @@ just ci           # build + test + format check
 For development, prefer using a tmp directory to avoid polluting the project tree and to get faster builds on tmpfs:
 
 ```bash
-just build_dir=/tmp/neriplayer-build build
-just build_dir=/tmp/neriplayer-build test
+just build_dir=/tmp/qeriplayer-build build
+just build_dir=/tmp/qeriplayer-build test
 ```
 
 Or set it permanently for the session:
 
 ```bash
-export JUST_BUILD_DIR=/tmp/neriplayer-build
+export JUST_BUILD_DIR=/tmp/qeriplayer-build
 just build
 just test
 ```

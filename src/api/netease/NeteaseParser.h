@@ -1,8 +1,8 @@
 /// @file NeteaseParser.h
 /// @brief JSON-to-domain parsing for NetEase API responses
 
-#ifndef NERIPLAYERQT_NETEASEPARSER_H
-#define NERIPLAYERQT_NETEASEPARSER_H
+#ifndef QERIPLAYERQT_NETEASEPARSER_H
+#define QERIPLAYERQT_NETEASEPARSER_H
 
 #include "api/common/LoginResult.h"
 #include "domain/Album.h"
@@ -19,7 +19,7 @@
 #include <QStringList>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Static parser methods for NetEase API JSON responses
@@ -64,6 +64,6 @@ private:
     static void logMalformed(const QString &method, const QString &detail);
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_NETEASEPARSER_H
+#endif // QERIPLAYERQT_NETEASEPARSER_H

@@ -7,7 +7,7 @@
 #include "core/logger/Logger.h"
 #include "repo/SqlRowMapper.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 SongRepository::SongRepository(DatabaseManager *db)
     : m_db(db)
@@ -153,4 +153,4 @@ QVector<Song> SongRepository::search(const QString &query, int limit)
     return result;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

@@ -1,14 +1,14 @@
 /// @file BackendFactory.h
 /// @brief Factory for creating audio playback backends
 
-#ifndef NERIPLAYERQT_BACKENDFACTORY_H
-#define NERIPLAYERQT_BACKENDFACTORY_H
+#ifndef QERIPLAYERQT_BACKENDFACTORY_H
+#define QERIPLAYERQT_BACKENDFACTORY_H
 
 #include "player/IPlayerBackend.h"
 
 #include <memory>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Factory for creating IPlayerBackend instances
@@ -32,6 +32,6 @@ public:
     [[nodiscard]] static bool isMpvAvailable();
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_BACKENDFACTORY_H
+#endif // QERIPLAYERQT_BACKENDFACTORY_H

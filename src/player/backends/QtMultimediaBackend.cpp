@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <stdexcept>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 QtMultimediaBackend::QtMultimediaBackend(QObject *parent)
     : IPlayerBackend(parent)
@@ -180,4 +180,4 @@ void QtMultimediaBackend::updateCachedState()
     }
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

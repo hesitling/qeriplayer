@@ -8,7 +8,7 @@
 #include <QDir>
 #include <QStandardPaths>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 QString AppPaths::dataDir()
 {
@@ -17,7 +17,7 @@ QString AppPaths::dataDir()
 #elif defined(Q_OS_MACOS)
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 #else // Linux
-    QString path = QDir::homePath() + QStringLiteral("/.local/share/NeriPlayer");
+    QString path = QDir::homePath() + QStringLiteral("/.local/share/QeriPlayer");
 #endif
     return ensureCreated(path);
 }
@@ -29,7 +29,7 @@ QString AppPaths::configDir()
 #elif defined(Q_OS_MACOS)
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 #else // Linux
-    QString path = QDir::homePath() + QStringLiteral("/.config/NeriPlayer");
+    QString path = QDir::homePath() + QStringLiteral("/.config/QeriPlayer");
 #endif
     return ensureCreated(path);
 }
@@ -41,14 +41,14 @@ QString AppPaths::cacheDir()
 #elif defined(Q_OS_MACOS)
     QString path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 #else // Linux
-    QString path = QDir::homePath() + QStringLiteral("/.cache/NeriPlayer");
+    QString path = QDir::homePath() + QStringLiteral("/.cache/QeriPlayer");
 #endif
     return ensureCreated(path);
 }
 
 QString AppPaths::tempDir()
 {
-    QString path = QDir::tempPath() + QStringLiteral("/NeriPlayer");
+    QString path = QDir::tempPath() + QStringLiteral("/QeriPlayer");
     return ensureCreated(path);
 }
 
@@ -64,4 +64,4 @@ QString AppPaths::ensureCreated(const QString &path)
     return dir.absolutePath();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

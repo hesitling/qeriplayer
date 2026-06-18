@@ -5,7 +5,7 @@
 
 #include "core/logger/Logger.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 SettingsViewModel::SettingsViewModel(ISettingsRepository *settingsRepo, NeteaseClient *neteaseClient,
                                      IPlayHistoryRepository *historyRepo, QObject *parent)
@@ -234,4 +234,4 @@ void SettingsViewModel::clearError()
     Q_EMIT errorChanged();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

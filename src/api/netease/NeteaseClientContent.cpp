@@ -9,7 +9,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 // ─── IMusicPlatformPlugin ───────────────────────────────────────────────────
 
@@ -236,4 +236,4 @@ QCoro::Task<ApiResult<QVector<Song>>> NeteaseClient::getAlbumDetail(const QStrin
     co_return ApiResult<QVector<Song>>(NeteaseParser::parseSongs(songsArray));
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

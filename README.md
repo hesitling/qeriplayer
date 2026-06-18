@@ -1,6 +1,6 @@
-# NeriPlayer Qt Desktop Client
+# QeriPlayer Qt Desktop Client
 
-A Qt 6 desktop client for NeriPlayer, providing a native cross-platform music playback experience.
+A Qt 6 desktop client for QeriPlayer, providing a native cross-platform music playback experience.
 
 ## Features
 
@@ -30,7 +30,7 @@ cmake -S . -B build
 cmake --build build
 
 # Run the application
-./build/NeriPlayerQt
+./build/QeriPlayerQt
 ```
 
 ### QCoro Source Selection
@@ -39,16 +39,16 @@ By default, CMake uses a local `lib/qcoro` checkout when it exists and falls bac
 
 ```bash
 # Force the installed QCoro package
-cmake -S . -B build -DNERIPLAYER_USE_SYSTEM_QCORO=ON
+cmake -S . -B build -DQERIPLAYER_USE_SYSTEM_QCORO=ON
 
 # Use a custom QCoro source checkout
-cmake -S . -B build -DNERIPLAYER_QCORO_SOURCE_DIR=/path/to/qcoro
+cmake -S . -B build -DQERIPLAYER_QCORO_SOURCE_DIR=/path/to/qcoro
 ```
 
 ## Project Structure
 
 ```
-neriplayer-qt/
+qeriplayer-qt/
 ├── CMakeLists.txt          # CMake build configuration
 ├── README.md               # Project overview and build instructions
 ├── docs/                   # Architecture and module design documents
@@ -63,7 +63,7 @@ neriplayer-qt/
 
 ## Architecture Status
 
-The project is in early implementation. The current code establishes the application shell and first core services. The architecture documents describe the intended layered design, with Android NeriPlayer used as a feature reference rather than a direct dependency-shape template.
+The project is in early implementation. The current code establishes the application shell and first core services. The architecture documents describe the intended layered design, with Android QeriPlayer used as a feature reference rather than a direct dependency-shape template.
 
 Near-term implementation areas:
 
@@ -76,4 +76,4 @@ Near-term implementation areas:
 
 ## License
 
-This project is part of the NeriPlayer ecosystem. See the main NeriPlayer repository for license information.
+This project is part of the QeriPlayer ecosystem. See the main QeriPlayer repository for license information.

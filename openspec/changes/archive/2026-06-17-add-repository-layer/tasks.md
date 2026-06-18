@@ -47,7 +47,7 @@
 
 ## 9. Service Wiring
 
-- [x] 9.1 Update `NeriPlayerApplication.cpp` — register all 5 repositories in ServiceLocator after DatabaseManager
+- [x] 9.1 Update `QeriPlayerApplication.cpp` — register all 5 repositories in ServiceLocator after DatabaseManager
 - [x] 9.2 Update `CMakeLists.txt` — add all new repo source and header files to SOURCES and HEADERS
 
 ## 10. Tests

@@ -1,8 +1,8 @@
 /// @file IMusicPlatformPlugin.h
 /// @brief Abstract interface for music platform clients
 
-#ifndef NERIPLAYERQT_IMUSICPLATFORMPLUGIN_H
-#define NERIPLAYERQT_IMUSICPLATFORMPLUGIN_H
+#ifndef QERIPLAYERQT_IMUSICPLATFORMPLUGIN_H
+#define QERIPLAYERQT_IMUSICPLATFORMPLUGIN_H
 
 #include "api/common/ApiResult.h"
 #include "domain/Enums.h"
@@ -14,7 +14,7 @@
 #include <QCoroTask>
 #include <QString>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Abstract interface that all music platform clients implement
@@ -77,6 +77,6 @@ public:
     virtual QString platformName() const = 0;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_IMUSICPLATFORMPLUGIN_H
+#endif // QERIPLAYERQT_IMUSICPLATFORMPLUGIN_H

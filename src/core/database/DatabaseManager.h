@@ -1,8 +1,8 @@
 /// @file DatabaseManager.h
 /// @brief SQLite database wrapper with schema management
 
-#ifndef NERIPLAYERQT_DATABASEMANAGER_H
-#define NERIPLAYERQT_DATABASEMANAGER_H
+#ifndef QERIPLAYERQT_DATABASEMANAGER_H
+#define QERIPLAYERQT_DATABASEMANAGER_H
 
 #include <QString>
 #include <QVariant>
@@ -15,7 +15,7 @@
 
 struct sqlite3;
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Exception thrown on database errors
@@ -129,6 +129,6 @@ private:
     std::vector<std::pair<int, std::function<bool(sqlite3 *)>>> m_migrations;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_DATABASEMANAGER_H
+#endif // QERIPLAYERQT_DATABASEMANAGER_H

@@ -2,15 +2,15 @@
 
 ### Requirement: Application data directory
 The system SHALL provide `AppPaths::dataDir()` that returns the platform-appropriate directory for persistent application data:
-- Linux: `~/.local/share/NeriPlayer/`
-- macOS: `~/Library/Application Support/NeriPlayer/`
-- Windows: `%APPDATA%/NeriPlayer/`
+- Linux: `~/.local/share/QeriPlayer/`
+- macOS: `~/Library/Application Support/QeriPlayer/`
+- Windows: `%APPDATA%/QeriPlayer/`
 
 The directory SHALL be created if it does not exist.
 
 #### Scenario: Get data directory on Linux
 - **WHEN** `AppPaths::dataDir()` is called on Linux
-- **THEN** the returned path SHALL end with `.local/share/NeriPlayer`
+- **THEN** the returned path SHALL end with `.local/share/QeriPlayer`
 
 #### Scenario: Auto-create data directory
 - **WHEN** `AppPaths::dataDir()` is called and the directory does not exist
@@ -18,9 +18,9 @@ The directory SHALL be created if it does not exist.
 
 ### Requirement: Application config directory
 The system SHALL provide `AppPaths::configDir()` that returns the platform-appropriate directory for configuration files:
-- Linux: `~/.config/NeriPlayer/`
-- macOS: `~/Library/Application Support/NeriPlayer/`
-- Windows: `%APPDATA%/NeriPlayer/`
+- Linux: `~/.config/QeriPlayer/`
+- macOS: `~/Library/Application Support/QeriPlayer/`
+- Windows: `%APPDATA%/QeriPlayer/`
 
 The directory SHALL be created if it does not exist.
 
@@ -30,9 +30,9 @@ The directory SHALL be created if it does not exist.
 
 ### Requirement: Application cache directory
 The system SHALL provide `AppPaths::cacheDir()` that returns the platform-appropriate directory for cache files:
-- Linux: `~/.cache/NeriPlayer/`
-- macOS: `~/Library/Caches/NeriPlayer/`
-- Windows: `%LOCALAPPDATA%/NeriPlayer/Cache/`
+- Linux: `~/.cache/QeriPlayer/`
+- macOS: `~/Library/Caches/QeriPlayer/`
+- Windows: `%LOCALAPPDATA%/QeriPlayer/Cache/`
 
 The directory SHALL be created if it does not exist.
 

@@ -3,7 +3,7 @@
 
 #include "api/common/ApiError.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 ApiError::ApiError(int code, const QString &message, const QString &details)
     : m_code(code)
@@ -78,4 +78,4 @@ QString ApiError::userMessage() const
     return QStringLiteral("An unknown error occurred.");
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

@@ -14,7 +14,7 @@ The system SHALL provide a `Song` struct containing:
 - Platform identifiers: `channelId` (QString), `audioId` (QString), `subAudioId` (QString), `playlistContextId` (QString), `streamUrl` (QString)
 - `extra` (QVariantMap for platform-specific fields)
 
-Field names SHALL match Android NeriPlayer's `SongItem` model. All fields SHALL be default-constructible and copyable.
+Field names SHALL match Android QeriPlayer's `SongItem` model. All fields SHALL be default-constructible and copyable.
 
 #### Scenario: Construct a Song with all fields
 - **WHEN** a Song is constructed with id="1", name="Test", artist="Artist", album="Album", durationMs=180000
@@ -25,7 +25,7 @@ Field names SHALL match Android NeriPlayer's `SongItem` model. All fields SHALL 
 - **THEN** all fields in the destination SHALL equal the source
 
 ### Requirement: Album model
-The system SHALL provide an `Album` struct containing: `id` (QString), `name` (QString), `artist` (QString), `coverUrl` (QUrl), `size` (int, track count), and `platform` (MusicPlatform enum). Field names SHALL match Android NeriPlayer's `AlbumSummary` model.
+The system SHALL provide an `Album` struct containing: `id` (QString), `name` (QString), `artist` (QString), `coverUrl` (QUrl), `size` (int, track count), and `platform` (MusicPlatform enum). Field names SHALL match Android QeriPlayer's `AlbumSummary` model.
 
 #### Scenario: Default Album construction
 - **WHEN** an Album is default-constructed
@@ -39,7 +39,7 @@ The system SHALL provide an `Artist` struct containing: `id` (QString), `name` (
 - **THEN** the Artist SHALL hold the provided values
 
 ### Requirement: Playlist model
-The system SHALL provide a `Playlist` struct containing: `id` (QString), `name` (QString), `description` (QString), `coverUrl` (QUrl), `songCount` (int), `owner` (QString), `platform` (MusicPlatform enum), `songs` (QVector<Song>, optionally populated), `modifiedAt` (qint64, epoch milliseconds), and `customCoverUrl` (QString). Field names SHALL align with Android NeriPlayer's `LocalPlaylist` model.
+The system SHALL provide a `Playlist` struct containing: `id` (QString), `name` (QString), `description` (QString), `coverUrl` (QUrl), `songCount` (int), `owner` (QString), `platform` (MusicPlatform enum), `songs` (QVector<Song>, optionally populated), `modifiedAt` (qint64, epoch milliseconds), and `customCoverUrl` (QString). Field names SHALL align with Android QeriPlayer's `LocalPlaylist` model.
 
 #### Scenario: Playlist with embedded songs
 - **WHEN** a Playlist is constructed with 3 songs in the `songs` vector
@@ -57,21 +57,21 @@ The system SHALL provide a `Lyrics` struct containing: `rawText` (QString) and `
 - **THEN** `words[0].startTimeMs` SHALL be 1000 and `words[1].endTimeMs` SHALL be 3000
 
 ### Requirement: PlaybackAudioSource enum
-The system SHALL provide an enum `PlaybackAudioSource` with values: `Local`, `NetEase`, `Bilibili`, `YouTube`. Aligned with Android NeriPlayer's `PlaybackAudioSource`.
+The system SHALL provide an enum `PlaybackAudioSource` with values: `Local`, `NetEase`, `Bilibili`, `YouTube`. Aligned with Android QeriPlayer's `PlaybackAudioSource`.
 
 #### Scenario: Default audio source
 - **WHEN** a PlaybackAudioSource is default-constructed
 - **THEN** it SHALL equal `PlaybackAudioSource::Local` (enum value 0)
 
 ### Requirement: BiliPlaylistKind enum
-The system SHALL provide an enum `BiliPlaylistKind` with values: `CreatedFavorite`, `CollectedFavorite`, `Collection`. Aligned with Android NeriPlayer's `BiliPlaylistKind`.
+The system SHALL provide an enum `BiliPlaylistKind` with values: `CreatedFavorite`, `CollectedFavorite`, `Collection`. Aligned with Android QeriPlayer's `BiliPlaylistKind`.
 
 #### Scenario: BiliPlaylistKind distinct values
 - **WHEN** BiliPlaylistKind values are compared
 - **THEN** all three values SHALL be distinct
 
 ### Requirement: SongIdentity model
-The system SHALL provide a `SongIdentity` struct containing: `id` (QString), `album` (QString), `mediaUri` (QString). It SHALL provide a `stableKey()` method returning a deterministic string for hashing and comparison. It SHALL support equality comparison operators. Aligned with Android NeriPlayer's `SongIdentity`.
+The system SHALL provide a `SongIdentity` struct containing: `id` (QString), `album` (QString), `mediaUri` (QString). It SHALL provide a `stableKey()` method returning a deterministic string for hashing and comparison. It SHALL support equality comparison operators. Aligned with Android QeriPlayer's `SongIdentity`.
 
 #### Scenario: Stable key generation
 - **WHEN** a SongIdentity with id="1", album="TestAlbum", mediaUri="http://example.com/song" has `stableKey()` called
@@ -82,7 +82,7 @@ The system SHALL provide a `SongIdentity` struct containing: `id` (QString), `al
 - **THEN** they SHALL compare equal
 
 ### Requirement: SongUrlResult model
-The system SHALL provide a `SongUrlResult` struct with a `Status` enum containing: `Success`, `WaitingForAuthoritativeStream`, `RequiresLogin`, `Failure`. It SHALL contain: `status`, `url` (QString), `durationMs` (qint64), `mimeType` (QString), `noticeMessage` (QString), `expectedContentLength` (qint64), `audioInfo` (AudioInfo), `cacheKeyOverride` (QString). An `AudioInfo` struct SHALL contain: `qualityKey`, `qualityLabel`, `codecLabel`, `mimeType` (all QString), `bitrateKbps`, `sampleRateHz`, `bitDepth`, `channelCount` (all int). Aligned with Android NeriPlayer's `SongUrlResult` and `PlaybackAudioInfo`.
+The system SHALL provide a `SongUrlResult` struct with a `Status` enum containing: `Success`, `WaitingForAuthoritativeStream`, `RequiresLogin`, `Failure`. It SHALL contain: `status`, `url` (QString), `durationMs` (qint64), `mimeType` (QString), `noticeMessage` (QString), `expectedContentLength` (qint64), `audioInfo` (AudioInfo), `cacheKeyOverride` (QString). An `AudioInfo` struct SHALL contain: `qualityKey`, `qualityLabel`, `codecLabel`, `mimeType` (all QString), `bitrateKbps`, `sampleRateHz`, `bitDepth`, `channelCount` (all int). Aligned with Android QeriPlayer's `SongUrlResult` and `PlaybackAudioInfo`.
 
 #### Scenario: Successful URL result
 - **WHEN** a SongUrlResult is constructed with status=Success, url="http://example.com/stream", durationMs=180000
@@ -93,7 +93,7 @@ The system SHALL provide a `SongUrlResult` struct with a `Status` enum containin
 - **THEN** `status` SHALL be `Failure` and `url` SHALL be empty
 
 ### Requirement: PlaylistSummary model
-The system SHALL provide a `PlaylistSummary` struct containing: `id` (QString), `name` (QString), `coverUrl` (QUrl), `playCount` (qint64), `trackCount` (int). An `AlbumSummary` struct SHALL contain: `id` (QString), `name` (QString), `coverUrl` (QUrl), `size` (int). A `BiliPlaylist` struct SHALL contain: `mediaId` (qint64), `fid` (qint64), `mid` (qint64), `title` (QString), `count` (int), `coverUrl` (QUrl), `kind` (BiliPlaylistKind), `subtitle` (QString). Aligned with Android NeriPlayer's summary models.
+The system SHALL provide a `PlaylistSummary` struct containing: `id` (QString), `name` (QString), `coverUrl` (QUrl), `playCount` (qint64), `trackCount` (int). An `AlbumSummary` struct SHALL contain: `id` (QString), `name` (QString), `coverUrl` (QUrl), `size` (int). A `BiliPlaylist` struct SHALL contain: `mediaId` (qint64), `fid` (qint64), `mid` (qint64), `title` (QString), `count` (int), `coverUrl` (QUrl), `kind` (BiliPlaylistKind), `subtitle` (QString). Aligned with Android QeriPlayer's summary models.
 
 #### Scenario: Default PlaylistSummary construction
 - **WHEN** a PlaylistSummary is default-constructed
@@ -108,7 +108,7 @@ The system SHALL provide a `PlaylistSummary` struct containing: `id` (QString), 
 - **THEN** `kind` SHALL be `BiliPlaylistKind::CreatedFavorite` and `count` SHALL be 0
 
 ### Requirement: PersistedPlayerState model
-The system SHALL provide a `PersistedPlayerState` struct containing: `playlist` (QVector<Song>), `currentIndex` (int), `mediaUrl` (QString), `positionMs` (qint64), `shouldResumePlayback` (bool), `repeatMode` (RepeatMode), `shuffleEnabled` (bool). Aligned with Android NeriPlayer's `PersistedState`.
+The system SHALL provide a `PersistedPlayerState` struct containing: `playlist` (QVector<Song>), `currentIndex` (int), `mediaUrl` (QString), `positionMs` (qint64), `shouldResumePlayback` (bool), `repeatMode` (RepeatMode), `shuffleEnabled` (bool). Aligned with Android QeriPlayer's `PersistedState`.
 
 #### Scenario: Default construction
 - **WHEN** a PersistedPlayerState is default-constructed
@@ -157,7 +157,7 @@ The system SHALL provide an enum `AudioQuality` with values: `Low`, `Standard`, 
 - **THEN** `Lossless` SHALL be greater than `High`, `High` greater than `Standard`, and `Standard` greater than `Low`
 
 ### Requirement: Listen Together domain models
-The system SHALL provide Listen Together domain types aligned with Android NeriPlayer's `listentogether/` package:
+The system SHALL provide Listen Together domain types aligned with Android QeriPlayer's `listentogether/` package:
 
 - `ListenTogetherTrack` (wire format): `stableKey`, `channelId`, `audioId`, `subAudioId`, `playlistContextId`, `mediaUri`, `streamUrl`, `name`, `artist`, `album`, `durationMs`, `coverUrl`
 - `ListenTogetherRoomState`: `roomId`, `version`, `schemaVersion`, `controllerUserUuid`, `settings`, `members`, `queue`, `currentIndex`, `track`, `playback`, `roomStatus`, etc.

@@ -1,8 +1,8 @@
 /// @file PlaylistViewModel.h
 /// @brief ViewModel for library overview listing playlists from all sources
 
-#ifndef NERIPLAYERQT_PLAYLISTVIEWMODEL_H
-#define NERIPLAYERQT_PLAYLISTVIEWMODEL_H
+#ifndef QERIPLAYERQT_PLAYLISTVIEWMODEL_H
+#define QERIPLAYERQT_PLAYLISTVIEWMODEL_H
 
 #include "api/netease/NeteaseClient.h"
 #include "domain/PlaylistSummary.h"
@@ -14,7 +14,7 @@
 #include <QString>
 #include <QVariantList>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief ViewModel managing the library overview
@@ -69,10 +69,10 @@ Q_SIGNALS:
     void localPlaylistSelected(const QString &id);
 
     /// @brief User selected a NetEase playlist for detail view
-    void neteasePlaylistSelected(const NeriPlayerQt::PlaylistSummary &summary);
+    void neteasePlaylistSelected(const QeriPlayerQt::PlaylistSummary &summary);
 
     /// @brief User selected a NetEase album for detail view
-    void neteaseAlbumSelected(const NeriPlayerQt::AlbumSummary &summary);
+    void neteaseAlbumSelected(const QeriPlayerQt::AlbumSummary &summary);
 
 private:
     QCoro::Task<void> loadNeteasePlaylistsImpl();
@@ -89,6 +89,6 @@ private:
     bool m_hasError = false;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_PLAYLISTVIEWMODEL_H
+#endif // QERIPLAYERQT_PLAYLISTVIEWMODEL_H

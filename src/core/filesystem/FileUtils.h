@@ -1,13 +1,13 @@
 /// @file FileUtils.h
 /// @brief Safe file I/O utilities with atomic write support
 
-#ifndef NERIPLAYERQT_FILEUTILS_H
-#define NERIPLAYERQT_FILEUTILS_H
+#ifndef QERIPLAYERQT_FILEUTILS_H
+#define QERIPLAYERQT_FILEUTILS_H
 
 #include <QByteArray>
 #include <QString>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Utility class for safe file operations
@@ -45,6 +45,6 @@ private:
     static thread_local QString s_lastError;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_FILEUTILS_H
+#endif // QERIPLAYERQT_FILEUTILS_H

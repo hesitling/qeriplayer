@@ -1,8 +1,8 @@
 /// @file SearchResult.h
 /// @brief Search result domain model
 
-#ifndef NERIPLAYERQT_SEARCHRESULT_H
-#define NERIPLAYERQT_SEARCHRESULT_H
+#ifndef QERIPLAYERQT_SEARCHRESULT_H
+#define QERIPLAYERQT_SEARCHRESULT_H
 
 #include "domain/Album.h"
 #include "domain/Artist.h"
@@ -12,7 +12,7 @@
 #include <QMetaType>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Aggregated search results from one or more platforms
@@ -26,8 +26,8 @@ struct SearchResult {
     bool hasMore = false;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::SearchResult)
+Q_DECLARE_METATYPE(QeriPlayerQt::SearchResult)
 
-#endif // NERIPLAYERQT_SEARCHRESULT_H
+#endif // QERIPLAYERQT_SEARCHRESULT_H

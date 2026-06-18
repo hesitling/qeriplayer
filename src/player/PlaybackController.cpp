@@ -14,7 +14,7 @@
 
 #include <stdexcept>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 PlaybackController::PlaybackController(std::unique_ptr<IPlayerBackend> backend, IMusicPlatformPlugin *plugin,
                                        IPlayerStateRepository *playerStateRepo, ISettingsRepository *settingsRepo,
@@ -376,4 +376,4 @@ QCoro::Task<QString> PlaybackController::resolveUrl(const Song &song)
     co_return result.data().url;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

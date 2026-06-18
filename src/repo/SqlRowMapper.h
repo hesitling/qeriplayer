@@ -1,8 +1,8 @@
 /// @file SqlRowMapper.h
 /// @brief Converts between SQL rows and domain types
 
-#ifndef NERIPLAYERQT_SQLROWMAPPER_H
-#define NERIPLAYERQT_SQLROWMAPPER_H
+#ifndef QERIPLAYERQT_SQLROWMAPPER_H
+#define QERIPLAYERQT_SQLROWMAPPER_H
 
 #include "core/database/DatabaseManager.h"
 #include "domain/PersistedPlayerState.h"
@@ -11,7 +11,7 @@
 
 #include <QVariant>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Utility for converting between SQL query rows and domain types
@@ -77,6 +77,6 @@ private:
     static void fillSongFromJson(Song &song, const QString &field, const QVariant &value);
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_SQLROWMAPPER_H
+#endif // QERIPLAYERQT_SQLROWMAPPER_H

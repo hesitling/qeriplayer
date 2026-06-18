@@ -9,7 +9,7 @@
 #include <QDir>
 #include <QFileInfo>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 // NamedLogger implementation
 
@@ -94,7 +94,7 @@ void Logger::initialize(const LoggerConfig &config)
         if (!logDir.exists()) {
             logDir.mkpath(".");
         }
-        QString logPath = logDir.filePath("neriplayer-%Y-%m-%d.log");
+        QString logPath = logDir.filePath("qeriplayer-%Y-%m-%d.log");
         s_fileSink
             = std::make_shared<spdlog::sinks::daily_file_sink_mt>(logPath.toStdString(), 0, 0, false, config.maxDays);
         sinks.push_back(s_fileSink);
@@ -212,4 +212,4 @@ void Logger::flush()
     spdlog::default_logger()->flush();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

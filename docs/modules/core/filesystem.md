@@ -31,9 +31,9 @@ public:
 
 | Method | Linux | macOS | Windows |
 |--------|-------|-------|---------|
-| `dataDir()` | `~/.local/share/NeriPlayer/` | `~/Library/Application Support/NeriPlayer/` | `%APPDATA%/NeriPlayer/` |
-| `configDir()` | `~/.config/NeriPlayer/` | `~/Library/Application Support/NeriPlayer/` | `%APPDATA%/NeriPlayer/` |
-| `cacheDir()` | `~/.cache/NeriPlayer/` | `~/Library/Caches/NeriPlayer/` | `%LOCALAPPDATA%/NeriPlayer/Cache/` |
+| `dataDir()` | `~/.local/share/QeriPlayer/` | `~/Library/Application Support/QeriPlayer/` | `%APPDATA%/QeriPlayer/` |
+| `configDir()` | `~/.config/QeriPlayer/` | `~/Library/Application Support/QeriPlayer/` | `%APPDATA%/QeriPlayer/` |
+| `cacheDir()` | `~/.cache/QeriPlayer/` | `~/Library/Caches/QeriPlayer/` | `%LOCALAPPDATA%/QeriPlayer/Cache/` |
 
 ## FileUtils
 
@@ -76,7 +76,7 @@ signals:
 
 ```cpp
 // Get application directories
-QString dbPath = AppPaths::dataDir() + "/neriplayer.db";
+QString dbPath = AppPaths::dataDir() + "/qeriplayer.db";
 QString logDir = AppPaths::dataDir() + "/logs";
 
 // Safe file I/O

@@ -4,7 +4,7 @@
 
 #include <QNetworkReply>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 bool HttpResponse::isSuccess() const
 {
@@ -54,4 +54,4 @@ QCoro::Task<HttpResponse> HttpClient::send(QNetworkReply *reply)
     co_return response;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

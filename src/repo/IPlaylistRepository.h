@@ -1,8 +1,8 @@
 /// @file IPlaylistRepository.h
 /// @brief Interface for playlist persistence operations
 
-#ifndef NERIPLAYERQT_IPLAYLISTREPOSITORY_H
-#define NERIPLAYERQT_IPLAYLISTREPOSITORY_H
+#ifndef QERIPLAYERQT_IPLAYLISTREPOSITORY_H
+#define QERIPLAYERQT_IPLAYLISTREPOSITORY_H
 
 #include "domain/Playlist.h"
 #include "domain/PlaylistSummary.h"
@@ -13,7 +13,7 @@
 
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Abstract interface for playlist CRUD operations on playlists/playlist_songs
@@ -77,6 +77,6 @@ public:
     virtual int songCount(const QString &playlistId) = 0;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_IPLAYLISTREPOSITORY_H
+#endif // QERIPLAYERQT_IPLAYLISTREPOSITORY_H

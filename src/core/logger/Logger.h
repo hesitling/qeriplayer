@@ -1,8 +1,8 @@
 /// @file Logger.h
 /// @brief spdlog-based logging with file rotation and named loggers
 
-#ifndef NERIPLAYERQT_LOGGER_H
-#define NERIPLAYERQT_LOGGER_H
+#ifndef QERIPLAYERQT_LOGGER_H
+#define QERIPLAYERQT_LOGGER_H
 
 #include <spdlog/sinks/daily_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -14,7 +14,7 @@
 #include <mutex>
 #include <unordered_map>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Log severity levels
@@ -131,6 +131,6 @@ private:
     static std::unordered_map<std::string, std::shared_ptr<NamedLogger>> s_loggers;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_LOGGER_H
+#endif // QERIPLAYERQT_LOGGER_H

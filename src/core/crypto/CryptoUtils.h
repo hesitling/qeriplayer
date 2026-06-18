@@ -1,15 +1,15 @@
 /// @file CryptoUtils.h
 /// @brief Cryptographic utilities: key generation, hashing
 
-#ifndef NERIPLAYERQT_CRYPTOUTILS_H
-#define NERIPLAYERQT_CRYPTOUTILS_H
+#ifndef QERIPLAYERQT_CRYPTOUTILS_H
+#define QERIPLAYERQT_CRYPTOUTILS_H
 
 #include <QByteArray>
 #include <QString>
 
 #include <stdexcept>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Exception thrown on cryptographic errors
@@ -40,6 +40,6 @@ public:
     static QByteArray sha256(const QByteArray &data);
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_CRYPTOUTILS_H
+#endif // QERIPLAYERQT_CRYPTOUTILS_H

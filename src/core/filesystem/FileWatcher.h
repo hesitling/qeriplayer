@@ -1,14 +1,14 @@
 /// @file FileWatcher.h
 /// @brief File change monitoring using QFileSystemWatcher
 
-#ifndef NERIPLAYERQT_FILEWATCHER_H
-#define NERIPLAYERQT_FILEWATCHER_H
+#ifndef QERIPLAYERQT_FILEWATCHER_H
+#define QERIPLAYERQT_FILEWATCHER_H
 
 #include <QFileSystemWatcher>
 #include <QObject>
 #include <QString>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Monitors a file or directory for changes
@@ -46,6 +46,6 @@ private:
     QFileSystemWatcher m_watcher;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_FILEWATCHER_H
+#endif // QERIPLAYERQT_FILEWATCHER_H

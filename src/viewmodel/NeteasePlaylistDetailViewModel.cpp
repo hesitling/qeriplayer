@@ -5,7 +5,7 @@
 
 #include "core/logger/Logger.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 NeteasePlaylistDetailViewModel::NeteasePlaylistDetailViewModel(NeteaseClient *neteaseClient, ISongRepository *songRepo,
                                                                IPlaylistRepository *playlistRepo, QObject *parent)
@@ -203,4 +203,4 @@ QCoro::Task<void> NeteasePlaylistDetailViewModel::loadAlbumImpl(const QString &a
     }
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

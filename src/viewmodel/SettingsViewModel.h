@@ -1,8 +1,8 @@
 /// @file SettingsViewModel.h
 /// @brief ViewModel for settings management and platform authentication
 
-#ifndef NERIPLAYERQT_SETTINGSVIEWMODEL_H
-#define NERIPLAYERQT_SETTINGSVIEWMODEL_H
+#ifndef QERIPLAYERQT_SETTINGSVIEWMODEL_H
+#define QERIPLAYERQT_SETTINGSVIEWMODEL_H
 
 #include "api/netease/NeteaseClient.h"
 #include "domain/Enums.h"
@@ -13,7 +13,7 @@
 #include <QCoroTask>
 #include <QObject>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief ViewModel managing settings persistence and platform auth
@@ -49,7 +49,7 @@ public:
     // --- Settings ---
     Q_INVOKABLE void loadSettings();
     Q_INVOKABLE void setTheme(const QString &theme);
-    Q_INVOKABLE void setAudioQuality(NeriPlayerQt::AudioQuality quality);
+    Q_INVOKABLE void setAudioQuality(QeriPlayerQt::AudioQuality quality);
     Q_INVOKABLE void setDownloadPath(const QString &path);
 
     // --- Auth ---
@@ -82,6 +82,6 @@ private:
     bool m_hasError = false;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_SETTINGSVIEWMODEL_H
+#endif // QERIPLAYERQT_SETTINGSVIEWMODEL_H

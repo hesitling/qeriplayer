@@ -1,6 +1,6 @@
 #include "core/network/NetworkMonitor.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 NetworkMonitor::NetworkMonitor(QObject *parent)
     : QObject(parent)
@@ -22,4 +22,4 @@ void NetworkMonitor::setOnline(bool online)
     emit onlineChanged(m_online);
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

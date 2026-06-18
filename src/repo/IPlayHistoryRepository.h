@@ -1,8 +1,8 @@
 /// @file IPlayHistoryRepository.h
 /// @brief Interface for play history persistence operations
 
-#ifndef NERIPLAYERQT_IPLAYHISTORYREPOSITORY_H
-#define NERIPLAYERQT_IPLAYHISTORYREPOSITORY_H
+#ifndef QERIPLAYERQT_IPLAYHISTORYREPOSITORY_H
+#define QERIPLAYERQT_IPLAYHISTORYREPOSITORY_H
 
 #include "domain/Song.h"
 
@@ -10,7 +10,7 @@
 #include <QStringList>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Abstract interface for play history operations on play_history table
@@ -47,6 +47,6 @@ public:
     virtual int playCount(const QString &songId) = 0;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_IPLAYHISTORYREPOSITORY_H
+#endif // QERIPLAYERQT_IPLAYHISTORYREPOSITORY_H

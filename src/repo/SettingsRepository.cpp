@@ -5,7 +5,7 @@
 
 #include "core/database/DatabaseManager.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 SettingsRepository::SettingsRepository(DatabaseManager *db)
     : m_db(db)
@@ -63,4 +63,4 @@ int SettingsRepository::getInt(const QString &key, int defaultValue)
     return ok ? result : defaultValue;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

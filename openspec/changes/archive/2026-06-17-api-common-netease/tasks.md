@@ -100,7 +100,7 @@
 
 ## 10. Service Registration & Build
 
-- [x] 10.1 Register `NeteaseClient` in `NeriPlayerApplication::initializeCoreServices()` after NetworkManager and SecureStorage
+- [x] 10.1 Register `NeteaseClient` in `QeriPlayerApplication::initializeCoreServices()` after NetworkManager and SecureStorage
 - [x] 10.2 Update `CMakeLists.txt` with all new source files (`src/api/common/`, `src/api/netease/`) and test targets (`TestNeteaseCrypto`, `TestNeteaseParser`)
 - [x] 10.3 Verify full build compiles without errors
 - [x] 10.4 Run all existing tests to verify no regressions

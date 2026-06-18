@@ -8,7 +8,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 PlaylistViewModel::PlaylistViewModel(IPlaylistRepository *playlistRepo, NeteaseClient *neteaseClient, QObject *parent)
     : QObject(parent)
@@ -211,4 +211,4 @@ QCoro::Task<void> PlaylistViewModel::loadNeteaseAlbumsImpl()
     }
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

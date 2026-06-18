@@ -1,14 +1,14 @@
 /// @file LoginResult.h
 /// @brief Login result type
 
-#ifndef NERIPLAYERQT_LOGINRESULT_H
-#define NERIPLAYERQT_LOGINRESULT_H
+#ifndef QERIPLAYERQT_LOGINRESULT_H
+#define QERIPLAYERQT_LOGINRESULT_H
 
 #include <QMetaType>
 #include <QString>
 #include <QUrl>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Result of a successful login operation
@@ -24,8 +24,8 @@ struct LoginResult {
     QString cookie; ///< Semicolon-delimited key=value pairs
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::LoginResult)
+Q_DECLARE_METATYPE(QeriPlayerQt::LoginResult)
 
-#endif // NERIPLAYERQT_LOGINRESULT_H
+#endif // QERIPLAYERQT_LOGINRESULT_H

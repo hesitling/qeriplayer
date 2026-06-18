@@ -1,8 +1,8 @@
 /// @file SearchViewModel.h
 /// @brief ViewModel for multi-platform music search with debounce
 
-#ifndef NERIPLAYERQT_SEARCHVIEWMODEL_H
-#define NERIPLAYERQT_SEARCHVIEWMODEL_H
+#ifndef QERIPLAYERQT_SEARCHVIEWMODEL_H
+#define QERIPLAYERQT_SEARCHVIEWMODEL_H
 
 #include "api/common/IMusicPlatformPlugin.h"
 #include "domain/Enums.h"
@@ -16,7 +16,7 @@
 #include <QTimer>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief ViewModel for music search with platform dispatch and debounce
@@ -61,7 +61,7 @@ public:
 
     // --- Setters ---
     void setQuery(const QString &query);
-    void setSelectedPlatform(NeriPlayerQt::MusicPlatform platform);
+    void setSelectedPlatform(QeriPlayerQt::MusicPlatform platform);
 
     // --- Actions ---
     Q_INVOKABLE void search();
@@ -77,7 +77,7 @@ Q_SIGNALS:
     void errorChanged();
 
     /// @brief Emitted when user selects a search result to play
-    void requestPlay(const NeriPlayerQt::Song &song);
+    void requestPlay(const QeriPlayerQt::Song &song);
 
 private:
     QCoro::Task<void> searchImpl();
@@ -101,6 +101,6 @@ private:
     static constexpr int PAGE_SIZE = 30;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_SEARCHVIEWMODEL_H
+#endif // QERIPLAYERQT_SEARCHVIEWMODEL_H

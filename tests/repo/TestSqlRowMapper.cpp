@@ -10,7 +10,7 @@
 #include <QJsonDocument>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestSqlRowMapper : public QObject {
     Q_OBJECT

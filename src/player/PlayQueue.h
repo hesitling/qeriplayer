@@ -1,8 +1,8 @@
 /// @file PlayQueue.h
 /// @brief Ordered song queue with repeat modes and shuffle
 
-#ifndef NERIPLAYERQT_PLAYQUEUE_H
-#define NERIPLAYERQT_PLAYQUEUE_H
+#ifndef QERIPLAYERQT_PLAYQUEUE_H
+#define QERIPLAYERQT_PLAYQUEUE_H
 
 #include "domain/Enums.h"
 #include "domain/PersistedPlayerState.h"
@@ -13,7 +13,7 @@
 
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Ordered song queue with repeat modes, shuffle, and navigation
@@ -88,7 +88,7 @@ Q_SIGNALS:
     void currentChanged();
     void queueChanged();
     void shuffleChanged(bool enabled);
-    void repeatChanged(NeriPlayerQt::RepeatMode mode);
+    void repeatChanged(QeriPlayerQt::RepeatMode mode);
 
 private:
     void rebuildShuffleArray();
@@ -105,6 +105,6 @@ private:
     int m_shuffleCursor = 0;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_PLAYQUEUE_H
+#endif // QERIPLAYERQT_PLAYQUEUE_H

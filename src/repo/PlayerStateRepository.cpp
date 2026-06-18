@@ -8,7 +8,7 @@
 
 #include <QDateTime>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 PlayerStateRepository::PlayerStateRepository(DatabaseManager *db)
     : m_db(db)
@@ -62,4 +62,4 @@ void PlayerStateRepository::clear()
     m_db->exec("DELETE FROM player_state");
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(NeriPlayerQt VERSION 0.1.0 LANGUAGES CXX)
+project(QeriPlayerQt VERSION 0.1.0 LANGUAGES CXX)
 
 # C++20 标准
 set(CMAKE_CXX_STANDARD 20)
@@ -14,11 +14,11 @@ include(GNUInstallDirs)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets Multimedia)
 
 # QCoro
-set(NERIPLAYER_QCORO_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/qcoro" CACHE PATH
+set(QERIPLAYER_QCORO_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/qcoro" CACHE PATH
     "Path to a local QCoro source checkout")
-option(NERIPLAYER_USE_SYSTEM_QCORO "Always use an installed QCoro package" OFF)
+option(QERIPLAYER_USE_SYSTEM_QCORO "Always use an installed QCoro package" OFF)
 
-if(NOT NERIPLAYER_USE_SYSTEM_QCORO AND EXISTS "${NERIPLAYER_QCORO_SOURCE_DIR}/CMakeLists.txt")
+if(NOT QERIPLAYER_USE_SYSTEM_QCORO AND EXISTS "${QERIPLAYER_QCORO_SOURCE_DIR}/CMakeLists.txt")
     set(QCORO_BUILD_EXAMPLES OFF CACHE BOOL "Build QCoro examples" FORCE)
     set(QCORO_BUILD_TESTING OFF CACHE BOOL "Build QCoro tests" FORCE)
     set(QCORO_WITH_QTDBUS OFF CACHE BOOL "Build QCoro QtDBus support" FORCE)
@@ -28,12 +28,12 @@ if(NOT NERIPLAYER_USE_SYSTEM_QCORO AND EXISTS "${NERIPLAYER_QCORO_SOURCE_DIR}/CM
     set(QCORO_WITH_QML OFF CACHE BOOL "Build QCoro QML support" FORCE)
     set(QCORO_WITH_QTTEST OFF CACHE BOOL "Build QCoro QtTest support" FORCE)
 
-    add_subdirectory("${NERIPLAYER_QCORO_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/_deps/qcoro")
-    set(NERIPLAYER_QCORO_LIBRARIES QCoro6::Core QCoro6::Network QCoro6::WebSockets)
+    add_subdirectory("${QERIPLAYER_QCORO_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/_deps/qcoro")
+    set(QERIPLAYER_QCORO_LIBRARIES QCoro6::Core QCoro6::Network QCoro6::WebSockets)
 else()
     find_package(QCoro6 REQUIRED COMPONENTS Core Network WebSockets)
     qcoro_enable_coroutines()
-    set(NERIPLAYER_QCORO_LIBRARIES QCoro::Core QCoro::Network QCoro::WebSockets)
+    set(QERIPLAYER_QCORO_LIBRARIES QCoro::Core QCoro::Network QCoro::WebSockets)
 endif()
 
 # SQLite
@@ -72,7 +72,7 @@ set(CMAKE_AUTORCC ON)
 
 set(SOURCES
     src/main.cpp
-    src/app/NeriPlayerApplication.cpp
+    src/app/QeriPlayerApplication.cpp
     src/core/crypto/CryptoUtils.cpp
     src/core/crypto/Encryptor.cpp
     src/core/crypto/Decryptor.cpp
@@ -107,7 +107,7 @@ set(SOURCES
 )
 
 set(HEADERS
-    src/app/NeriPlayerApplication.h
+    src/app/QeriPlayerApplication.h
     src/app/ServiceLocator.h
     src/core/crypto/CryptoUtils.h
     src/core/crypto/Encryptor.h
@@ -167,28 +167,28 @@ set(UI_FILES
     src/mainwindow.ui
 )
 
-add_executable(NeriPlayerQt ${SOURCES} ${HEADERS} ${UI_FILES})
+add_executable(QeriPlayerQt ${SOURCES} ${HEADERS} ${UI_FILES})
 
-target_link_libraries(NeriPlayerQt PRIVATE
+target_link_libraries(QeriPlayerQt PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
     Qt6::Network
     Qt6::WebSockets
     Qt6::Multimedia
-    ${NERIPLAYER_QCORO_LIBRARIES}
+    ${QERIPLAYER_QCORO_LIBRARIES}
     ${SQLITE3_LIBRARIES}
     ${SPDLOG_LIBRARIES}
     OpenSSL::Crypto
 )
 
-target_include_directories(NeriPlayerQt PRIVATE
+target_include_directories(QeriPlayerQt PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${SQLITE3_INCLUDE_DIRS}
     ${SPDLOG_INCLUDE_DIRS}
 )
 
-install(TARGETS NeriPlayerQt
+install(TARGETS QeriPlayerQt
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -218,15 +218,15 @@ set(VIEWMODEL_HEADERS
     src/viewmodel/NeteasePlaylistDetailViewModel.h
     src/viewmodel/MainViewModel.h
 )
-add_library(neriplayer_viewmodel STATIC ${VIEWMODEL_SOURCES} ${VIEWMODEL_HEADERS})
-target_include_directories(neriplayer_viewmodel PUBLIC
+add_library(qeriplayer_viewmodel STATIC ${VIEWMODEL_SOURCES} ${VIEWMODEL_HEADERS})
+target_include_directories(qeriplayer_viewmodel PUBLIC
     ${CMAKE_SOURCE_DIR}/src
 )
-target_link_libraries(neriplayer_viewmodel PUBLIC
+target_link_libraries(qeriplayer_viewmodel PUBLIC
     Qt6::Core
-    ${NERIPLAYER_QCORO_LIBRARIES}
+    ${QERIPLAYER_QCORO_LIBRARIES}
 )
-target_compile_definitions(neriplayer_viewmodel PRIVATE
+target_compile_definitions(qeriplayer_viewmodel PRIVATE
     QT_NO_KEYWORDS
 )
 
@@ -264,7 +264,7 @@ set(NETEASE_E2E_LIBS
     Qt6::Core
     Qt6::Network
     Qt6::WebSockets
-    ${NERIPLAYER_QCORO_LIBRARIES}
+    ${QERIPLAYER_QCORO_LIBRARIES}
     ${SQLITE3_LIBRARIES}
     ${SPDLOG_LIBRARIES}
     OpenSSL::Crypto

@@ -1,18 +1,18 @@
 /// @file SongIdentity.h
 /// @brief Song identity for cross-platform deduplication
 
-#ifndef NERIPLAYERQT_SONGIDENTITY_H
-#define NERIPLAYERQT_SONGIDENTITY_H
+#ifndef QERIPLAYERQT_SONGIDENTITY_H
+#define QERIPLAYERQT_SONGIDENTITY_H
 
 #include <QMetaType>
 #include <QString>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Stable identity for cross-platform song deduplication
  *
- * Aligned with Android NeriPlayer's SongIdentity model.
+ * Aligned with Android QeriPlayer's SongIdentity model.
  * Used to determine if two song entries from different sources
  * represent the same logical song.
  */
@@ -47,21 +47,21 @@ struct Song;
  */
 inline SongIdentity songIdentityFromSong(const Song &song);
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
 // Include Song.h here (after the declaration) for songIdentityFromSong implementation.
 // This avoids circular dependency since Song.h does not include SongIdentity.h.
 #include "domain/Song.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 inline SongIdentity songIdentityFromSong(const Song &song)
 {
     return SongIdentity {song.id, song.album, song.mediaUri.toString()};
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::SongIdentity)
+Q_DECLARE_METATYPE(QeriPlayerQt::SongIdentity)
 
-#endif // NERIPLAYERQT_SONGIDENTITY_H
+#endif // QERIPLAYERQT_SONGIDENTITY_H

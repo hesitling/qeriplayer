@@ -67,5 +67,5 @@
 ## 10. Integration
 
 - [x] 10.1 Register PlaybackController and BackendFactory in ServiceLocator
-- [x] 10.2 Initialize playback engine in NeriPlayerApplication startup
+- [x] 10.2 Initialize playback engine in QeriPlayerApplication startup
 - [x] 10.3 Update TODO.md to mark Phase 3 tasks as complete

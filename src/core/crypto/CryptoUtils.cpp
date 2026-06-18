@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <sstream>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 QByteArray CryptoUtils::generateKey()
 {
@@ -39,4 +39,4 @@ QByteArray CryptoUtils::sha256(const QByteArray &data)
     return QByteArray::fromStdString(oss.str());
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

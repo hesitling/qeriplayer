@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <random>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 PlayQueue::PlayQueue(QObject *parent)
     : QObject(parent)
@@ -336,4 +336,4 @@ int PlayQueue::advanceIndex(int index) const
     return index;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

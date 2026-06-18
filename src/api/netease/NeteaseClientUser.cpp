@@ -13,7 +13,7 @@
 #include <QRegularExpression>
 #include <QUrlQuery>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 // ─── User Operations ───────────────────────────────────────────────────────
 
@@ -335,4 +335,4 @@ QCoro::Task<ApiResult<QString>> NeteaseClient::getLikedPlaylistId(const QString 
     co_return ApiResult<QString>(ApiError(404, QStringLiteral("Liked playlist not found")));
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

@@ -1,8 +1,8 @@
 /// @file MainViewModel.h
 /// @brief Main ViewModel coordinating child VMs and navigation
 
-#ifndef NERIPLAYERQT_MAINVIEWMODEL_H
-#define NERIPLAYERQT_MAINVIEWMODEL_H
+#ifndef QERIPLAYERQT_MAINVIEWMODEL_H
+#define QERIPLAYERQT_MAINVIEWMODEL_H
 
 #include "domain/PlaylistSummary.h"
 #include "viewmodel/LocalPlaylistDetailViewModel.h"
@@ -14,7 +14,7 @@
 
 #include <QObject>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class MainViewModel : public QObject {
     Q_OBJECT
@@ -44,10 +44,10 @@ public:
     LocalPlaylistDetailViewModel *localPlaylistDetail() const;
     NeteasePlaylistDetailViewModel *neteasePlaylistDetail() const;
 
-    Q_INVOKABLE void navigateTo(NeriPlayerQt::MainViewModel::View view);
+    Q_INVOKABLE void navigateTo(QeriPlayerQt::MainViewModel::View view);
     Q_INVOKABLE void openLocalPlaylist(const QString &id);
-    Q_INVOKABLE void openNeteasePlaylist(const NeriPlayerQt::PlaylistSummary &summary);
-    Q_INVOKABLE void openNeteaseAlbum(const NeriPlayerQt::AlbumSummary &summary);
+    Q_INVOKABLE void openNeteasePlaylist(const QeriPlayerQt::PlaylistSummary &summary);
+    Q_INVOKABLE void openNeteaseAlbum(const QeriPlayerQt::AlbumSummary &summary);
     Q_INVOKABLE void initialize();
 
 Q_SIGNALS:
@@ -69,6 +69,6 @@ private:
     NeteasePlaylistDetailViewModel *m_neteasePlaylistDetail = nullptr;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
 #endif

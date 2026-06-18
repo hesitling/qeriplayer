@@ -9,7 +9,7 @@
 
 #include <QDateTime>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 PlaylistRepository::PlaylistRepository(DatabaseManager *db)
     : m_db(db)
@@ -205,4 +205,4 @@ void PlaylistRepository::updateSongCount(const QString &playlistId)
                {playlistId, playlistId});
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

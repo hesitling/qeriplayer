@@ -6,7 +6,7 @@
 
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestSettingsRepository : public QObject {
     Q_OBJECT

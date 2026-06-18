@@ -7,7 +7,7 @@
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 static constexpr int NONCE_SIZE = 12;
 static constexpr int TAG_SIZE = 16;
@@ -86,4 +86,4 @@ QByteArray Encryptor::encrypt(const QByteArray &plaintext, const QByteArray &key
     return result;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

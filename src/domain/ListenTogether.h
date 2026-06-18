@@ -1,8 +1,8 @@
 /// @file ListenTogether.h
 /// @brief Listen Together domain models for synchronized playback
 
-#ifndef NERIPLAYERQT_LISTENTOGETHER_H
-#define NERIPLAYERQT_LISTENTOGETHER_H
+#ifndef QERIPLAYERQT_LISTENTOGETHER_H
+#define QERIPLAYERQT_LISTENTOGETHER_H
 
 #include "domain/Song.h"
 
@@ -12,12 +12,12 @@
 #include <QVariantMap>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Channel identifiers for Listen Together
  *
- * Must match Android NeriPlayer's ListenTogetherChannels constants exactly.
+ * Must match Android QeriPlayer's ListenTogetherChannels constants exactly.
  */
 namespace ListenTogetherChannels {
 inline constexpr const char *NETEASE = "netease";
@@ -29,7 +29,7 @@ inline constexpr const char *LOCAL = "local";
 /**
  * @brief Room status constants
  *
- * Must match Android NeriPlayer's ListenTogetherRoomStatuses constants exactly.
+ * Must match Android QeriPlayer's ListenTogetherRoomStatuses constants exactly.
  */
 namespace ListenTogetherRoomStatuses {
 inline constexpr const char *ACTIVE = "active";
@@ -40,7 +40,7 @@ inline constexpr const char *CLOSED = "closed";
 /**
  * @brief Wire-format track for Listen Together protocol
  *
- * Aligned with Android NeriPlayer's ListenTogetherTrack.
+ * Aligned with Android QeriPlayer's ListenTogetherTrack.
  * This is the JSON-serializable track representation exchanged
  * between clients and the coordination server.
  */
@@ -62,7 +62,7 @@ struct ListenTogetherTrack {
 /**
  * @brief Room settings for Listen Together
  *
- * Aligned with Android NeriPlayer's ListenTogetherRoomSettings.
+ * Aligned with Android QeriPlayer's ListenTogetherRoomSettings.
  */
 struct ListenTogetherRoomSettings {
     bool allowMemberControl = true;
@@ -73,7 +73,7 @@ struct ListenTogetherRoomSettings {
 /**
  * @brief Room member info
  *
- * Aligned with Android NeriPlayer's ListenTogetherMember.
+ * Aligned with Android QeriPlayer's ListenTogetherMember.
  */
 struct ListenTogetherMember {
     QString userUuid;
@@ -86,7 +86,7 @@ struct ListenTogetherMember {
 /**
  * @brief Playback synchronization state
  *
- * Aligned with Android NeriPlayer's ListenTogetherPlaybackState.
+ * Aligned with Android QeriPlayer's ListenTogetherPlaybackState.
  */
 struct ListenTogetherPlaybackState {
     QString state; ///< "playing" or "paused"
@@ -98,7 +98,7 @@ struct ListenTogetherPlaybackState {
 /**
  * @brief Full room state from the coordination server
  *
- * Aligned with Android NeriPlayer's ListenTogetherRoomState.
+ * Aligned with Android QeriPlayer's ListenTogetherRoomState.
  */
 struct ListenTogetherRoomState {
     QString roomId;
@@ -122,7 +122,7 @@ struct ListenTogetherRoomState {
 /**
  * @brief Cause info for events
  *
- * Aligned with Android NeriPlayer's ListenTogetherCause.
+ * Aligned with Android QeriPlayer's ListenTogetherCause.
  */
 struct ListenTogetherCause {
     QString userUuid;
@@ -135,14 +135,14 @@ struct ListenTogetherCause {
 /**
  * @brief Connection state enum
  *
- * Aligned with Android NeriPlayer's ListenTogetherConnectionState.
+ * Aligned with Android QeriPlayer's ListenTogetherConnectionState.
  */
 enum class ListenTogetherConnectionState : std::uint8_t { Disconnected = 0, Connecting = 1, Connected = 2 };
 
 /**
  * @brief Client-side session state
  *
- * Aligned with Android NeriPlayer's ListenTogetherSessionState.
+ * Aligned with Android QeriPlayer's ListenTogetherSessionState.
  */
 struct ListenTogetherSessionState {
     QString baseUrl;
@@ -161,7 +161,7 @@ struct ListenTogetherSessionState {
 /**
  * @brief Control event sent to the coordination server
  *
- * Aligned with Android NeriPlayer's ListenTogetherEvent.
+ * Aligned with Android QeriPlayer's ListenTogetherEvent.
  */
 struct ListenTogetherEvent {
     QString type;
@@ -182,7 +182,7 @@ struct ListenTogetherEvent {
 /**
  * @brief Compute stable key for a track
  *
- * Matches Android NeriPlayer's buildStableTrackKey() logic.
+ * Matches Android QeriPlayer's buildStableTrackKey() logic.
  */
 inline QString buildStableTrackKey(const QString &channelId, const QString &audioId, const QString &subAudioId = {},
                                    const QString &playlistContextId = {})
@@ -205,7 +205,7 @@ inline QString buildStableTrackKey(const QString &channelId, const QString &audi
 /**
  * @brief Resolve channel ID from a Song
  *
- * Matches Android NeriPlayer's SongItem.resolvedChannelId().
+ * Matches Android QeriPlayer's SongItem.resolvedChannelId().
  */
 inline QString resolvedChannelId(const Song &song)
 {
@@ -223,7 +223,7 @@ inline QString resolvedChannelId(const Song &song)
 /**
  * @brief Resolve audio ID from a Song
  *
- * Matches Android NeriPlayer's SongItem.resolvedAudioId().
+ * Matches Android QeriPlayer's SongItem.resolvedAudioId().
  */
 inline QString resolvedAudioId(const Song &song)
 {
@@ -235,7 +235,7 @@ inline QString resolvedAudioId(const Song &song)
 /**
  * @brief Convert a Song to ListenTogetherTrack for wire transmission
  *
- * Matches Android NeriPlayer's SongItem.toListenTogetherTrackOrNull().
+ * Matches Android QeriPlayer's SongItem.toListenTogetherTrackOrNull().
  * Returns an empty optional-equivalent if the song has no resolvable channel.
  */
 inline ListenTogetherTrack songToTrack(const Song &song)
@@ -263,7 +263,7 @@ inline ListenTogetherTrack songToTrack(const Song &song)
 /**
  * @brief Convert a ListenTogetherTrack back to a Song
  *
- * Matches Android NeriPlayer's ListenTogetherTrack.toSongItem().
+ * Matches Android QeriPlayer's ListenTogetherTrack.toSongItem().
  */
 inline Song trackToSong(const ListenTogetherTrack &track)
 {
@@ -288,16 +288,16 @@ inline Song trackToSong(const ListenTogetherTrack &track)
     return song;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::ListenTogetherTrack)
-Q_DECLARE_METATYPE(NeriPlayerQt::ListenTogetherRoomSettings)
-Q_DECLARE_METATYPE(NeriPlayerQt::ListenTogetherMember)
-Q_DECLARE_METATYPE(NeriPlayerQt::ListenTogetherPlaybackState)
-Q_DECLARE_METATYPE(NeriPlayerQt::ListenTogetherRoomState)
-Q_DECLARE_METATYPE(NeriPlayerQt::ListenTogetherCause)
-Q_DECLARE_METATYPE(NeriPlayerQt::ListenTogetherConnectionState)
-Q_DECLARE_METATYPE(NeriPlayerQt::ListenTogetherSessionState)
-Q_DECLARE_METATYPE(NeriPlayerQt::ListenTogetherEvent)
+Q_DECLARE_METATYPE(QeriPlayerQt::ListenTogetherTrack)
+Q_DECLARE_METATYPE(QeriPlayerQt::ListenTogetherRoomSettings)
+Q_DECLARE_METATYPE(QeriPlayerQt::ListenTogetherMember)
+Q_DECLARE_METATYPE(QeriPlayerQt::ListenTogetherPlaybackState)
+Q_DECLARE_METATYPE(QeriPlayerQt::ListenTogetherRoomState)
+Q_DECLARE_METATYPE(QeriPlayerQt::ListenTogetherCause)
+Q_DECLARE_METATYPE(QeriPlayerQt::ListenTogetherConnectionState)
+Q_DECLARE_METATYPE(QeriPlayerQt::ListenTogetherSessionState)
+Q_DECLARE_METATYPE(QeriPlayerQt::ListenTogetherEvent)
 
-#endif // NERIPLAYERQT_LISTENTOGETHER_H
+#endif // QERIPLAYERQT_LISTENTOGETHER_H

@@ -1,12 +1,12 @@
-#ifndef NERIPLAYERQT_SERVICELOCATOR_H
-#define NERIPLAYERQT_SERVICELOCATOR_H
+#ifndef QERIPLAYERQT_SERVICELOCATOR_H
+#define QERIPLAYERQT_SERVICELOCATOR_H
 
 #include <memory>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class ServiceLocator {
 public:
@@ -48,6 +48,6 @@ private:
     std::unordered_map<std::type_index, ServicePtr> m_services;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_SERVICELOCATOR_H
+#endif // QERIPLAYERQT_SERVICELOCATOR_H

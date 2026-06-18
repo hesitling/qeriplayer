@@ -5,7 +5,7 @@
 
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestNeteaseCrypto : public QObject {
     Q_OBJECT

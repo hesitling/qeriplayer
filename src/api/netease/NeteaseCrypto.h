@@ -1,13 +1,13 @@
 /// @file NeteaseCrypto.h
 /// @brief NetEase WeAPI encryption helpers
 
-#ifndef NERIPLAYERQT_NETEASECRYPTO_H
-#define NERIPLAYERQT_NETEASECRYPTO_H
+#ifndef QERIPLAYERQT_NETEASECRYPTO_H
+#define QERIPLAYERQT_NETEASECRYPTO_H
 
 #include <QByteArray>
 #include <QString>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief NetEase WeAPI encryption
@@ -69,6 +69,6 @@ private:
     static const QByteArray EAPI_URL_FORMAT;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_NETEASECRYPTO_H
+#endif // QERIPLAYERQT_NETEASECRYPTO_H

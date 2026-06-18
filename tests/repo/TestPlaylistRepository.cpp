@@ -7,7 +7,7 @@
 
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestPlaylistRepository : public QObject {
     Q_OBJECT

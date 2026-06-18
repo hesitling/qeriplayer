@@ -7,7 +7,7 @@
 
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestPlayHistoryRepository : public QObject {
     Q_OBJECT

@@ -1,14 +1,14 @@
 /// @file SongRepository.h
 /// @brief SQLite-backed song repository
 
-#ifndef NERIPLAYERQT_SONGREPOSITORY_H
-#define NERIPLAYERQT_SONGREPOSITORY_H
+#ifndef QERIPLAYERQT_SONGREPOSITORY_H
+#define QERIPLAYERQT_SONGREPOSITORY_H
 
 #include "repo/ISongRepository.h"
 
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class DatabaseManager;
 
@@ -32,6 +32,6 @@ private:
     DatabaseManager *m_db;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_SONGREPOSITORY_H
+#endif // QERIPLAYERQT_SONGREPOSITORY_H

@@ -1,8 +1,8 @@
 /// @file Playlist.h
 /// @brief Playlist domain model
 
-#ifndef NERIPLAYERQT_PLAYLIST_H
-#define NERIPLAYERQT_PLAYLIST_H
+#ifndef QERIPLAYERQT_PLAYLIST_H
+#define QERIPLAYERQT_PLAYLIST_H
 
 #include "domain/Enums.h"
 #include "domain/Song.h"
@@ -12,12 +12,12 @@
 #include <QUrl>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Represents a playlist with optional embedded songs
  *
- * Aligned with Android NeriPlayer's LocalPlaylist model.
+ * Aligned with Android QeriPlayer's LocalPlaylist model.
  */
 struct Playlist {
     QString id;
@@ -32,8 +32,8 @@ struct Playlist {
     QString customCoverUrl; ///< User override cover
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::Playlist)
+Q_DECLARE_METATYPE(QeriPlayerQt::Playlist)
 
-#endif // NERIPLAYERQT_PLAYLIST_H
+#endif // QERIPLAYERQT_PLAYLIST_H

@@ -1,8 +1,8 @@
 /// @file SongListModel.h
 /// @brief QAbstractListModel exposing QVector<Song> to QML
 
-#ifndef NERIPLAYERQT_SONGLISTMODEL_H
-#define NERIPLAYERQT_SONGLISTMODEL_H
+#ifndef QERIPLAYERQT_SONGLISTMODEL_H
+#define QERIPLAYERQT_SONGLISTMODEL_H
 
 #include "domain/Song.h"
 
@@ -11,7 +11,7 @@
 #include <QHash>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief QAbstractListModel adapter for QVector<Song>
@@ -97,6 +97,6 @@ private:
     int m_playingIndex = -1;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_SONGLISTMODEL_H
+#endif // QERIPLAYERQT_SONGLISTMODEL_H

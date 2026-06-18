@@ -7,7 +7,7 @@
 #include <QTemporaryDir>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestQtMultimediaBackend : public QObject {
     Q_OBJECT

@@ -14,7 +14,7 @@ Phase 1 delivered the foundation layer (domain models, database, logger, filesys
   - Song detail, playback URL resolution, lyrics retrieval
   - Playlist detail, user playlists, CRUD operations
   - Recommendations (daily, personalized FM, new songs)
-- Register `NeteaseClient` in `ServiceLocator` and wire it into `NeriPlayerApplication`.
+- Register `NeteaseClient` in `ServiceLocator` and wire it into `QeriPlayerApplication`.
 - Add unit tests for NeteaseCrypto (encryption round-trips) and NeteaseParser (JSON parsing with recorded fixtures).
 
 ## Capabilities
@@ -31,7 +31,7 @@ None — no existing specs to modify.
 ## Impact
 
 - New files under `src/api/common/` and `src/api/netease/`.
-- Modified files: `src/app/NeriPlayerApplication.cpp` (register NeteaseClient), `CMakeLists.txt` (new source files).
+- Modified files: `src/app/QeriPlayerApplication.cpp` (register NeteaseClient), `CMakeLists.txt` (new source files).
 - New test files under `tests/api/` for crypto and parser unit tests.
 - Dependency on `HttpClient` (Phase 1) for all network calls.
 - No breaking changes — purely additive to the existing codebase.

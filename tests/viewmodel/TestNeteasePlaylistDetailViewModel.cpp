@@ -9,7 +9,7 @@
 #include <QSignalSpy>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 // Simplified tests - NeteaseClient requires full infra, so test what we can
 

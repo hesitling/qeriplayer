@@ -1,6 +1,6 @@
-# NeriPlayer Qt — Long-Term Implementation Roadmap
+# QeriPlayer Qt — Long-Term Implementation Roadmap
 
-This document tracks the full implementation plan for NeriPlayer Qt, organized by phase. Each phase builds on the previous one. Check off items as they are completed.
+This document tracks the full implementation plan for QeriPlayer Qt, organized by phase. Each phase builds on the previous one. Check off items as they are completed.
 
 ---
 
@@ -117,7 +117,7 @@ Integrate audio playback with the platform APIs.
 
 ## Phase 4: ViewModels
 
-Business logic layer connecting data access to the UI. No dedicated service layer — ViewModels access repositories and API clients directly, following the Android NeriPlayer pattern. `PlaybackController` (Phase 3) handles playback orchestration as a de facto service.
+Business logic layer connecting data access to the UI. No dedicated service layer — ViewModels access repositories and API clients directly, following the Android QeriPlayer pattern. `PlaybackController` (Phase 3) handles playback orchestration as a de facto service.
 
 - [x] **ViewModel Layer** (`src/viewmodel/`)
   - [x] `MainViewModel` — app-wide state, navigation, service coordination

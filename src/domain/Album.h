@@ -1,8 +1,8 @@
 /// @file Album.h
 /// @brief Album domain model
 
-#ifndef NERIPLAYERQT_ALBUM_H
-#define NERIPLAYERQT_ALBUM_H
+#ifndef QERIPLAYERQT_ALBUM_H
+#define QERIPLAYERQT_ALBUM_H
 
 #include "domain/Enums.h"
 
@@ -10,12 +10,12 @@
 #include <QString>
 #include <QUrl>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Represents an album
  *
- * Field names aligned with Android NeriPlayer's AlbumSummary model.
+ * Field names aligned with Android QeriPlayer's AlbumSummary model.
  */
 struct Album {
     QString id;
@@ -26,8 +26,8 @@ struct Album {
     MusicPlatform platform = MusicPlatform::Unknown;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::Album)
+Q_DECLARE_METATYPE(QeriPlayerQt::Album)
 
-#endif // NERIPLAYERQT_ALBUM_H
+#endif // QERIPLAYERQT_ALBUM_H

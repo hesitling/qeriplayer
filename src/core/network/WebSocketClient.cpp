@@ -2,7 +2,7 @@
 
 #include <QAbstractSocket>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 WebSocketClient::WebSocketClient(QObject *parent)
     : QObject(parent)
@@ -36,4 +36,4 @@ bool WebSocketClient::isConnected() const
     return m_socket.state() == QAbstractSocket::ConnectedState;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

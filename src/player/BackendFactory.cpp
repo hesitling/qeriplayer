@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 std::unique_ptr<IPlayerBackend> BackendFactory::createBackend(const QString &type)
 {
@@ -46,4 +46,4 @@ bool BackendFactory::isMpvAvailable()
     return libmpv.load();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

@@ -27,14 +27,14 @@ add_executable(TestPlaybackController
 )
 target_include_directories(TestPlaybackController PRIVATE
     ${CMAKE_SOURCE_DIR}/src
-    ${NERIPLAYER_QCORO_INCLUDE_DIRS}
+    ${QERIPLAYER_QCORO_INCLUDE_DIRS}
     ${SPDLOG_INCLUDE_DIRS}
 )
 target_link_libraries(TestPlaybackController PRIVATE
     Qt6::Core
     Qt6::Multimedia
     Qt6::Test
-    ${NERIPLAYER_QCORO_LIBRARIES}
+    ${QERIPLAYER_QCORO_LIBRARIES}
     ${SPDLOG_LIBRARIES}
 )
 target_compile_definitions(TestPlaybackController PRIVATE
@@ -52,13 +52,13 @@ add_executable(TestQtMultimediaBackend
 )
 target_include_directories(TestQtMultimediaBackend PRIVATE
     ${CMAKE_SOURCE_DIR}/src
-    ${NERIPLAYER_QCORO_INCLUDE_DIRS}
+    ${QERIPLAYER_QCORO_INCLUDE_DIRS}
 )
 target_link_libraries(TestQtMultimediaBackend PRIVATE
     Qt6::Core
     Qt6::Multimedia
     Qt6::Test
-    ${NERIPLAYER_QCORO_LIBRARIES}
+    ${QERIPLAYER_QCORO_LIBRARIES}
 )
 target_compile_definitions(TestQtMultimediaBackend PRIVATE
     QT_NO_KEYWORDS

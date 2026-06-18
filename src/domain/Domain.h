@@ -1,8 +1,8 @@
 /// @file Domain.h
 /// @brief Umbrella header for all domain types
 
-#ifndef NERIPLAYERQT_DOMAIN_H
-#define NERIPLAYERQT_DOMAIN_H
+#ifndef QERIPLAYERQT_DOMAIN_H
+#define QERIPLAYERQT_DOMAIN_H
 
 #include "domain/Album.h"
 #include "domain/Artist.h"
@@ -17,4 +17,4 @@
 #include "domain/SongIdentity.h"
 #include "domain/SongUrlResult.h"
 
-#endif // NERIPLAYERQT_DOMAIN_H
+#endif // QERIPLAYERQT_DOMAIN_H

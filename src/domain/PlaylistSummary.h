@@ -1,8 +1,8 @@
 /// @file PlaylistSummary.h
 /// @brief Lightweight summary models for playlist and album cards
 
-#ifndef NERIPLAYERQT_PLAYLISTSUMMARY_H
-#define NERIPLAYERQT_PLAYLISTSUMMARY_H
+#ifndef QERIPLAYERQT_PLAYLISTSUMMARY_H
+#define QERIPLAYERQT_PLAYLISTSUMMARY_H
 
 #include "domain/Enums.h"
 
@@ -10,12 +10,12 @@
 #include <QString>
 #include <QUrl>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Lightweight playlist summary for card UI
  *
- * Aligned with Android NeriPlayer's PlaylistSummary model.
+ * Aligned with Android QeriPlayer's PlaylistSummary model.
  */
 struct PlaylistSummary {
     QString id;
@@ -28,7 +28,7 @@ struct PlaylistSummary {
 /**
  * @brief Lightweight album summary for card UI
  *
- * Aligned with Android NeriPlayer's AlbumSummary model.
+ * Aligned with Android QeriPlayer's AlbumSummary model.
  */
 struct AlbumSummary {
     QString id;
@@ -40,7 +40,7 @@ struct AlbumSummary {
 /**
  * @brief Bilibili playlist summary
  *
- * Aligned with Android NeriPlayer's BiliPlaylist model.
+ * Aligned with Android QeriPlayer's BiliPlaylist model.
  */
 struct BiliPlaylist {
     qint64 mediaId = 0;
@@ -53,10 +53,10 @@ struct BiliPlaylist {
     QString subtitle;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::PlaylistSummary)
-Q_DECLARE_METATYPE(NeriPlayerQt::AlbumSummary)
-Q_DECLARE_METATYPE(NeriPlayerQt::BiliPlaylist)
+Q_DECLARE_METATYPE(QeriPlayerQt::PlaylistSummary)
+Q_DECLARE_METATYPE(QeriPlayerQt::AlbumSummary)
+Q_DECLARE_METATYPE(QeriPlayerQt::BiliPlaylist)
 
-#endif // NERIPLAYERQT_PLAYLISTSUMMARY_H
+#endif // QERIPLAYERQT_PLAYLISTSUMMARY_H

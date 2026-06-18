@@ -37,7 +37,7 @@ enum class BiliPlaylistKind : uint8_t { CreatedFavorite, CollectedFavorite, Coll
 
 ## Song
 
-Core domain model aligned with Android NeriPlayer's `SongItem`.
+Core domain model aligned with Android QeriPlayer's `SongItem`.
 
 ```cpp
 struct Song {

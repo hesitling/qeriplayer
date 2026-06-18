@@ -1,8 +1,8 @@
 /// @file Artist.h
 /// @brief Artist domain model
 
-#ifndef NERIPLAYERQT_ARTIST_H
-#define NERIPLAYERQT_ARTIST_H
+#ifndef QERIPLAYERQT_ARTIST_H
+#define QERIPLAYERQT_ARTIST_H
 
 #include "domain/Enums.h"
 
@@ -10,7 +10,7 @@
 #include <QString>
 #include <QUrl>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Represents an artist
@@ -23,8 +23,8 @@ struct Artist {
     MusicPlatform platform = MusicPlatform::Unknown;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::Artist)
+Q_DECLARE_METATYPE(QeriPlayerQt::Artist)
 
-#endif // NERIPLAYERQT_ARTIST_H
+#endif // QERIPLAYERQT_ARTIST_H

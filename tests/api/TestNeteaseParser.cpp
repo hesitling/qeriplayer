@@ -8,7 +8,7 @@
 #include <QJsonObject>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 static QJsonObject loadFixture(const QString &name)
 {

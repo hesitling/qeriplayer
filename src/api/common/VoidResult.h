@@ -1,12 +1,12 @@
 /// @file VoidResult.h
 /// @brief Empty result type for no-payload operations
 
-#ifndef NERIPLAYERQT_VOIDRESULT_H
-#define NERIPLAYERQT_VOIDRESULT_H
+#ifndef QERIPLAYERQT_VOIDRESULT_H
+#define QERIPLAYERQT_VOIDRESULT_H
 
 #include <QMetaType>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Empty struct for API operations that return no meaningful data on success
@@ -17,8 +17,8 @@ namespace NeriPlayerQt {
  */
 struct VoidResult { };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::VoidResult)
+Q_DECLARE_METATYPE(QeriPlayerQt::VoidResult)
 
-#endif // NERIPLAYERQT_VOIDRESULT_H
+#endif // QERIPLAYERQT_VOIDRESULT_H

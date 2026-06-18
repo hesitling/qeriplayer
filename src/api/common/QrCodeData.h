@@ -1,14 +1,14 @@
 /// @file QrCodeData.h
 /// @brief QR code login data type
 
-#ifndef NERIPLAYERQT_QRCODEDATA_H
-#define NERIPLAYERQT_QRCODEDATA_H
+#ifndef QERIPLAYERQT_QRCODEDATA_H
+#define QERIPLAYERQT_QRCODEDATA_H
 
 #include <QMetaType>
 #include <QString>
 #include <QUrl>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Data for QR code-based login
@@ -22,8 +22,8 @@ struct QrCodeData {
     int expiresInSeconds = 0; ///< Seconds until the QR code expires
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::QrCodeData)
+Q_DECLARE_METATYPE(QeriPlayerQt::QrCodeData)
 
-#endif // NERIPLAYERQT_QRCODEDATA_H
+#endif // QERIPLAYERQT_QRCODEDATA_H

@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -23,6 +23,6 @@ private:
     void setupCentralWidget();
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
 #endif // MAINWINDOW_H

@@ -1,5 +1,5 @@
-#ifndef NERIPLAYERQT_HTTPCLIENT_H
-#define NERIPLAYERQT_HTTPCLIENT_H
+#ifndef QERIPLAYERQT_HTTPCLIENT_H
+#define QERIPLAYERQT_HTTPCLIENT_H
 
 #include <QCoroTask>
 
@@ -11,7 +11,7 @@
 #include <QString>
 #include <QUrl>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 struct HttpResponse {
     int statusCode = 0;
@@ -39,6 +39,6 @@ private:
     QNetworkAccessManager m_networkAccess;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_HTTPCLIENT_H
+#endif // QERIPLAYERQT_HTTPCLIENT_H

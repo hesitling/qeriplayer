@@ -1,8 +1,8 @@
 /// @file NeteasePlaylistDetailViewModel.h
 /// @brief ViewModel for NetEase playlist/album detail view
 
-#ifndef NERIPLAYERQT_NETEASEPLAYLISTDETAILVIEWMODEL_H
-#define NERIPLAYERQT_NETEASEPLAYLISTDETAILVIEWMODEL_H
+#ifndef QERIPLAYERQT_NETEASEPLAYLISTDETAILVIEWMODEL_H
+#define QERIPLAYERQT_NETEASEPLAYLISTDETAILVIEWMODEL_H
 
 #include "api/netease/NeteaseClient.h"
 #include "domain/Song.h"
@@ -16,7 +16,7 @@
 #include <QString>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class NeteasePlaylistDetailViewModel : public QObject {
     Q_OBJECT
@@ -54,8 +54,8 @@ Q_SIGNALS:
     void headerTrackCountChanged();
     void isLoadingChanged();
     void errorChanged();
-    void requestPlay(const NeriPlayerQt::Song &song);
-    void requestPlayPlaylist(const QVector<NeriPlayerQt::Song> &songs, int startIndex);
+    void requestPlay(const QeriPlayerQt::Song &song);
+    void requestPlayPlaylist(const QVector<QeriPlayerQt::Song> &songs, int startIndex);
 
 private:
     QCoro::Task<void> loadPlaylistImpl(const QString &playlistId);
@@ -79,6 +79,6 @@ private:
     bool m_isAlbum = false;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
 #endif

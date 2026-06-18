@@ -3,7 +3,7 @@
 
 #include "viewmodel/ViewModelError.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 ViewModelError::ViewModelError(ErrorType type, const QString &message, const QString &details)
     : m_type(type)
@@ -90,4 +90,4 @@ bool ViewModelError::isNetworkError() const
     return m_type == ErrorType::Network;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

@@ -1,4 +1,4 @@
-# justfile — NeriPlayer Qt task runner
+# justfile — QeriPlayer Qt task runner
 #
 # Usage:
 #   just              # show available commands
@@ -9,7 +9,7 @@
 #   just check        # format check (CI-friendly, no writes)
 #   just ci           # build + test + format check
 
-# Default build directory (override with: just build_dir=/tmp/neriplayer-build build)
+# Default build directory (override with: just build_dir=/tmp/qeriplayer-build build)
 # Or set JUST_BUILD_DIR env var for the session.
 build_dir := env_var_or_default("JUST_BUILD_DIR", "build")
 

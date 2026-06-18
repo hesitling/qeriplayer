@@ -1,9 +1,9 @@
-#ifndef NERIPLAYERQT_NETWORKMONITOR_H
-#define NERIPLAYERQT_NETWORKMONITOR_H
+#ifndef QERIPLAYERQT_NETWORKMONITOR_H
+#define QERIPLAYERQT_NETWORKMONITOR_H
 
 #include <QObject>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class NetworkMonitor : public QObject {
     Q_OBJECT
@@ -21,6 +21,6 @@ private:
     bool m_online = true;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_NETWORKMONITOR_H
+#endif // QERIPLAYERQT_NETWORKMONITOR_H

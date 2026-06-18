@@ -1,8 +1,8 @@
 /// @file LocalPlaylistDetailViewModel.h
 /// @brief ViewModel for local playlist detail view
 
-#ifndef NERIPLAYERQT_LOCALPLAYLISTDETAILVIEWMODEL_H
-#define NERIPLAYERQT_LOCALPLAYLISTDETAILVIEWMODEL_H
+#ifndef QERIPLAYERQT_LOCALPLAYLISTDETAILVIEWMODEL_H
+#define QERIPLAYERQT_LOCALPLAYLISTDETAILVIEWMODEL_H
 
 #include "domain/Playlist.h"
 #include "domain/Song.h"
@@ -15,7 +15,7 @@
 #include <QStringList>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class LocalPlaylistDetailViewModel : public QObject {
     Q_OBJECT
@@ -52,8 +52,8 @@ Q_SIGNALS:
     void playlistNameChanged();
     void isLoadingChanged();
     void errorChanged();
-    void requestPlay(const NeriPlayerQt::Song &song);
-    void requestPlayPlaylist(const QVector<NeriPlayerQt::Song> &songs, int startIndex);
+    void requestPlay(const QeriPlayerQt::Song &song);
+    void requestPlayPlaylist(const QVector<QeriPlayerQt::Song> &songs, int startIndex);
     void playlistDeleted();
 
 private:
@@ -67,6 +67,6 @@ private:
     bool m_hasError = false;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef NERIPLAYERQT_NETWORKMANAGER_H
-#define NERIPLAYERQT_NETWORKMANAGER_H
+#ifndef QERIPLAYERQT_NETWORKMANAGER_H
+#define QERIPLAYERQT_NETWORKMANAGER_H
 
 #include "core/network/HttpClient.h"
 #include "core/network/NetworkMonitor.h"
@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class NetworkManager : public QObject {
     Q_OBJECT
@@ -29,6 +29,6 @@ private:
     NetworkMonitor m_networkMonitor;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_NETWORKMANAGER_H
+#endif // QERIPLAYERQT_NETWORKMANAGER_H

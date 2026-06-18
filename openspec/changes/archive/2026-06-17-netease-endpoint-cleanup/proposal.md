@@ -1,6 +1,6 @@
 ## Why
 
-The Qt NeteaseClient was built by porting endpoints from various sources (web browser network inspector, old documentation), but many of these endpoints are now deprecated or broken (returning 404). Meanwhile, the Kotlin NeriPlayer has a smaller, validated set of endpoints that actually work. This change removes broken/deprecated endpoints and aligns the Qt client with the Kotlin version's proven API surface.
+The Qt NeteaseClient was built by porting endpoints from various sources (web browser network inspector, old documentation), but many of these endpoints are now deprecated or broken (returning 404). Meanwhile, the Kotlin QeriPlayer has a smaller, validated set of endpoints that actually work. This change removes broken/deprecated endpoints and aligns the Qt client with the Kotlin version's proven API surface.
 
 ## What Changes
 

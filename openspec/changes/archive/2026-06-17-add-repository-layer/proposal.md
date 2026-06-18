@@ -25,6 +25,6 @@ The database module (`DatabaseManager`) provides raw SQLite access, but there is
 ## Impact
 
 - **Files created**: 17 new source files (5 interfaces, 5 implementations, 1 mapper, 6 headers) + 5 test files.
-- **Files modified**: `DatabaseManager.cpp` (v2 migration), `NeriPlayerApplication.cpp` (service wiring), `CMakeLists.txt` (new files).
+- **Files modified**: `DatabaseManager.cpp` (v2 migration), `QeriPlayerApplication.cpp` (service wiring), `CMakeLists.txt` (new files).
 - **Schema**: Breaking change to `songs_cache` table structure. Existing v1 databases will be migrated automatically via table recreation.
 - **Dependencies**: No new external dependencies. Uses existing SQLite, Qt, and nlohmann/json (via `QJsonDocument`).

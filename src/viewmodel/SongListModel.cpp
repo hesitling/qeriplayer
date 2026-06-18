@@ -3,7 +3,7 @@
 
 #include "viewmodel/SongListModel.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 SongListModel::SongListModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -145,4 +145,4 @@ void SongListModel::setPlayingIndex(int index)
     }
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

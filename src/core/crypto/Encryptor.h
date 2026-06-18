@@ -1,12 +1,12 @@
 /// @file Encryptor.h
 /// @brief AES-256-GCM encryption
 
-#ifndef NERIPLAYERQT_ENCRYPTOR_H
-#define NERIPLAYERQT_ENCRYPTOR_H
+#ifndef QERIPLAYERQT_ENCRYPTOR_H
+#define QERIPLAYERQT_ENCRYPTOR_H
 
 #include <QByteArray>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief AES-256-GCM encryptor
@@ -25,6 +25,6 @@ public:
     static QByteArray encrypt(const QByteArray &plaintext, const QByteArray &key);
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_ENCRYPTOR_H
+#endif // QERIPLAYERQT_ENCRYPTOR_H

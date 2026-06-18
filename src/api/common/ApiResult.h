@@ -1,15 +1,15 @@
 /// @file ApiResult.h
 /// @brief Result type for API operations
 
-#ifndef NERIPLAYERQT_APIRESULT_H
-#define NERIPLAYERQT_APIRESULT_H
+#ifndef QERIPLAYERQT_APIRESULT_H
+#define QERIPLAYERQT_APIRESULT_H
 
 #include "api/common/ApiError.h"
 
 #include <cassert>
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Result type holding either a value of type T or an ApiError
@@ -90,6 +90,6 @@ private:
     ApiError m_error;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_APIRESULT_H
+#endif // QERIPLAYERQT_APIRESULT_H

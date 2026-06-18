@@ -71,7 +71,7 @@ public:
 ## Design Decisions
 
 - **spdlog-based** — uses `daily_file_sink_mt` for file rotation (not `rotating_file_sink_mt`).
-- **Daily rotation** — log files are named `neriplayer-YYYY-MM-DD.log`. Files older than `maxDays` are deleted automatically.
+- **Daily rotation** — log files are named `qeriplayer-YYYY-MM-DD.log`. Files older than `maxDays` are deleted automatically.
 - **Shared sinks** — all named loggers share the same file and console sinks (initialized once).
 - **Double initialization is a no-op** — calling `initialize()` twice preserves the original config.
 - **Runtime level change** — `setLevel()` takes effect immediately.

@@ -1,6 +1,6 @@
 ## Context
 
-NeriPlayer Qt has completed Phase 1 (foundation) and Phase 2 (API clients + repositories). The domain layer includes `PlaybackState`, `RepeatMode`, `Song`, `SongUrlResult`, and `PersistedPlayerState`. The `IPlayerStateRepository` persists queue/position. The `IMusicPlatformPlugin` resolves playback URLs. No audio playback code exists yet — `src/player/` is empty.
+QeriPlayer Qt has completed Phase 1 (foundation) and Phase 2 (API clients + repositories). The domain layer includes `PlaybackState`, `RepeatMode`, `Song`, `SongUrlResult`, and `PersistedPlayerState`. The `IPlayerStateRepository` persists queue/position. The `IMusicPlatformPlugin` resolves playback URLs. No audio playback code exists yet — `src/player/` is empty.
 
 The playback engine sits between URL resolution (API layer) and the future UI/ViewModel layers. It must support multiple audio backends (Qt Multimedia default, mpv optional) and handle queue management, shuffle, repeat, and state persistence.
 

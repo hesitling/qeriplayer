@@ -1,8 +1,8 @@
 /// @file PlaylistRepository.h
 /// @brief SQLite-backed playlist repository
 
-#ifndef NERIPLAYERQT_PLAYLISTREPOSITORY_H
-#define NERIPLAYERQT_PLAYLISTREPOSITORY_H
+#ifndef QERIPLAYERQT_PLAYLISTREPOSITORY_H
+#define QERIPLAYERQT_PLAYLISTREPOSITORY_H
 
 #include "repo/IPlaylistRepository.h"
 
@@ -10,7 +10,7 @@
 
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class DatabaseManager;
 
@@ -37,6 +37,6 @@ private:
     void updateSongCount(const QString &playlistId);
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_PLAYLISTREPOSITORY_H
+#endif // QERIPLAYERQT_PLAYLISTREPOSITORY_H

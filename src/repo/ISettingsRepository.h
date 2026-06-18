@@ -1,15 +1,15 @@
 /// @file ISettingsRepository.h
 /// @brief Interface for settings persistence operations
 
-#ifndef NERIPLAYERQT_ISETTINGSREPOSITORY_H
-#define NERIPLAYERQT_ISETTINGSREPOSITORY_H
+#ifndef QERIPLAYERQT_ISETTINGSREPOSITORY_H
+#define QERIPLAYERQT_ISETTINGSREPOSITORY_H
 
 #include <QString>
 #include <QVariantMap>
 
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Abstract interface for settings operations on the settings table
@@ -52,6 +52,6 @@ public:
     virtual int getInt(const QString &key, int defaultValue = 0) = 0;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_ISETTINGSREPOSITORY_H
+#endif // QERIPLAYERQT_ISETTINGSREPOSITORY_H

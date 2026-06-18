@@ -3,7 +3,7 @@
 
 #include "core/filesystem/FileWatcher.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 FileWatcher::FileWatcher(QObject *parent)
     : QObject(parent)
@@ -28,4 +28,4 @@ bool FileWatcher::isWatching() const
     return !m_watcher.files().isEmpty() || !m_watcher.directories().isEmpty();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

@@ -38,11 +38,11 @@ The system SHALL support the following log levels in order of severity: `trace`,
 - **THEN** the message SHALL appear in both file and console sinks
 
 ### Requirement: File sink with rotation
-The file sink SHALL create daily log files in the configured log directory. Files SHALL be named with the pattern `neriplayer-YYYY-MM-DD.log`. Old log files SHALL be retained for 7 days and then deleted.
+The file sink SHALL create daily log files in the configured log directory. Files SHALL be named with the pattern `qeriplayer-YYYY-MM-DD.log`. Old log files SHALL be retained for 7 days and then deleted.
 
 #### Scenario: Log file creation
 - **WHEN** the application starts and logs a message
-- **THEN** a log file named `neriplayer-YYYY-MM-DD.log` for the current date SHALL exist in the log directory
+- **THEN** a log file named `qeriplayer-YYYY-MM-DD.log` for the current date SHALL exist in the log directory
 
 #### Scenario: Old log cleanup
 - **WHEN** log files older than 7 days exist

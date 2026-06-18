@@ -16,7 +16,7 @@
 #include <QJsonObject>
 #include <QMutexLocker>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 SecureStorage::SecureStorage(const QString &filePath)
     : m_filePath(filePath)
@@ -143,4 +143,4 @@ QByteArray SecureStorage::deriveMasterKey() const
     return key;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

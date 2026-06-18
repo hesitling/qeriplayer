@@ -1,4 +1,4 @@
-# Contributing to NeriPlayer Qt
+# Contributing to QeriPlayer Qt
 
 ## Git Hooks
 
@@ -31,7 +31,7 @@ just test         # build + run all tests
 Use a tmp directory for faster dev builds:
 
 ```bash
-just build_dir=/tmp/neriplayer-build build
+just build_dir=/tmp/qeriplayer-build build
 ```
 
 ## Code Style

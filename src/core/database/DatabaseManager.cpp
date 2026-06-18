@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <algorithm>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 DatabaseManager::DatabaseManager() = default;
 
@@ -408,4 +408,4 @@ void DatabaseManager::applyInitialSchema(sqlite3 *handle)
     }
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

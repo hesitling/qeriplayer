@@ -1,15 +1,15 @@
 /// @file PlayHistory.h
 /// @brief Play history type
 
-#ifndef NERIPLAYERQT_PLAYHISTORY_H
-#define NERIPLAYERQT_PLAYHISTORY_H
+#ifndef QERIPLAYERQT_PLAYHISTORY_H
+#define QERIPLAYERQT_PLAYHISTORY_H
 
 #include "domain/Song.h"
 
 #include <QMetaType>
 #include <QString>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief A record of a song play event
@@ -20,8 +20,8 @@ struct PlayHistory {
     int playCount = 0;   ///< Total play count for this song
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::PlayHistory)
+Q_DECLARE_METATYPE(QeriPlayerQt::PlayHistory)
 
-#endif // NERIPLAYERQT_PLAYHISTORY_H
+#endif // QERIPLAYERQT_PLAYHISTORY_H

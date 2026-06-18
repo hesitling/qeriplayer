@@ -1,8 +1,8 @@
 /// @file Song.h
 /// @brief Song domain model
 
-#ifndef NERIPLAYERQT_SONG_H
-#define NERIPLAYERQT_SONG_H
+#ifndef QERIPLAYERQT_SONG_H
+#define QERIPLAYERQT_SONG_H
 
 #include "domain/Enums.h"
 #include "domain/Lyrics.h"
@@ -12,12 +12,12 @@
 #include <QUrl>
 #include <QVariantMap>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Represents a song across all platforms
  *
- * Aligned with Android NeriPlayer's SongItem model.
+ * Aligned with Android QeriPlayer's SongItem model.
  * Includes customization fields (custom/original) for user overrides,
  * lyric matching fields, local file support, and platform-specific identifiers.
  */
@@ -69,8 +69,8 @@ struct Song {
     QVariantMap extra;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::Song)
+Q_DECLARE_METATYPE(QeriPlayerQt::Song)
 
-#endif // NERIPLAYERQT_SONG_H
+#endif // QERIPLAYERQT_SONG_H

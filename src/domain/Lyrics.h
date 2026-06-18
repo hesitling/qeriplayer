@@ -1,14 +1,14 @@
 /// @file Lyrics.h
 /// @brief Lyrics domain model with word-level timing support
 
-#ifndef NERIPLAYERQT_LYRICS_H
-#define NERIPLAYERQT_LYRICS_H
+#ifndef QERIPLAYERQT_LYRICS_H
+#define QERIPLAYERQT_LYRICS_H
 
 #include <QMetaType>
 #include <QString>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Word-level timing for synchronized lyrics display
@@ -37,10 +37,10 @@ struct Lyrics {
     QVector<LyricLine> lines; ///< Sorted by startTimeMs ascending
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::LyricWord)
-Q_DECLARE_METATYPE(NeriPlayerQt::LyricLine)
-Q_DECLARE_METATYPE(NeriPlayerQt::Lyrics)
+Q_DECLARE_METATYPE(QeriPlayerQt::LyricWord)
+Q_DECLARE_METATYPE(QeriPlayerQt::LyricLine)
+Q_DECLARE_METATYPE(QeriPlayerQt::Lyrics)
 
-#endif // NERIPLAYERQT_LYRICS_H
+#endif // QERIPLAYERQT_LYRICS_H

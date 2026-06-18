@@ -1,8 +1,8 @@
 ## Context
 
-NeriPlayer Qt has completed Phases 1–3: core infrastructure, API clients (NeteaseClient), repository layer (5 repos), and the playback engine (PlaybackController + PlayQueue + QtMultimediaBackend). The next step is the ViewModel layer — the business logic bridge between data/player layers and the future QML UI.
+QeriPlayer Qt has completed Phases 1–3: core infrastructure, API clients (NeteaseClient), repository layer (5 repos), and the playback engine (PlaybackController + PlayQueue + QtMultimediaBackend). The next step is the ViewModel layer — the business logic bridge between data/player layers and the future QML UI.
 
-The Android NeriPlayer uses a similar architecture: ViewModels in `ui/viewmodel/` access repos and API clients directly, with no dedicated service layer. The Qt port follows this pattern, adding `Q_PROPERTY`/`Q_INVOKABLE` for QML binding.
+The Android QeriPlayer uses a similar architecture: ViewModels in `ui/viewmodel/` access repos and API clients directly, with no dedicated service layer. The Qt port follows this pattern, adding `Q_PROPERTY`/`Q_INVOKABLE` for QML binding.
 
 Existing interfaces that ViewModels depend on:
 - `IMusicPlatformPlugin` — search, song detail, URL resolution, lyrics
@@ -33,7 +33,7 @@ Existing interfaces that ViewModels depend on:
 
 **Choice:** Child VMs emit `requestPlay(Song)` signals; `MainViewModel` wires them to `PlayerViewModel::play()`.
 
-**Why:** Avoids circular dependencies between VMs. `SearchViewModel` doesn't know about `PlayerViewModel`. `MainViewModel` acts as the composition root for signal wiring, mirroring how `NeriPlayerApplication` wires core services.
+**Why:** Avoids circular dependencies between VMs. `SearchViewModel` doesn't know about `PlayerViewModel`. `MainViewModel` acts as the composition root for signal wiring, mirroring how `QeriPlayerApplication` wires core services.
 
 **Alternative considered:** Direct `PlayerViewModel*` injection into child VMs. Rejected — creates coupling and makes testing harder (need to mock PlayerViewModel in every child VM test).
 

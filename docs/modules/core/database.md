@@ -64,7 +64,7 @@ class DatabaseError : public std::runtime_error { ... };
 
 ## Schema
 
-The database uses a `schema_version` table to track the current version. The initial schema and subsequent migrations are registered in `NeriPlayerApplication::initializeCoreServices()`.
+The database uses a `schema_version` table to track the current version. The initial schema and subsequent migrations are registered in `QeriPlayerApplication::initializeCoreServices()`.
 
 ### Schema v2 Tables
 
@@ -87,7 +87,7 @@ The database uses a `schema_version` table to track the current version. The ini
 DatabaseManager db;
 db.registerMigration(1, [](sqlite3 *handle) { /* v1 schema */ });
 db.registerMigration(2, [](sqlite3 *handle) { /* v1→v2 migration */ });
-if (!db.open(AppPaths::dataDir() + "/neriplayer.db")) {
+if (!db.open(AppPaths::dataDir() + "/qeriplayer.db")) {
     // handle error
 }
 

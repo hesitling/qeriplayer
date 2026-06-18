@@ -3,11 +3,11 @@ name: feature-workflow
 description: End-to-end feature workflow — explore, propose, implement with TDD, update docs, create PR. Use when the user wants to build a complete feature from scratch through to merge.
 license: MIT
 metadata:
-  author: neriplayer
-  version: "1.0"
+  author: qeriplayer
+  version: "2.0"
 ---
 
-Full feature workflow: explore → propose → implement (TDD) → docs → PR.
+PR-based feature workflow: explore → propose → plan PRs → implement PR → create PR → repeat.
 
 **Input**: A description of the feature to build. Can be vague — step 1 will clarify.
 
@@ -49,28 +49,81 @@ Create an OpenSpec change with proposal, design, specs, and tasks.
 
 ---
 
-## Step 3: Implement (TDD Loop)
+## Step 3: Plan PRs
 
-For each **group** of related tasks in `tasks.md`:
+Group tasks into reviewable PRs. Each PR must be a focused, logical unit of change.
 
-### 3a. Write tests
+### PR Sizing Guidelines
 
-Write test cases for the entire group **before** writing any implementation.
+| Criteria | Target |
+|----------|--------|
+| Lines changed | 200-400 (excluding generated code) |
+| Files touched | 5-10 |
+| Logical changes | 1 |
+| Review time | 15-30 minutes |
+
+### Grouping Rules
+
+1. **One logical change per PR** — a PR should be describable in a single sentence.
+2. **Dependencies flow forward** — PR N+1 depends on PR N, not the reverse.
+3. **Each PR is independently testable** — tests pass after each PR merges.
+4. **Infrastructure before features** — core/utility changes come first.
+5. **API before UI** — data layer before presentation layer.
+
+### Splitting Strategy
+
+If tasks would create a PR that's too large:
+
+- Split by module boundary (e.g., core changes vs. API changes)
+- Split by layer (e.g., data model → repository → service → UI)
+- Split by functionality (e.g., CRUD operations: create → read → update → delete)
+
+### Output
+
+Update `tasks.md` with PR groupings:
+
+```markdown
+## PR 1: <title>
+- [ ] Task A
+- [ ] Task B
+
+## PR 2: <title> (depends on PR 1)
+- [ ] Task C
+- [ ] Task D
+```
+
+Show PR plan summary before proceeding.
+
+---
+
+## Step 4: Implement PR (TDD Loop)
+
+For the current PR's task group:
+
+### 4a. Create branch
+
+```bash
+git checkout -b feat/<change>/pr-<n>
+```
+
+### 4b. Write tests
+
+Write test cases for the entire PR **before** writing any implementation.
 
 - Place tests in `tests/<module>/` following existing naming conventions.
 - Test files: `Test<ClassName>.cpp` using Qt Test (`QTest::qCompare`, `QVERIFY`, etc.).
 - Register test targets in `CMakeLists.txt` with `add_executable` + `add_test`.
 - Tests should compile but may fail at this point (expected).
 
-### 3b. Write implementation
+### 4c. Write implementation
 
-Implement all tasks in the group to make the tests pass.
+Implement all tasks in the PR to make the tests pass.
 
 - Follow code conventions in `AGENTS.md` (naming, includes, coroutine style).
-- Keep changes minimal and focused on the task group.
+- Keep changes minimal and focused on the PR's scope.
 - Mark each task complete in `tasks.md`: `- [ ]` → `- [x]`
 
-### 3c. Run tests
+### 4d. Run tests
 
 ```bash
 just test
@@ -78,41 +131,20 @@ just test
 
 All tests must pass. If a test fails, fix the implementation (not the test) unless the test itself is wrong.
 
-### 3d. Run format
+### 4e. Run format
 
 ```bash
 just format
 ```
 
-### 3e. Commit
+### 4f. Commit
 
 ```bash
 git add -A
 git commit -m "<type>(<scope>): <subject>"
 ```
 
-Follow conventional commits. Reference the change name in the commit body if helpful.
-
-**Repeat** 3a–3e for each task group until all tasks are complete.
-
----
-
-## Step 4: Update docs
-
-Update documentation to match what was built.
-
-1. Update the relevant module doc in `docs/modules/` (e.g., `core/database.md`, `api/netease.md`).
-2. If new types were added, update or create `docs/modules/domain.md`.
-3. If new repos were added, update `docs/modules/repo/index.md`.
-4. Update `docs/TODO.md` — check off completed items.
-5. Update `docs/modules/index.md` if the module map changed.
-6. Ensure all class names, field names, and enum values in docs match the actual code.
-
-```bash
-just format
-git add -A
-git commit -m "docs: update docs for <feature>"
-```
+Follow conventional commits. Reference the change name and PR number in the commit body.
 
 ---
 
@@ -120,7 +152,7 @@ git commit -m "docs: update docs for <feature>"
 
 1. Push the branch:
    ```bash
-   git push -u origin <branch>
+   git push -u origin feat/<change>/pr-<n>
    ```
 
 2. Create the PR:
@@ -129,10 +161,54 @@ git commit -m "docs: update docs for <feature>"
    ```
 
 3. PR body should include:
-   - What the feature does
+   - What this PR does (one sentence)
    - Which modules are affected
-   - Link to the OpenSpec change (if applicable)
+   - Link to the OpenSpec change
+   - Part N of M for this feature
    - Testing notes
+
+4. Add to PR body:
+   ```markdown
+   ## Part of: <feature name>
+   This is PR <N> of <M>. See [change spec](openspec/changes/<name>/).
+
+   ## What
+   <one sentence summary>
+
+   ## Modules affected
+   - `<module>`
+
+   ## Testing
+   <how to verify>
+   ```
+
+---
+
+## Step 6: Repeat or Finalize
+
+### If more PRs remain
+
+1. Merge the current PR (or wait for review).
+2. Return to **Step 4** for the next PR group.
+
+### If all PRs complete
+
+1. Update documentation:
+   - Update relevant module docs in `docs/modules/`
+   - Update `docs/TODO.md` — check off completed items
+   - Update `docs/modules/index.md` if the module map changed
+   - Ensure all class names, field names, and enum values in docs match the actual code
+
+2. Archive the change:
+   ```bash
+   openspec archive change "<name>"
+   ```
+
+3. Final commit:
+   ```bash
+   git add -A
+   git commit -m "docs: update docs for <feature>"
+   ```
 
 ---
 
@@ -142,14 +218,24 @@ git commit -m "docs: update docs for <feature>"
 ## Feature Complete
 
 **Change:** <name>
-**Branch:** <branch>
+**PRs:** <N> PRs created
 **Tasks:** N/N complete ✓
-**PR:** <url>
 
-### Summary
-- <what was built>
-- <tests added>
-- <docs updated>
+### PR Summary
+| PR | Title | Status |
+|----|-------|--------|
+| 1  | <title> | ✓ Merged |
+| 2  | <title> | ✓ Merged |
+| 3  | <title> | ⏳ Pending review |
+
+### What was built
+- <summary>
+
+### Tests added
+- <test files>
+
+### Docs updated
+- <doc files>
 ```
 
 ---
@@ -157,10 +243,11 @@ git commit -m "docs: update docs for <feature>"
 ## Guardrails
 
 - **Always explore before proposing** — don't guess about existing code.
-- **Tests before implementation** — TDD within each task group.
-- **All tests must pass** before committing a group.
+- **Plan PRs before implementing** — know the full scope before starting.
+- **One logical change per PR** — resist the urge to bundle.
+- **Tests before implementation** — TDD within each PR.
+- **All tests must pass** before committing a PR.
 - **Format before committing** — `just format` then commit.
 - **Docs must match code** — field names, enum values, class names.
-- **Commit per task group** — not per task (too granular), not per feature (too coarse).
 - **Pause if blocked** — unclear requirements, design issues, or test failures that need discussion.
 - **Use existing tools** — `just test`, `just format`, `just check`, `openspec` CLI.

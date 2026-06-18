@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 static void printJson(const QJsonObject &obj, int indent = 0)
 {

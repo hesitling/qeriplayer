@@ -2,26 +2,26 @@
 
 ## Overview
 
-The application module is the entry point of NeriPlayer Qt. It initializes core services, registers them in the `ServiceLocator`, and manages the application lifecycle.
+The application module is the entry point of QeriPlayer Qt. It initializes core services, registers them in the `ServiceLocator`, and manages the application lifecycle.
 
 ## Source Files
 
 ```
 src/app/
-├── NeriPlayerApplication.h / .cpp
+├── QeriPlayerApplication.h / .cpp
 └── ServiceLocator.h
 ```
 
-## NeriPlayerApplication
+## QeriPlayerApplication
 
 Inherits from `QApplication`. Owns the `ServiceLocator` and `MainWindow`.
 
 ```cpp
-class NeriPlayerApplication : public QApplication {
+class QeriPlayerApplication : public QApplication {
     Q_OBJECT
 public:
-    NeriPlayerApplication(int &argc, char **argv);
-    ~NeriPlayerApplication() override;
+    QeriPlayerApplication(int &argc, char **argv);
+    ~QeriPlayerApplication() override;
 
     bool initialize();
     void showMainWindow();
@@ -41,7 +41,7 @@ private:
 ### Initialization Flow
 
 ```
-NeriPlayerApplication::initialize()
+QeriPlayerApplication::initialize()
 ├── initializeCoreServices()
 │   ├── Logger::initialize()
 │   ├── DatabaseManager → open, register migrations, create tables
@@ -91,7 +91,7 @@ if (network) {
 
 ### Design Decisions
 
-- **Not a singleton** — `ServiceLocator` is a regular member of `NeriPlayerApplication`. Access via `app.services()`.
+- **Not a singleton** — `ServiceLocator` is a regular member of `QeriPlayerApplication`. Access via `app.services()`.
 - **Type-based keys** — each type can have at most one registered service.
 - **Returns nullptr for missing services** — callers must check.
 - **No circular dependency detection** — services should be registered in dependency order.
@@ -100,7 +100,7 @@ if (network) {
 
 ```cpp
 int main(int argc, char *argv[]) {
-    NeriPlayerApplication app(argc, argv);
+    QeriPlayerApplication app(argc, argv);
     if (!app.initialize()) return 1;
     app.showMainWindow();
     return app.exec();

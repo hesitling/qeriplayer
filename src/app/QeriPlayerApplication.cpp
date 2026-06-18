@@ -1,7 +1,7 @@
-/// @file NeriPlayerApplication.cpp
+/// @file QeriPlayerApplication.cpp
 /// @brief Application entry point with service registration
 
-#include "app/NeriPlayerApplication.h"
+#include "app/QeriPlayerApplication.h"
 
 #include "api/netease/NeteaseClient.h"
 #include "core/crypto/SecureStorage.h"
@@ -20,53 +20,53 @@
 
 #include <QDebug>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
-NeriPlayerApplication::NeriPlayerApplication(int &argc, char **argv)
+QeriPlayerApplication::QeriPlayerApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
-    setApplicationName(QStringLiteral("NeriPlayer Qt"));
+    setApplicationName(QStringLiteral("QeriPlayer Qt"));
     setApplicationVersion(QStringLiteral("0.1.0"));
-    setOrganizationName(QStringLiteral("NeriPlayer"));
+    setOrganizationName(QStringLiteral("QeriPlayer"));
 }
 
-NeriPlayerApplication::~NeriPlayerApplication()
+QeriPlayerApplication::~QeriPlayerApplication()
 {
     // Services are cleaned up by ServiceLocator's unique_ptr.
     // Destruction order is unspecified (unordered_map).
     m_services.clear();
 }
 
-bool NeriPlayerApplication::initialize()
+bool QeriPlayerApplication::initialize()
 {
     initializeCoreServices();
     initializeUi();
     return true;
 }
 
-void NeriPlayerApplication::showMainWindow()
+void QeriPlayerApplication::showMainWindow()
 {
     if (m_mainWindow) {
         m_mainWindow->show();
     }
 }
 
-ServiceLocator *NeriPlayerApplication::services()
+ServiceLocator *QeriPlayerApplication::services()
 {
     return &m_services;
 }
 
-const ServiceLocator *NeriPlayerApplication::services() const
+const ServiceLocator *QeriPlayerApplication::services() const
 {
     return &m_services;
 }
 
-MainWindow *NeriPlayerApplication::mainWindow() const
+MainWindow *QeriPlayerApplication::mainWindow() const
 {
     return m_mainWindow.get();
 }
 
-void NeriPlayerApplication::initializeCoreServices()
+void QeriPlayerApplication::initializeCoreServices()
 {
     // 1. Logger (first — other services may log)
     LoggerConfig logConfig;
@@ -84,11 +84,11 @@ void NeriPlayerApplication::initializeCoreServices()
     }
 
     auto log = Logger::get("app");
-    log->info("NeriPlayer Qt starting up");
+    log->info("QeriPlayer Qt starting up");
 
     // 2. Database
     auto db = std::make_unique<DatabaseManager>();
-    QString dbPath = AppPaths::dataDir() + QStringLiteral("/neriplayer.db");
+    QString dbPath = AppPaths::dataDir() + QStringLiteral("/qeriplayer.db");
     if (!db->open(dbPath)) {
         log->error("Failed to open database: {}", dbPath.toStdString());
     } else {
@@ -163,9 +163,9 @@ void NeriPlayerApplication::initializeCoreServices()
     log->info("Core services initialized");
 }
 
-void NeriPlayerApplication::initializeUi()
+void QeriPlayerApplication::initializeUi()
 {
     m_mainWindow = std::make_unique<MainWindow>();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

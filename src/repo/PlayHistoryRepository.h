@@ -1,12 +1,12 @@
 /// @file PlayHistoryRepository.h
 /// @brief SQLite-backed play history repository
 
-#ifndef NERIPLAYERQT_PLAYHISTORYREPOSITORY_H
-#define NERIPLAYERQT_PLAYHISTORYREPOSITORY_H
+#ifndef QERIPLAYERQT_PLAYHISTORYREPOSITORY_H
+#define QERIPLAYERQT_PLAYHISTORYREPOSITORY_H
 
 #include "repo/IPlayHistoryRepository.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class DatabaseManager;
 
@@ -27,6 +27,6 @@ private:
     DatabaseManager *m_db;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_PLAYHISTORYREPOSITORY_H
+#endif // QERIPLAYERQT_PLAYHISTORYREPOSITORY_H

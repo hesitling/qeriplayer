@@ -1,8 +1,8 @@
 /// @file ISongRepository.h
 /// @brief Interface for song persistence operations
 
-#ifndef NERIPLAYERQT_ISONGREPOSITORY_H
-#define NERIPLAYERQT_ISONGREPOSITORY_H
+#ifndef QERIPLAYERQT_ISONGREPOSITORY_H
+#define QERIPLAYERQT_ISONGREPOSITORY_H
 
 #include "domain/Enums.h"
 #include "domain/Song.h"
@@ -13,7 +13,7 @@
 
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Abstract interface for song CRUD operations on songs_cache
@@ -67,6 +67,6 @@ public:
     virtual QVector<Song> search(const QString &query, int limit = 50) = 0;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_ISONGREPOSITORY_H
+#endif // QERIPLAYERQT_ISONGREPOSITORY_H

@@ -10,7 +10,7 @@
 #include <QSignalSpy>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 // --- Mock IPlaylistRepository ---
 

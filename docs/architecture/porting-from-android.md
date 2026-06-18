@@ -1,16 +1,16 @@
-# Porting Architecture from Android NeriPlayer
+# Porting Architecture from Android QeriPlayer
 
 ## 1. Purpose
 
-The Android NeriPlayer project is the primary feature reference for the Qt client. It should guide supported platforms, user flows, data formats, playback behavior, settings, and synchronization semantics.
+The Android QeriPlayer project is the primary feature reference for the Qt client. It should guide supported platforms, user flows, data formats, playback behavior, settings, and synchronization semantics.
 
 The Qt client should not directly copy Android dependency shapes when they are tied to Android lifecycle, Compose state, Media3, WorkManager, DataStore, or application-wide Kotlin singletons.
 
 ## 2. Mapping Strategy
 
-| Android NeriPlayer | Qt Client Equivalent | Porting Guidance |
+| Android QeriPlayer | Qt Client Equivalent | Porting Guidance |
 |--------------------|----------------------|------------------|
-| `Application` bootstrap | `NeriPlayerApplication` | Keep startup orchestration in `src/app/` |
+| `Application` bootstrap | `QeriPlayerApplication` | Keep startup orchestration in `src/app/` |
 | `AppContainer` service locator | `ServiceLocator` composition root | Register long-lived services, but inject them into consumers |
 | `PlayerManager` singleton | `PlaybackController` + `IPlayerBackend` + `PlayerViewModel` | Split playback state, engine control, URL resolution, and UI state |
 | Kotlin `Flow`/Compose state | Qt signals, properties, and QCoro tasks | Expose ViewModel state through `Q_PROPERTY` and signals |
@@ -26,7 +26,7 @@ Qt modules should follow this direction:
 UI → ViewModel → Repository / API Client → Core
 ```
 
-Note: There is no dedicated service layer. ViewModels access repositories and API clients directly, following the Android NeriPlayer pattern. `PlaybackController` (in `player/`) is the exception — it encapsulates playback orchestration.
+Note: There is no dedicated service layer. ViewModels access repositories and API clients directly, following the Android QeriPlayer pattern. `PlaybackController` (in `player/`) is the exception — it encapsulates playback orchestration.
 
 Rules:
 

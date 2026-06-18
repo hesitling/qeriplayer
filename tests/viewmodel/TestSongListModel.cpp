@@ -7,7 +7,7 @@
 #include <QSignalSpy>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestSongListModel : public QObject {
     Q_OBJECT

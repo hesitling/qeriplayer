@@ -14,7 +14,7 @@
 
 #include <memory>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 // --- Mock IPlayerBackend ---
 

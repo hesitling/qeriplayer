@@ -11,7 +11,7 @@
 #include <QJsonObject>
 #include <QNetworkRequest>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 // ─── Login ──────────────────────────────────────────────────────────────────
 
@@ -199,4 +199,4 @@ QCoro::Task<ApiResult<VoidResult>> NeteaseClient::verifyCaptcha(const QString &p
     co_return ApiResult<VoidResult>(VoidResult {});
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

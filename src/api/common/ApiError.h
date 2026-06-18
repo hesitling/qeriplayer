@@ -1,13 +1,13 @@
 /// @file ApiError.h
 /// @brief API error type with code classification
 
-#ifndef NERIPLAYERQT_APIERROR_H
-#define NERIPLAYERQT_APIERROR_H
+#ifndef QERIPLAYERQT_APIERROR_H
+#define QERIPLAYERQT_APIERROR_H
 
 #include <QMetaType>
 #include <QString>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Represents an error from a music platform API
@@ -68,8 +68,8 @@ private:
     QString m_details;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::ApiError)
+Q_DECLARE_METATYPE(QeriPlayerQt::ApiError)
 
-#endif // NERIPLAYERQT_APIERROR_H
+#endif // QERIPLAYERQT_APIERROR_H

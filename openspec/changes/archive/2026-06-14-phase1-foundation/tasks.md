@@ -78,9 +78,9 @@
 ## 6. App Bootstrap Integration
 
 - [x] 6.1 Add getter methods to `ServiceLocator` for DatabaseManager, Logger, AppPaths, SecureStorage
-- [x] 6.2 Update `NeriPlayerApplication::initializeCoreServices()` to create and register all new services
+- [x] 6.2 Update `QeriPlayerApplication::initializeCoreServices()` to create and register all new services
 - [x] 6.3 Ensure initialization order: Logger → FileSystem → Database → Crypto
-- [x] 6.4 Implement graceful shutdown in `NeriPlayerApplication` destructor (close DB, flush logs)
+- [x] 6.4 Implement graceful shutdown in `QeriPlayerApplication` destructor (close DB, flush logs)
 - [x] 6.5 Update CMakeLists.txt to include all new source files
 
 ## 7. Verification

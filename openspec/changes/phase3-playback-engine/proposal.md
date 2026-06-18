@@ -1,6 +1,6 @@
 ## Why
 
-NeriPlayer Qt can search and resolve playback URLs from NetEase, but has no audio playback. Phase 3 adds the playback engine — the core user-facing feature that turns URL resolution into actual music.
+QeriPlayer Qt can search and resolve playback URLs from NetEase, but has no audio playback. Phase 3 adds the playback engine — the core user-facing feature that turns URL resolution into actual music.
 
 ## What Changes
 

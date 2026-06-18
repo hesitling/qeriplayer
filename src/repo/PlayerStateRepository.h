@@ -1,14 +1,14 @@
 /// @file PlayerStateRepository.h
 /// @brief SQLite-backed player state repository
 
-#ifndef NERIPLAYERQT_PLAYERSTATEREPOSITORY_H
-#define NERIPLAYERQT_PLAYERSTATEREPOSITORY_H
+#ifndef QERIPLAYERQT_PLAYERSTATEREPOSITORY_H
+#define QERIPLAYERQT_PLAYERSTATEREPOSITORY_H
 
 #include "repo/IPlayerStateRepository.h"
 
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class DatabaseManager;
 
@@ -30,6 +30,6 @@ private:
     DatabaseManager *m_db;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_PLAYERSTATEREPOSITORY_H
+#endif // QERIPLAYERQT_PLAYERSTATEREPOSITORY_H

@@ -1,15 +1,15 @@
 /// @file ViewModelError.h
 /// @brief Structured error type for ViewModel layer
 
-#ifndef NERIPLAYERQT_VIEWMODELERROR_H
-#define NERIPLAYERQT_VIEWMODELERROR_H
+#ifndef QERIPLAYERQT_VIEWMODELERROR_H
+#define QERIPLAYERQT_VIEWMODELERROR_H
 
 #include "api/common/ApiError.h"
 
 #include <QMetaType>
 #include <QString>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Structured error type for ViewModel layer
@@ -101,8 +101,8 @@ private:
     QString m_details;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::ViewModelError)
+Q_DECLARE_METATYPE(QeriPlayerQt::ViewModelError)
 
-#endif // NERIPLAYERQT_VIEWMODELERROR_H
+#endif // QERIPLAYERQT_VIEWMODELERROR_H

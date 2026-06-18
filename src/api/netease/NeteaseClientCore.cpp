@@ -14,7 +14,7 @@
 #include <QNetworkRequest>
 #include <QUrlQuery>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 static const QUrl DEFAULT_BASE_URL(QStringLiteral("https://music.163.com"));
 static const QString COOKIE_STORAGE_KEY = QStringLiteral("netease_cookie");
@@ -309,4 +309,4 @@ void NeteaseClient::clearCookies()
     }
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

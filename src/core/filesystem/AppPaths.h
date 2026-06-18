@@ -1,18 +1,18 @@
 /// @file AppPaths.h
 /// @brief Cross-platform application directory paths
 
-#ifndef NERIPLAYERQT_APPPATHS_H
-#define NERIPLAYERQT_APPPATHS_H
+#ifndef QERIPLAYERQT_APPPATHS_H
+#define QERIPLAYERQT_APPPATHS_H
 
 #include <QString>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Provides platform-specific application directory paths
  *
- * Linux uses hardcoded paths to match NeriPlayer naming convention:
- *   ~/.local/share/NeriPlayer, ~/.config/NeriPlayer, ~/.cache/NeriPlayer
+ * Linux uses hardcoded paths to match QeriPlayer naming convention:
+ *   ~/.local/share/QeriPlayer, ~/.config/QeriPlayer, ~/.cache/QeriPlayer
  *
  * Windows and macOS use QStandardPaths (AppDataLocation, CacheLocation).
  */
@@ -42,6 +42,6 @@ private:
     static QString ensureCreated(const QString &path);
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_APPPATHS_H
+#endif // QERIPLAYERQT_APPPATHS_H

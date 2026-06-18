@@ -8,7 +8,7 @@
 #include <QTemporaryDir>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestLogger : public QObject {
     Q_OBJECT
@@ -106,7 +106,7 @@ void TestLogger::log_createsLogFile()
     // A log message was already emitted in initTestCase
     QDir logDir(m_tempDir.path());
     QStringList filters;
-    filters << "neriplayer-*.log";
+    filters << "qeriplayer-*.log";
     auto files = logDir.entryList(filters, QDir::Files);
     QVERIFY(!files.isEmpty());
 }
@@ -120,7 +120,7 @@ void TestLogger::log_format()
 
     QDir logDir(m_tempDir.path());
     QStringList filters;
-    filters << "neriplayer-*.log";
+    filters << "qeriplayer-*.log";
     auto files = logDir.entryList(filters, QDir::Files);
     if (files.isEmpty()) {
         QSKIP("Log file not created yet (buffered)");

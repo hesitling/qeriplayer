@@ -9,7 +9,7 @@
 
 #include <QUuid>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 thread_local QString FileUtils::s_lastError;
 
@@ -91,4 +91,4 @@ QString FileUtils::lastError()
     return s_lastError;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

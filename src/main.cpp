@@ -1,4 +1,4 @@
-#include "app/NeriPlayerApplication.h"
+#include "app/QeriPlayerApplication.h"
 
 #include <QDebug>
 #include <exception>
@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
     try {
-        NeriPlayerQt::NeriPlayerApplication app(argc, argv);
+        QeriPlayerQt::QeriPlayerApplication app(argc, argv);
         if (!app.initialize()) {
             return 1;
         }

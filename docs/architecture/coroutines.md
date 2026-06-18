@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-NeriPlayer Qt uses C++20 coroutines and the [QCoro](https://github.com/qcoro/qcoro) library to simplify asynchronous programming, particularly in scenarios involving network requests, file I/O, and database operations.
+QeriPlayer Qt uses C++20 coroutines and the [QCoro](https://github.com/qcoro/qcoro) library to simplify asynchronous programming, particularly in scenarios involving network requests, file I/O, and database operations.
 
 ## 2. Why Use Coroutines
 
@@ -70,7 +70,7 @@ QCoro is a library that integrates Qt's asynchronous APIs with C++20 coroutines,
 
 ```cmake
 cmake_minimum_required(VERSION 3.16)
-project(NeriPlayerQt VERSION 0.1.0 LANGUAGES CXX)
+project(QeriPlayerQt VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -84,13 +84,13 @@ qcoro_enable_coroutines()
 # Find Qt
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets)
 
-add_executable(NeriPlayerQt
+add_executable(QeriPlayerQt
     src/main.cpp
     src/mainwindow.cpp
     # ...
 )
 
-target_link_libraries(NeriPlayerQt PRIVATE
+target_link_libraries(QeriPlayerQt PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets

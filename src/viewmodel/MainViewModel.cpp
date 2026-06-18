@@ -3,7 +3,7 @@
 
 #include "viewmodel/MainViewModel.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 MainViewModel::MainViewModel(PlayerViewModel *playerVm, SearchViewModel *searchVm, PlaylistViewModel *playlistVm,
                              SettingsViewModel *settingsVm, QObject *parent)
@@ -150,4 +150,4 @@ void MainViewModel::wireDetailVmSignals()
     }
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

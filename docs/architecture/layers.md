@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-NeriPlayer Qt adopts a classic layered architecture design, dividing the application into presentation layer, business layer, data layer, and infrastructure layer. Each layer has clear responsibilities and well-defined dependencies.
+QeriPlayer Qt adopts a classic layered architecture design, dividing the application into presentation layer, business layer, data layer, and infrastructure layer. Each layer has clear responsibilities and well-defined dependencies.
 
 ## 2. Architecture Layers
 
@@ -50,7 +50,7 @@ The business layer handles the core business logic of the application.
 - Use signals and slots for communication
 - No direct access to UI components
 - ViewModels access API clients and repositories directly
-- No dedicated service layer — following the Android NeriPlayer pattern where ViewModels coordinate repos and API clients
+- No dedicated service layer — following the Android QeriPlayer pattern where ViewModels coordinate repos and API clients
 - `PlaybackController` is the exception: it encapsulates complex playback orchestration (backend, queue, URL resolution, state persistence) and acts as a de facto service
 
 ### 2.3 Data Layer
@@ -122,7 +122,7 @@ ViewModel (Data Processing)
 View (UI Update)
 ```
 
-Note: There is no dedicated service layer. ViewModels access repositories and API clients directly, following the Android NeriPlayer pattern. `PlaybackController` is the one exception — it encapsulates complex playback orchestration and lives in the `player/` module.
+Note: There is no dedicated service layer. ViewModels access repositories and API clients directly, following the Android QeriPlayer pattern. `PlaybackController` is the one exception — it encapsulates complex playback orchestration and lives in the `player/` module.
 
 ### 3.2 Playback Example
 
@@ -227,7 +227,7 @@ connect(m_playbackController, &PlaybackController::playbackStateChanged,
 5. SearchView displays results
 ```
 
-Note: Multi-platform search aggregation lives in the ViewModel, not in a dedicated SearchService. This follows the Android NeriPlayer pattern (see HomeViewModel, NowPlayingViewModel).
+Note: Multi-platform search aggregation lives in the ViewModel, not in a dedicated SearchService. This follows the Android QeriPlayer pattern (see HomeViewModel, NowPlayingViewModel).
 
 ### 6.2 Play Song
 
@@ -314,7 +314,7 @@ public:
 
 ## 8. Summary
 
-The layered architecture design gives NeriPlayer Qt a clear structure and good maintainability:
+The layered architecture design gives QeriPlayer Qt a clear structure and good maintainability:
 - **Separation of Responsibilities**: Each layer focuses on its own responsibilities
 - **Clear Dependencies**: Dependencies are well-defined, facilitating testing and maintenance
 - **Extensibility**: Easy to add new features and modules

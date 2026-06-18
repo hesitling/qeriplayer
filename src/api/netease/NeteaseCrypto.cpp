@@ -14,7 +14,7 @@
 #include <cstring>
 #include <stdexcept>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 // NetEase WeAPI constants
 const QByteArray NeteaseCrypto::AES_KEY = "0CoJUm6Qyw8W8jud";
@@ -231,4 +231,4 @@ QString NeteaseCrypto::eapiEncrypt(const QString &url, const QString &plaintext)
     return QString::fromLatin1(encrypted.toHex()).toUpper();
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

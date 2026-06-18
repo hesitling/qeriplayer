@@ -1,8 +1,8 @@
 /// @file NeteaseClient.h
 /// @brief NetEase Cloud Music API client
 
-#ifndef NERIPLAYERQT_NETEASECLIENT_H
-#define NERIPLAYERQT_NETEASECLIENT_H
+#ifndef QERIPLAYERQT_NETEASECLIENT_H
+#define QERIPLAYERQT_NETEASECLIENT_H
 
 #include "api/common/ApiResult.h"
 #include "api/common/IMusicPlatformPlugin.h"
@@ -27,7 +27,7 @@
 #include <QNetworkRequest>
 #include <QRegularExpression>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class HttpClient;
 class SecureStorage;
@@ -187,6 +187,6 @@ private:
     bool m_authenticated = false;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_NETEASECLIENT_H
+#endif // QERIPLAYERQT_NETEASECLIENT_H

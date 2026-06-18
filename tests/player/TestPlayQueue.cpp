@@ -6,7 +6,7 @@
 #include <QSignalSpy>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestPlayQueue : public QObject {
     Q_OBJECT

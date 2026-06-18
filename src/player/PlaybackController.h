@@ -1,8 +1,8 @@
 /// @file PlaybackController.h
 /// @brief High-level orchestrator coordinating backend, queue, URL resolution, and persistence
 
-#ifndef NERIPLAYERQT_PLAYBACKCONTROLLER_H
-#define NERIPLAYERQT_PLAYBACKCONTROLLER_H
+#ifndef QERIPLAYERQT_PLAYBACKCONTROLLER_H
+#define QERIPLAYERQT_PLAYBACKCONTROLLER_H
 
 #include "api/common/IMusicPlatformPlugin.h"
 #include "domain/Enums.h"
@@ -20,7 +20,7 @@
 
 #include <memory>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief High-level playback orchestrator
@@ -102,8 +102,8 @@ public:
     void restoreState();
 
 Q_SIGNALS:
-    void currentSongChanged(const NeriPlayerQt::Song &song);
-    void playbackStateChanged(NeriPlayerQt::PlaybackState state);
+    void currentSongChanged(const QeriPlayerQt::Song &song);
+    void playbackStateChanged(QeriPlayerQt::PlaybackState state);
     void positionChanged(qint64 positionMs);
     void durationChanged(qint64 durationMs);
     void errorOccurred(const QString &message);
@@ -138,6 +138,6 @@ private:
     QCoro::Task<void> m_autoAdvanceTask;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_PLAYBACKCONTROLLER_H
+#endif // QERIPLAYERQT_PLAYBACKCONTROLLER_H

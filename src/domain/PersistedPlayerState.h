@@ -1,8 +1,8 @@
 /// @file PersistedPlayerState.h
 /// @brief Player state persistence models
 
-#ifndef NERIPLAYERQT_PERSISTEDPLAYERSTATE_H
-#define NERIPLAYERQT_PERSISTEDPLAYERSTATE_H
+#ifndef QERIPLAYERQT_PERSISTEDPLAYERSTATE_H
+#define QERIPLAYERQT_PERSISTEDPLAYERSTATE_H
 
 #include "domain/Enums.h"
 #include "domain/Song.h"
@@ -10,12 +10,12 @@
 #include <QMetaType>
 #include <QVector>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Serialized player state for persistence across sessions
  *
- * Aligned with Android NeriPlayer's PersistedState model.
+ * Aligned with Android QeriPlayer's PersistedState model.
  */
 struct PersistedPlayerState {
     QVector<Song> playlist;
@@ -27,8 +27,8 @@ struct PersistedPlayerState {
     bool shuffleEnabled = false;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::PersistedPlayerState)
+Q_DECLARE_METATYPE(QeriPlayerQt::PersistedPlayerState)
 
-#endif // NERIPLAYERQT_PERSISTEDPLAYERSTATE_H
+#endif // QERIPLAYERQT_PERSISTEDPLAYERSTATE_H

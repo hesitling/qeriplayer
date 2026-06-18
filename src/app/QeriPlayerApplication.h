@@ -1,8 +1,8 @@
-/// @file NeriPlayerApplication.h
+/// @file QeriPlayerApplication.h
 /// @brief Application entry point with service registration
 
-#ifndef NERIPLAYERQT_NERIPLAYERAPPLICATION_H
-#define NERIPLAYERQT_NERIPLAYERAPPLICATION_H
+#ifndef QERIPLAYERQT_QERIPLAYERAPPLICATION_H
+#define QERIPLAYERQT_QERIPLAYERAPPLICATION_H
 
 #include "app/ServiceLocator.h"
 
@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class MainWindow;
 class NetworkManager;
@@ -19,12 +19,12 @@ class Logger;
 class AppPaths;
 class SecureStorage;
 
-class NeriPlayerApplication : public QApplication {
+class QeriPlayerApplication : public QApplication {
     Q_OBJECT
 
 public:
-    NeriPlayerApplication(int &argc, char **argv);
-    ~NeriPlayerApplication() override;
+    QeriPlayerApplication(int &argc, char **argv);
+    ~QeriPlayerApplication() override;
 
     bool initialize();
     void showMainWindow();
@@ -41,6 +41,6 @@ private:
     std::unique_ptr<MainWindow> m_mainWindow;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_NERIPLAYERAPPLICATION_H
+#endif // QERIPLAYERQT_QERIPLAYERAPPLICATION_H

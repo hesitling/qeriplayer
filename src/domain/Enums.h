@@ -1,14 +1,14 @@
 /// @file Enums.h
 /// @brief Domain enumerations shared across all layers
 
-#ifndef NERIPLAYERQT_ENUMS_H
-#define NERIPLAYERQT_ENUMS_H
+#ifndef QERIPLAYERQT_ENUMS_H
+#define QERIPLAYERQT_ENUMS_H
 
 #include <QMetaType>
 
 #include <cstdint>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 /**
  * @brief Supported music platforms
@@ -38,25 +38,25 @@ enum class AudioQuality : std::uint8_t { Low = 0, Standard = 1, High = 2, Lossle
 /**
  * @brief Audio playback source
  *
- * Aligned with Android NeriPlayer's PlaybackAudioSource.
+ * Aligned with Android QeriPlayer's PlaybackAudioSource.
  */
 enum class PlaybackAudioSource : std::uint8_t { Local = 0, NetEase = 1, Bilibili = 2, YouTube = 3 };
 
 /**
  * @brief Bilibili playlist kind
  *
- * Aligned with Android NeriPlayer's BiliPlaylistKind.
+ * Aligned with Android QeriPlayer's BiliPlaylistKind.
  */
 enum class BiliPlaylistKind : std::uint8_t { CreatedFavorite = 0, CollectedFavorite = 1, Collection = 2 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-Q_DECLARE_METATYPE(NeriPlayerQt::MusicPlatform)
-Q_DECLARE_METATYPE(NeriPlayerQt::SearchType)
-Q_DECLARE_METATYPE(NeriPlayerQt::PlaybackState)
-Q_DECLARE_METATYPE(NeriPlayerQt::RepeatMode)
-Q_DECLARE_METATYPE(NeriPlayerQt::AudioQuality)
-Q_DECLARE_METATYPE(NeriPlayerQt::PlaybackAudioSource)
-Q_DECLARE_METATYPE(NeriPlayerQt::BiliPlaylistKind)
+Q_DECLARE_METATYPE(QeriPlayerQt::MusicPlatform)
+Q_DECLARE_METATYPE(QeriPlayerQt::SearchType)
+Q_DECLARE_METATYPE(QeriPlayerQt::PlaybackState)
+Q_DECLARE_METATYPE(QeriPlayerQt::RepeatMode)
+Q_DECLARE_METATYPE(QeriPlayerQt::AudioQuality)
+Q_DECLARE_METATYPE(QeriPlayerQt::PlaybackAudioSource)
+Q_DECLARE_METATYPE(QeriPlayerQt::BiliPlaylistKind)
 
-#endif // NERIPLAYERQT_ENUMS_H
+#endif // QERIPLAYERQT_ENUMS_H

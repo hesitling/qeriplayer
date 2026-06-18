@@ -5,7 +5,7 @@
 
 #include "core/logger/Logger.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 PlayerViewModel::PlayerViewModel(PlaybackController *controller, IPlayHistoryRepository *historyRepo, QObject *parent)
     : QObject(parent)
@@ -286,4 +286,4 @@ void PlayerViewModel::updateQueueModel()
     m_queueModel->setPlayingIndex(m_controller->queue()->currentIndex());
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

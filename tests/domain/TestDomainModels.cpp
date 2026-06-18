@@ -7,7 +7,7 @@
 #include <QTest>
 #include <QVariant>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestDomainModels : public QObject {
     Q_OBJECT

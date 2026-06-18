@@ -1,14 +1,14 @@
 /// @file SettingsRepository.h
 /// @brief SQLite-backed settings repository
 
-#ifndef NERIPLAYERQT_SETTINGSREPOSITORY_H
-#define NERIPLAYERQT_SETTINGSREPOSITORY_H
+#ifndef QERIPLAYERQT_SETTINGSREPOSITORY_H
+#define QERIPLAYERQT_SETTINGSREPOSITORY_H
 
 #include "repo/ISettingsRepository.h"
 
 #include <optional>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 class DatabaseManager;
 
@@ -30,6 +30,6 @@ private:
     DatabaseManager *m_db;
 };
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt
 
-#endif // NERIPLAYERQT_SETTINGSREPOSITORY_H
+#endif // QERIPLAYERQT_SETTINGSREPOSITORY_H

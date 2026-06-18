@@ -1,7 +1,7 @@
 ## Context
 
-NeriPlayer Qt currently has:
-- An application shell (`NeriPlayerApplication`) with a `ServiceLocator` for dependency injection.
+QeriPlayer Qt currently has:
+- An application shell (`QeriPlayerApplication`) with a `ServiceLocator` for dependency injection.
 - A network module (`HttpClient`, `WebSocketClient`, `NetworkMonitor`, `NetworkManager`) under `src/core/network/`.
 - A `MainWindow` placeholder with menu/toolbar/status bar.
 
@@ -71,7 +71,7 @@ Use OpenSSL on Linux, CommonCrypto on macOS, and BCrypt on Windows. Provide a th
 
 ### D5: Service registration via existing ServiceLocator
 
-Extend `ServiceLocator` with getters for `DatabaseManager`, `Logger`, `FileSystem`, `SecureStorage`. Initialize them in `NeriPlayerApplication::initializeCoreServices()`.
+Extend `ServiceLocator` with getters for `DatabaseManager`, `Logger`, `FileSystem`, `SecureStorage`. Initialize them in `QeriPlayerApplication::initializeCoreServices()`.
 
 **Rationale:** The project already uses `ServiceLocator` for dependency injection. No need to introduce a DI framework — the service locator pattern is sufficient for this scope.
 

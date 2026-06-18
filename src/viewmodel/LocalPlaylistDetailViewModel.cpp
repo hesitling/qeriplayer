@@ -5,7 +5,7 @@
 
 #include "core/logger/Logger.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 LocalPlaylistDetailViewModel::LocalPlaylistDetailViewModel(IPlaylistRepository *playlistRepo, ISongRepository *songRepo,
                                                            QObject *parent)
@@ -142,4 +142,4 @@ void LocalPlaylistDetailViewModel::playAll()
     Q_EMIT requestPlayPlaylist(m_songs->songs(), 0);
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

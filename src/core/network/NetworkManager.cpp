@@ -1,6 +1,6 @@
 #include "core/network/NetworkManager.h"
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 NetworkManager::NetworkManager(QObject *parent)
     : QObject(parent)
@@ -40,4 +40,4 @@ const NetworkMonitor *NetworkManager::networkMonitor() const
     return &m_networkMonitor;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

@@ -8,7 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-namespace NeriPlayerQt {
+namespace QeriPlayerQt {
 
 void NeteaseParser::logMalformed(const QString &method, const QString &detail)
 {
@@ -411,4 +411,4 @@ SongUrlResult NeteaseParser::parseSongUrl(const QJsonObject &json)
     return result;
 }
 
-} // namespace NeriPlayerQt
+} // namespace QeriPlayerQt

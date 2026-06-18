@@ -11,7 +11,7 @@
 #include <QTemporaryDir>
 #include <QTest>
 
-using namespace NeriPlayerQt;
+using namespace QeriPlayerQt;
 
 class TestFileSystem : public QObject {
     Q_OBJECT

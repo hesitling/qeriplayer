@@ -1,10 +1,10 @@
 schema: spec-driven
 
 context: |
-  ## NeriPlayer Qt
+  ## QeriPlayer Qt
 
   Multi-platform music player built with Qt 6, C++20, and QCoro.
-  Android NeriPlayer is the feature reference.
+  Android QeriPlayer is the feature reference.
 
   ### Tech Stack
 
@@ -36,7 +36,7 @@ context: |
 
   ```
   src/
-  ├── app/           # NeriPlayerApplication, ServiceLocator
+  ├── app/           # QeriPlayerApplication, ServiceLocator
   ├── core/          # network, database, filesystem, crypto, logger
   ├── domain/        # Shared value types (Song, Playlist, Lyrics, enums)
   ├── api/           # Platform API clients
@@ -59,7 +59,7 @@ context: |
 
   ### Key Design Patterns
 
-  - **ServiceLocator** (not singleton) — owned by NeriPlayerApplication
+  - **ServiceLocator** (not singleton) — owned by QeriPlayerApplication
   - **Repository pattern** — IXxxRepository interfaces, XxxRepository SQLite impls
   - **IMusicPlatformPlugin** — abstract interface for all platform clients
   - **ApiResult<T>** — success/error result type for all API operations
