@@ -69,7 +69,23 @@ public:
     Q_INVOKABLE QCoro::QmlTask loadMore();
     Q_INVOKABLE void clearResults();
     Q_INVOKABLE void clearError();
+
+    /**
+     * @brief Select a platform by its display name
+     * @param name Platform name to match (e.g. "NetEase", "Bilibili")
+     *
+     * Iterates available plugins and calls setSelectedPlatform() on match.
+     * No-op if no plugin matches the given name.
+     */
     Q_INVOKABLE void selectPlatformByName(const QString &name);
+
+    /**
+     * @brief Request playback of a song at the given index
+     * @param index Row index into the results model
+     *
+     * Emits requestPlay(song) if the index is valid and the song has a
+     * non-empty id. The MainViewModel wiring dispatches to PlayerViewModel.
+     */
     Q_INVOKABLE void playSong(int index);
 
 Q_SIGNALS:
