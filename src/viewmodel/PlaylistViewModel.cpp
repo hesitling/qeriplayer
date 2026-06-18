@@ -10,10 +10,11 @@
 
 namespace QeriPlayerQt {
 
-PlaylistViewModel::PlaylistViewModel(IPlaylistRepository *playlistRepo, NeteaseClient *neteaseClient, QObject *parent)
+PlaylistViewModel::PlaylistViewModel(IPlaylistRepository *playlistRepo, IPlaylistLibraryClient *libraryClient,
+                                     QObject *parent)
     : QObject(parent)
     , m_playlistRepo(playlistRepo)
-    , m_neteaseClient(neteaseClient)
+    , m_libraryClient(libraryClient)
 {
 }
 
@@ -121,6 +122,44 @@ QCoro::QmlTask PlaylistViewModel::renameLocalPlaylist(const QString &id, const Q
     }());
 }
 
+// --- Selection helpers for QML ---
+
+void PlaylistViewModel::openLocalPlaylist(int index)
+{
+    if (index < 0 || index >= m_localPlaylists.size()) {
+        return;
+    }
+
+    const auto summary = m_localPlaylists.at(index).value<PlaylistSummary>();
+    if (!summary.id.isEmpty()) {
+        Q_EMIT localPlaylistSelected(summary.id);
+    }
+}
+
+void PlaylistViewModel::openNeteasePlaylist(int index)
+{
+    if (index < 0 || index >= m_neteasePlaylists.size()) {
+        return;
+    }
+
+    const auto summary = m_neteasePlaylists.at(index).value<PlaylistSummary>();
+    if (!summary.id.isEmpty()) {
+        Q_EMIT neteasePlaylistSelected(summary);
+    }
+}
+
+void PlaylistViewModel::openNeteaseAlbum(int index)
+{
+    if (index < 0 || index >= m_neteaseAlbums.size()) {
+        return;
+    }
+
+    const auto summary = m_neteaseAlbums.at(index).value<AlbumSummary>();
+    if (!summary.id.isEmpty()) {
+        Q_EMIT neteaseAlbumSelected(summary);
+    }
+}
+
 // --- Error ---
 
 void PlaylistViewModel::clearError()
@@ -157,7 +196,16 @@ QCoro::Task<void> PlaylistViewModel::loadNeteasePlaylistsImpl()
     clearError();
 
     try {
-        auto result = co_await m_neteaseClient->getUserPlaylists(QString()); // Empty = current user
+        if (m_libraryClient == nullptr) {
+            m_error = ViewModelError(ViewModelError::ErrorType::Unknown, QStringLiteral("Library client unavailable"));
+            m_hasError = true;
+            m_isLoading = false;
+            Q_EMIT isLoadingChanged();
+            Q_EMIT errorChanged();
+            co_return;
+        }
+
+        auto result = co_await m_libraryClient->getUserPlaylists(QString()); // Empty = current user
 
         m_isLoading = false;
         Q_EMIT isLoadingChanged();
@@ -198,7 +246,16 @@ QCoro::Task<void> PlaylistViewModel::loadNeteaseAlbumsImpl()
     clearError();
 
     try {
-        auto result = co_await m_neteaseClient->getUserStarredAlbums(QString()); // Empty = current user
+        if (m_libraryClient == nullptr) {
+            m_error = ViewModelError(ViewModelError::ErrorType::Unknown, QStringLiteral("Library client unavailable"));
+            m_hasError = true;
+            m_isLoading = false;
+            Q_EMIT isLoadingChanged();
+            Q_EMIT errorChanged();
+            co_return;
+        }
+
+        auto result = co_await m_libraryClient->getUserStarredAlbums(QString()); // Empty = current user
 
         m_isLoading = false;
         Q_EMIT isLoadingChanged();
@@ -215,11 +272,11 @@ QCoro::Task<void> PlaylistViewModel::loadNeteaseAlbumsImpl()
         QVariantList list;
         for (const QJsonValue &val : playlistArray) {
             QJsonObject obj = val.toObject();
-            PlaylistSummary summary;
+            AlbumSummary summary;
             summary.id = obj.value(QStringLiteral("id")).toVariant().toString();
             summary.name = obj.value(QStringLiteral("name")).toString();
             summary.coverUrl = QUrl(obj.value(QStringLiteral("coverImgUrl")).toString());
-            summary.trackCount = obj.value(QStringLiteral("trackCount")).toInt();
+            summary.size = obj.value(QStringLiteral("trackCount")).toInt();
             list.append(QVariant::fromValue(summary));
         }
         m_neteaseAlbums = list;

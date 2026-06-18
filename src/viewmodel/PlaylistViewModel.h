@@ -4,9 +4,9 @@
 #ifndef QERIPLAYERQT_PLAYLISTVIEWMODEL_H
 #define QERIPLAYERQT_PLAYLISTVIEWMODEL_H
 
-#include "api/netease/NeteaseClient.h"
 #include "domain/PlaylistSummary.h"
 #include "repo/IPlaylistRepository.h"
+#include "viewmodel/IPlaylistLibraryClient.h"
 #include "viewmodel/ViewModelError.h"
 
 #include <QCoroQmlTask>
@@ -34,7 +34,7 @@ class PlaylistViewModel : public QObject {
     Q_PROPERTY(ViewModelError error READ error NOTIFY errorChanged)
 
 public:
-    explicit PlaylistViewModel(IPlaylistRepository *playlistRepo, NeteaseClient *neteaseClient,
+    explicit PlaylistViewModel(IPlaylistRepository *playlistRepo, IPlaylistLibraryClient *libraryClient,
                                QObject *parent = nullptr);
     ~PlaylistViewModel() override;
 
@@ -55,6 +55,11 @@ public:
     Q_INVOKABLE QCoro::QmlTask createLocalPlaylist(const QString &name);
     Q_INVOKABLE QCoro::QmlTask deleteLocalPlaylist(const QString &id);
     Q_INVOKABLE QCoro::QmlTask renameLocalPlaylist(const QString &id, const QString &name);
+
+    // --- Selection helpers for QML ---
+    Q_INVOKABLE void openLocalPlaylist(int index);
+    Q_INVOKABLE void openNeteasePlaylist(int index);
+    Q_INVOKABLE void openNeteaseAlbum(int index);
 
     // --- Error ---
     Q_INVOKABLE void clearError();
@@ -81,7 +86,7 @@ private:
     QCoro::Task<void> loadNeteaseAlbumsImpl();
 
     IPlaylistRepository *m_playlistRepo;
-    NeteaseClient *m_neteaseClient;
+    IPlaylistLibraryClient *m_libraryClient;
 
     QVariantList m_localPlaylists;
     QVariantList m_neteasePlaylists;

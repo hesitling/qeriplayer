@@ -140,6 +140,7 @@ add_executable(TestPlaylistViewModel
     TestPlaylistViewModel.cpp
     ${CMAKE_SOURCE_DIR}/src/viewmodel/PlaylistViewModel.cpp
     ${CMAKE_SOURCE_DIR}/src/viewmodel/ViewModelError.cpp
+    ${CMAKE_SOURCE_DIR}/src/domain/PlaylistSummary.cpp
     ${CMAKE_SOURCE_DIR}/src/api/common/ApiError.cpp
     ${CMAKE_SOURCE_DIR}/src/api/netease/NeteaseClientCore.cpp
     ${CMAKE_SOURCE_DIR}/src/api/netease/NeteaseClientAuth.cpp
@@ -268,6 +269,7 @@ set_tests_properties(TestNeteasePlaylistDetailViewModel PROPERTIES
 add_executable(TestMainViewModel
     TestMainViewModel.cpp
     ${CMAKE_SOURCE_DIR}/src/viewmodel/MainViewModel.cpp
+    ${CMAKE_SOURCE_DIR}/src/domain/PlaylistSummary.cpp
     ${CMAKE_SOURCE_DIR}/src/viewmodel/PlayerViewModel.cpp
     ${CMAKE_SOURCE_DIR}/src/viewmodel/SearchViewModel.cpp
     ${CMAKE_SOURCE_DIR}/src/viewmodel/PlaylistViewModel.cpp

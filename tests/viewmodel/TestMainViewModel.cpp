@@ -163,6 +163,19 @@ public:
     }
 };
 
+class MockPlaylistLibraryClient : public IPlaylistLibraryClient {
+public:
+    QCoro::Task<ApiResult<QVector<Playlist>>> getUserPlaylists(const QString &) override
+    {
+        co_return ApiResult<QVector<Playlist>>(QVector<Playlist> {});
+    }
+
+    QCoro::Task<ApiResult<QJsonObject>> getUserStarredAlbums(const QString &, int = 1000, int = 0) override
+    {
+        co_return ApiResult<QJsonObject>(QJsonObject {});
+    }
+};
+
 class MockPlugin : public IMusicPlatformPlugin {
 public:
     QCoro::Task<ApiResult<SearchResult>> search(const QString &, SearchType, int, int) override
@@ -209,6 +222,7 @@ private:
     MockPlaylistRepo m_playlistRepo;
     MockSongRepo m_songRepo;
     MockPlugin m_plugin;
+    MockPlaylistLibraryClient m_playlistLibraryClient;
 
     MainViewModel *createViewModel()
     {
@@ -218,7 +232,7 @@ private:
 
         m_playerVm = new PlayerViewModel(controller, &m_historyRepo);
         m_searchVm = new SearchViewModel({&m_plugin}, &m_songRepo);
-        m_playlistVm = new PlaylistViewModel(&m_playlistRepo, nullptr);
+        m_playlistVm = new PlaylistViewModel(&m_playlistRepo, &m_playlistLibraryClient);
         m_settingsVm = new SettingsViewModel(&m_settingsRepo, nullptr, &m_historyRepo);
 
         return new MainViewModel(m_playerVm, m_searchVm, m_playlistVm, m_settingsVm, &m_songRepo, &m_playlistRepo,

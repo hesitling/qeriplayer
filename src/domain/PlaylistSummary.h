@@ -18,6 +18,35 @@ namespace QeriPlayerQt {
  * Aligned with Android QeriPlayer's PlaylistSummary model.
  */
 struct PlaylistSummary {
+    Q_GADGET
+    Q_PROPERTY(QString id READ getId CONSTANT)
+    Q_PROPERTY(QString name READ getName CONSTANT)
+    Q_PROPERTY(QUrl coverUrl READ getCoverUrl CONSTANT)
+    Q_PROPERTY(qint64 playCount READ getPlayCount CONSTANT)
+    Q_PROPERTY(int trackCount READ getTrackCount CONSTANT)
+
+    QString getId() const
+    {
+        return id;
+    }
+    QString getName() const
+    {
+        return name;
+    }
+    QUrl getCoverUrl() const
+    {
+        return coverUrl;
+    }
+    qint64 getPlayCount() const
+    {
+        return playCount;
+    }
+    int getTrackCount() const
+    {
+        return trackCount;
+    }
+
+public:
     QString id;
     QString name;
     QUrl coverUrl;
@@ -31,6 +60,30 @@ struct PlaylistSummary {
  * Aligned with Android QeriPlayer's AlbumSummary model.
  */
 struct AlbumSummary {
+    Q_GADGET
+    Q_PROPERTY(QString id READ getId CONSTANT)
+    Q_PROPERTY(QString name READ getName CONSTANT)
+    Q_PROPERTY(QUrl coverUrl READ getCoverUrl CONSTANT)
+    Q_PROPERTY(int size READ getSize CONSTANT)
+
+    QString getId() const
+    {
+        return id;
+    }
+    QString getName() const
+    {
+        return name;
+    }
+    QUrl getCoverUrl() const
+    {
+        return coverUrl;
+    }
+    int getSize() const
+    {
+        return size;
+    }
+
+public:
     QString id;
     QString name;
     QUrl coverUrl;

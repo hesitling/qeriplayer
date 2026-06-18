@@ -104,6 +104,7 @@ set(SOURCES
     src/player/PlaybackController.cpp
     src/player/BackendFactory.cpp
     src/domain/Song.cpp
+    src/domain/PlaylistSummary.cpp
 )
 
 set(HEADERS
@@ -216,6 +217,8 @@ set(VIEWMODEL_HEADERS
     src/viewmodel/PlayerViewModel.h
     src/viewmodel/SettingsViewModel.h
     src/viewmodel/SearchViewModel.h
+    src/viewmodel/IPlaylistLibraryClient.h
+    src/viewmodel/NeteasePlaylistLibraryClient.h
     src/viewmodel/PlaylistViewModel.h
     src/viewmodel/LocalPlaylistDetailViewModel.h
     src/viewmodel/NeteasePlaylistDetailViewModel.h

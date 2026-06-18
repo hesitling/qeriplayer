@@ -68,6 +68,8 @@ private Q_SLOTS:
     void playlistSummary_defaultConstruction();
     void albumSummary_defaultConstruction();
     void biliPlaylist_defaultConstruction();
+    void playlistSummary_qmlProperties();
+    void albumSummary_qmlProperties();
 
     // PersistedPlayerState
     void persistedPlayerState_defaultConstruction();
@@ -324,6 +326,50 @@ void TestDomainModels::biliPlaylist_defaultConstruction()
     BiliPlaylist bp;
     QCOMPARE(bp.kind, BiliPlaylistKind::CreatedFavorite);
     QCOMPARE(bp.count, 0);
+}
+
+void TestDomainModels::playlistSummary_qmlProperties()
+{
+    PlaylistSummary summary;
+    summary.id = QStringLiteral("pl-1");
+    summary.name = QStringLiteral("Road Trip");
+    summary.coverUrl = QUrl(QStringLiteral("https://example.com/cover.jpg"));
+    summary.trackCount = 12;
+
+    QVariant variant = QVariant::fromValue(summary);
+    const PlaylistSummary restored = variant.value<PlaylistSummary>();
+    QCOMPARE(restored.id, QStringLiteral("pl-1"));
+    QCOMPARE(restored.name, QStringLiteral("Road Trip"));
+    QCOMPARE(restored.coverUrl, QUrl(QStringLiteral("https://example.com/cover.jpg")));
+    QCOMPARE(restored.trackCount, 12);
+
+    const QMetaObject *metaObject = QMetaType::fromType<PlaylistSummary>().metaObject();
+    QVERIFY(metaObject != nullptr);
+    QVERIFY(metaObject->indexOfProperty("name") >= 0);
+    QVERIFY(metaObject->indexOfProperty("coverUrl") >= 0);
+    QVERIFY(metaObject->indexOfProperty("trackCount") >= 0);
+}
+
+void TestDomainModels::albumSummary_qmlProperties()
+{
+    AlbumSummary summary;
+    summary.id = QStringLiteral("al-1");
+    summary.name = QStringLiteral("Favorites");
+    summary.coverUrl = QUrl(QStringLiteral("https://example.com/album.jpg"));
+    summary.size = 8;
+
+    QVariant variant = QVariant::fromValue(summary);
+    const AlbumSummary restored = variant.value<AlbumSummary>();
+    QCOMPARE(restored.id, QStringLiteral("al-1"));
+    QCOMPARE(restored.name, QStringLiteral("Favorites"));
+    QCOMPARE(restored.coverUrl, QUrl(QStringLiteral("https://example.com/album.jpg")));
+    QCOMPARE(restored.size, 8);
+
+    const QMetaObject *metaObject = QMetaType::fromType<AlbumSummary>().metaObject();
+    QVERIFY(metaObject != nullptr);
+    QVERIFY(metaObject->indexOfProperty("name") >= 0);
+    QVERIFY(metaObject->indexOfProperty("coverUrl") >= 0);
+    QVERIFY(metaObject->indexOfProperty("size") >= 0);
 }
 
 // --- PersistedPlayerState ---
