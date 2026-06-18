@@ -2,7 +2,7 @@
 
 Defines the `QmlTask` return type pattern for ViewModel Q_INVOKABLE methods, enabling QML consumers to use `.then()` callbacks and `.await()` property binding for async operations.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Async VM methods return QCoro::QmlTask
 ViewModel methods that perform async work (containing `co_await`) SHALL return `QCoro::QmlTask` instead of `void`. The `QmlTask` type is a Q_GADGET that QML can interact with via `.then()` and `.await()`.
