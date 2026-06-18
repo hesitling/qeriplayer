@@ -10,6 +10,7 @@
 #include "repo/ISettingsRepository.h"
 #include "viewmodel/ViewModelError.h"
 
+#include <QCoroQmlTask>
 #include <QCoroTask>
 #include <QObject>
 
@@ -53,8 +54,8 @@ public:
     Q_INVOKABLE void setDownloadPath(const QString &path);
 
     // --- Auth ---
-    Q_INVOKABLE QCoro::Task<void> loginNetease(const QString &phone, const QString &password);
-    Q_INVOKABLE QCoro::Task<void> logoutNetease();
+    Q_INVOKABLE QCoro::QmlTask loginNetease(const QString &phone, const QString &password);
+    Q_INVOKABLE QCoro::QmlTask logoutNetease();
 
     // --- History ---
     Q_INVOKABLE void clearPlayHistory();
@@ -80,6 +81,9 @@ private:
     QString m_neteaseUsername;
     ViewModelError m_error;
     bool m_hasError = false;
+
+    QCoro::Task<void> loginNeteaseImpl(const QString &phone, const QString &password);
+    QCoro::Task<void> logoutNeteaseImpl();
 };
 
 } // namespace QeriPlayerQt

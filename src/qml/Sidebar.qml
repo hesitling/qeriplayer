@@ -30,6 +30,7 @@ Rectangle {
 
             contentItem: RowLayout {
                 spacing: 12
+                anchors.verticalCenter: parent.verticalCenter
 
                 Label {
                     text: model.icon

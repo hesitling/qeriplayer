@@ -168,7 +168,17 @@ void SettingsViewModel::setDownloadPath(const QString &path)
 
 // --- Auth ---
 
-QCoro::Task<void> SettingsViewModel::loginNetease(const QString &phone, const QString &password)
+QCoro::QmlTask SettingsViewModel::loginNetease(const QString &phone, const QString &password)
+{
+    return QCoro::QmlTask(loginNeteaseImpl(phone, password));
+}
+
+QCoro::QmlTask SettingsViewModel::logoutNetease()
+{
+    return QCoro::QmlTask(logoutNeteaseImpl());
+}
+
+QCoro::Task<void> SettingsViewModel::loginNeteaseImpl(const QString &phone, const QString &password)
 {
     if (!m_neteaseClient) {
         m_error = ViewModelError(ViewModelError::ErrorType::Api, "NetEase client not available");
@@ -191,7 +201,7 @@ QCoro::Task<void> SettingsViewModel::loginNetease(const QString &phone, const QS
     Q_EMIT errorChanged();
 }
 
-QCoro::Task<void> SettingsViewModel::logoutNetease()
+QCoro::Task<void> SettingsViewModel::logoutNeteaseImpl()
 {
     if (!m_neteaseClient) {
         m_error = ViewModelError(ViewModelError::ErrorType::Api, "NetEase client not available");

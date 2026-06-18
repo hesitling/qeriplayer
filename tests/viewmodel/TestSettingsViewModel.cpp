@@ -6,6 +6,7 @@
 #include "repo/ISettingsRepository.h"
 #include "viewmodel/SettingsViewModel.h"
 
+#include <QCoroQmlTask>
 #include <QCoroTask>
 #include <QSignalSpy>
 #include <QTest>
