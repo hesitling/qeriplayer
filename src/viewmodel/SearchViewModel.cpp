@@ -291,6 +291,9 @@ IMusicPlatformPlugin *SearchViewModel::currentPlugin() const
             if (m_selectedPlatform == MusicPlatform::YouTube && plugin->platformName() == QStringLiteral("YouTube")) {
                 return plugin;
             }
+            if (m_selectedPlatform == MusicPlatform::QQMusic && plugin->platformName() == QStringLiteral("QQMusic")) {
+                return plugin;
+            }
         }
     }
 
