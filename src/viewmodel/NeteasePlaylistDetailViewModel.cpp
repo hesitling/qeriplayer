@@ -64,16 +64,23 @@ QCoro::QmlTask NeteasePlaylistDetailViewModel::loadAlbum(const QString &albumId)
     return QCoro::QmlTask(loadAlbumImpl(albumId));
 }
 
+namespace {
+QCoro::Task<void> completedTask()
+{
+    co_return;
+}
+} // namespace
+
 QCoro::QmlTask NeteasePlaylistDetailViewModel::retry()
 {
     if (m_isAlbum) {
         if (m_lastAlbumId.isEmpty()) {
-            return QCoro::QmlTask(QCoro::Task<void>());
+            return QCoro::QmlTask(completedTask());
         }
         return QCoro::QmlTask(loadAlbumImpl(m_lastAlbumId));
     } else {
         if (m_lastPlaylistId.isEmpty()) {
-            return QCoro::QmlTask(QCoro::Task<void>());
+            return QCoro::QmlTask(completedTask());
         }
         return QCoro::QmlTask(loadPlaylistImpl(m_lastPlaylistId));
     }
