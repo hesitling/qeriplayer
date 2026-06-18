@@ -15,29 +15,29 @@ Delivers the full Library vertical slice for the Phase 5 QML migration: QML-read
 
 Commit group goal: make the Library tab usable with local playlists first, then lazy remote sections.
 
-- [ ] 2.1 Create `src/qml/LibraryView.qml` with tabs for Local, NetEase Playlists, and NetEase Albums
-- [ ] 2.2 Create a reusable playlist/albums card delegate component for overview lists
-- [ ] 2.3 Bind the Local tab to `playlistVm.localPlaylists` and implement empty-state messaging
-- [ ] 2.4 Implement create-local-playlist dialog flow in `LibraryView.qml` using `playlistVm.createLocalPlaylist()`
-- [ ] 2.5 Implement one-time lazy loading for NetEase playlists and albums when their tabs are first activated
-- [ ] 2.6 Implement loading, error, retry, and empty states for active remote tabs
-- [ ] 2.7 Wire card activation to the new `PlaylistViewModel` open helpers
-- [ ] 2.8 Add new overview QML files to `src/qml/qml.qrc`
+- [x] 2.1 Create `src/qml/LibraryView.qml` with tabs for Local, NetEase Playlists, and NetEase Albums
+- [x] 2.2 Create a reusable playlist/albums card delegate component for overview lists
+- [x] 2.3 Bind the Local tab to `playlistVm.localPlaylists` and implement empty-state messaging
+- [x] 2.4 Implement create-local-playlist dialog flow in `LibraryView.qml` using `playlistVm.createLocalPlaylist()`
+- [x] 2.5 Implement one-time lazy loading for NetEase playlists and albums when their tabs are first activated
+- [x] 2.6 Implement loading, error, retry, and empty states for active remote tabs
+- [x] 2.7 Wire card activation to the new `PlaylistViewModel` open helpers
+- [x] 2.8 Add new overview QML files to `src/qml/qml.qrc`
 
 ## 3. Detail pages + shell navigation
 
 Commit group goal: complete end-to-end navigation from library cards into local and NetEase detail views.
 
-- [ ] 3.1 Create `src/qml/LocalPlaylistDetailView.qml` bound to `mainVm.localPlaylistDetail`
-- [ ] 3.2 Create `src/qml/NeteasePlaylistDetailView.qml` bound to `mainVm.neteasePlaylistDetail`
-- [ ] 3.3 Reuse `SongDelegate.qml` in both detail pages with double-click play and Play All actions
-- [ ] 3.4 Add explicit Back actions in both detail pages that navigate back to Library through `mainVm`
-- [ ] 3.5 Add rename and delete dialog flows to `LocalPlaylistDetailView.qml`
-- [ ] 3.6 Add save-to-local action and loading/error handling to `NeteasePlaylistDetailView.qml`
-- [ ] 3.7 Replace the Library placeholder in `src/qml/main.qml` with `LibraryView {}`
-- [ ] 3.8 Extend `src/qml/main.qml` route switching to render `LocalPlaylistDetailView` and `NeteasePlaylistDetailView`
-- [ ] 3.9 Add Toast error wiring in `src/qml/main.qml` for `playlistVm`, `mainVm.localPlaylistDetail`, and `mainVm.neteasePlaylistDetail`
-- [ ] 3.10 Add new detail QML files to `src/qml/qml.qrc`
+- [x] 3.1 Create `src/qml/LocalPlaylistDetailView.qml` bound to `mainVm.localPlaylistDetail`
+- [x] 3.2 Create `src/qml/NeteasePlaylistDetailView.qml` bound to `mainVm.neteasePlaylistDetail`
+- [x] 3.3 Reuse `SongDelegate.qml` in both detail pages with double-click play and Play All actions
+- [x] 3.4 Add explicit Back actions in both detail pages that navigate back to Library through `mainVm`
+- [x] 3.5 Add rename and delete dialog flows to `LocalPlaylistDetailView.qml`
+- [x] 3.6 Add save-to-local action and loading/error handling to `NeteasePlaylistDetailView.qml`
+- [x] 3.7 Replace the Library placeholder in `src/qml/main.qml` with `LibraryView {}`
+- [x] 3.8 Extend `src/qml/main.qml` route switching to render `LocalPlaylistDetailView` and `NeteasePlaylistDetailView`
+- [x] 3.9 Add Toast error wiring in `src/qml/main.qml` for `playlistVm`, `mainVm.localPlaylistDetail`, and `mainVm.neteasePlaylistDetail`
+- [x] 3.10 Add new detail QML files to `src/qml/qml.qrc`
 
 ## 4. Navigation and regression coverage
 
