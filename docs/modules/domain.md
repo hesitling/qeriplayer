@@ -2,7 +2,7 @@
 
 ## Overview
 
-The domain layer contains all shared value types used across API clients, repositories, services, and UI. All structs are plain value types (no QObject, no Q_GADGET), default-constructible, copyable, and registered with `Q_DECLARE_METATYPE`.
+The domain layer contains all shared value types used across API clients, repositories, services, and UI. All structs are plain value types, default-constructible, copyable, and registered with `Q_DECLARE_METATYPE`. `Song` uses `Q_GADGET` with `Q_PROPERTY(READ)` to enable QML property access — other structs have no QObject dependency.
 
 ## Source Files
 
@@ -41,6 +41,15 @@ Core domain model aligned with Android QeriPlayer's `SongItem`.
 
 ```cpp
 struct Song {
+    Q_GADGET
+    Q_PROPERTY(QString id READ getId CONSTANT)
+    Q_PROPERTY(QString name READ getName CONSTANT)
+    Q_PROPERTY(QString artist READ getArtist CONSTANT)
+    Q_PROPERTY(QString album READ getAlbum CONSTANT)
+    Q_PROPERTY(qint64 durationMs READ getDurationMs CONSTANT)
+    Q_PROPERTY(QUrl coverUrl READ getCoverUrl CONSTANT)
+    Q_PROPERTY(MusicPlatform platform READ getPlatform CONSTANT)
+
     // Core identity
     QString id, name, artist, album, albumId;
     qint64 durationMs = 0;
