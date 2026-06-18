@@ -8,5 +8,6 @@
         <file>TransportControls.qml</file>
         <file>VolumeControl.qml</file>
         <file>Toast.qml</file>
+        <file>SongDelegate.qml</file>
     </qresource>
 </RCC>

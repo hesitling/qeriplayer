@@ -10,13 +10,13 @@
 
 ## 2. SongDelegate.qml
 
-- [ ] 2.1 Create `src/qml/SongDelegate.qml` — ItemDelegate with cover art, song name, artist, album, platform badge, duration
-- [ ] 2.2 Implement cover art (48×48, rounded, Image with placeholder 🎵)
-- [ ] 2.3 Implement song name (Font.Medium, elide right) and artist+album line (hint color, elide right)
-- [ ] 2.4 Implement platform badge — right-aligned rounded pill with `platformDisplayName(model.platform)` helper
-- [ ] 2.5 Implement duration label — right-aligned, `m:ss` format from `model.durationMs`
-- [ ] 2.6 Implement playing highlight — accent tint when `model.id === playerVm.currentSong.id`
-- [ ] 2.7 Add `SongDelegate.qml` to `src/qml/qml.qrc`
+- [x] 2.1 Create `src/qml/SongDelegate.qml` — ItemDelegate with cover art, song name, artist, album, platform badge, duration
+- [x] 2.2 Implement cover art (48×48, rounded, Image with placeholder 🎵)
+- [x] 2.3 Implement song name (Font.Medium, elide right) and artist+album line (hint color, elide right)
+- [x] 2.4 Implement platform badge — right-aligned rounded pill with `platformDisplayName(model.platform)` helper
+- [x] 2.5 Implement duration label — right-aligned, `m:ss` format from `model.durationMs`
+- [x] 2.6 Implement playing highlight — accent tint when `model.id === playerVm.currentSong.id`
+- [x] 2.7 Add `SongDelegate.qml` to `src/qml/qml.qrc`
 
 ## 3. SearchView.qml
 
