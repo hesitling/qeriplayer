@@ -11,7 +11,6 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        app.showMainWindow();
         return app.exec();
     } catch (const std::exception &ex) {
         qCritical() << "Unhandled exception:" << ex.what();

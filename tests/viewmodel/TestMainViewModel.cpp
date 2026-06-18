@@ -221,7 +221,8 @@ private:
         m_playlistVm = new PlaylistViewModel(&m_playlistRepo, nullptr);
         m_settingsVm = new SettingsViewModel(&m_settingsRepo, nullptr, &m_historyRepo);
 
-        return new MainViewModel(m_playerVm, m_searchVm, m_playlistVm, m_settingsVm);
+        return new MainViewModel(m_playerVm, m_searchVm, m_playlistVm, m_settingsVm, &m_songRepo, &m_playlistRepo,
+                                 nullptr);
     }
 
 private Q_SLOTS:

@@ -4,7 +4,10 @@
 #ifndef QERIPLAYERQT_MAINVIEWMODEL_H
 #define QERIPLAYERQT_MAINVIEWMODEL_H
 
+#include "api/netease/NeteaseClient.h"
 #include "domain/PlaylistSummary.h"
+#include "repo/IPlaylistRepository.h"
+#include "repo/ISongRepository.h"
 #include "viewmodel/LocalPlaylistDetailViewModel.h"
 #include "viewmodel/NeteasePlaylistDetailViewModel.h"
 #include "viewmodel/PlayerViewModel.h"
@@ -34,7 +37,8 @@ public:
     Q_ENUM(View)
 
     MainViewModel(PlayerViewModel *playerVm, SearchViewModel *searchVm, PlaylistViewModel *playlistVm,
-                  SettingsViewModel *settingsVm, QObject *parent = nullptr);
+                  SettingsViewModel *settingsVm, ISongRepository *songRepo, IPlaylistRepository *playlistRepo,
+                  NeteaseClient *neteaseClient, QObject *parent = nullptr);
     ~MainViewModel() override;
 
     View currentView() const;
@@ -69,6 +73,9 @@ private:
     LocalPlaylistDetailViewModel *m_localPlaylistDetail = nullptr;
     NeteasePlaylistDetailViewModel *m_neteasePlaylistDetail = nullptr;
     QCoro::QmlTask m_pendingTask;
+    ISongRepository *m_songRepo;
+    IPlaylistRepository *m_playlistRepo;
+    NeteaseClient *m_neteaseClient;
 };
 
 } // namespace QeriPlayerQt

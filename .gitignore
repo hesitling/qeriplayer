@@ -1,4 +1,5 @@
 # Build directories
+plans/
 build/
 cmake-build-*/
 out/

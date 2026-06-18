@@ -11,7 +11,7 @@ include(GNUInstallDirs)
 # ─── Dependencies ─────────────────────────────────────────────────
 
 # Qt 6
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets Multimedia)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets Multimedia Quick Qml QuickControls2)
 
 # QCoro
 set(QERIPLAYER_QCORO_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/qcoro" CACHE PATH
@@ -92,7 +92,6 @@ set(SOURCES
     src/repo/PlayHistoryRepository.cpp
     src/repo/PlaylistRepository.cpp
     src/repo/PlayerStateRepository.cpp
-    src/mainwindow.cpp
     src/api/common/ApiError.cpp
     src/api/netease/NeteaseCrypto.cpp
     src/api/netease/NeteaseParser.cpp
@@ -160,14 +159,13 @@ set(HEADERS
     src/player/PlayQueue.h
     src/player/PlaybackController.h
     src/player/BackendFactory.h
-    src/mainwindow.h
 )
 
-set(UI_FILES
-    src/mainwindow.ui
+set(QML_FILES
+    src/qml/qml.qrc
 )
 
-add_executable(QeriPlayerQt ${SOURCES} ${HEADERS} ${UI_FILES})
+add_executable(QeriPlayerQt ${SOURCES} ${HEADERS} ${QML_FILES})
 
 target_link_libraries(QeriPlayerQt PRIVATE
     Qt6::Core
@@ -176,6 +174,10 @@ target_link_libraries(QeriPlayerQt PRIVATE
     Qt6::Network
     Qt6::WebSockets
     Qt6::Multimedia
+    Qt6::Quick
+    Qt6::Qml
+    Qt6::QuickControls2
+    qeriplayer_viewmodel
     ${QERIPLAYER_QCORO_LIBRARIES}
     ${SQLITE3_LIBRARIES}
     ${SPDLOG_LIBRARIES}

@@ -10,9 +10,10 @@
 
 #include <memory>
 
+class QQmlApplicationEngine;
+
 namespace QeriPlayerQt {
 
-class MainWindow;
 class NetworkManager;
 class DatabaseManager;
 class Logger;
@@ -27,18 +28,16 @@ public:
     ~QeriPlayerApplication() override;
 
     bool initialize();
-    void showMainWindow();
 
     ServiceLocator *services();
     const ServiceLocator *services() const;
-    MainWindow *mainWindow() const;
 
 private:
     void initializeCoreServices();
-    void initializeUi();
+    bool initializeUi();
 
     ServiceLocator m_services;
-    std::unique_ptr<MainWindow> m_mainWindow;
+    std::unique_ptr<QQmlApplicationEngine> m_qmlEngine;
 };
 
 } // namespace QeriPlayerQt

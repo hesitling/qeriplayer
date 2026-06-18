@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/qml">
+        <file>main.qml</file>
+        <file>Sidebar.qml</file>
+    </qresource>
+</RCC>
