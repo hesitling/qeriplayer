@@ -17,10 +17,10 @@ RowLayout {
 
     // Volume icon logic
     function volumeIcon() {
-        if (root.isMuted) return "volume_off"
-        if (root.volume < 0.33) return "volume_mute"
-        if (root.volume < 0.66) return "volume_down"
-        return "volume_up"
+        if (root.isMuted) return "audio-volume-muted"
+        if (root.volume < 0.33) return "audio-volume-low"
+        if (root.volume < 0.66) return "audio-volume-medium"
+        return "audio-volume-high"
     }
 
     // Mute toggle button

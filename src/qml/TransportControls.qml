@@ -45,7 +45,7 @@ ColumnLayout {
 
         // Shuffle
         ToolButton {
-            icon.name: "shuffle"
+            icon.name: "media-playlist-shuffle"
             icon.width: 18
             icon.height: 18
             opacity: root.isShuffleEnabled ? 1.0 : 0.4
@@ -56,7 +56,7 @@ ColumnLayout {
 
         // Previous
         ToolButton {
-            icon.name: "skip_previous"
+            icon.name: "media-skip-backward"
             icon.width: 24
             icon.height: 24
             onClicked: root.prev()
@@ -68,7 +68,7 @@ ColumnLayout {
         ToolButton {
             Layout.preferredWidth: 48
             Layout.preferredHeight: 48
-            icon.name: root.isPlaying ? "pause" : "play_arrow"
+            icon.name: root.isPlaying ? "media-playback-pause" : "media-playback-start"
             icon.width: 32
             icon.height: 32
             onClicked: root.playPause()
@@ -78,7 +78,7 @@ ColumnLayout {
 
         // Next
         ToolButton {
-            icon.name: "skip_next"
+            icon.name: "media-skip-forward"
             icon.width: 24
             icon.height: 24
             onClicked: root.next()
@@ -88,7 +88,7 @@ ColumnLayout {
 
         // Repeat
         ToolButton {
-            icon.name: root.repeatMode === 1 ? "repeat_one" : "repeat"
+            icon.name: root.repeatMode === 1 ? "media-playlist-repeat-song" : "media-playlist-repeat"
             icon.width: 18
             icon.height: 18
             opacity: root.repeatMode === 0 ? 0.4 : 1.0
