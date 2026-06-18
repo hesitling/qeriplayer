@@ -43,7 +43,7 @@ Commit group goal: complete end-to-end navigation from library cards into local 
 
 Commit group goal: lock the new navigation contracts in with viewmodel/QML regression coverage and full validation.
 
-- [ ] 4.1 Extend `tests/viewmodel/TestMainViewModel.cpp` to cover library-detail navigation and detail VM lifecycle
-- [ ] 4.2 Add or update QML tests for new overview/detail page loading and key interactions if the existing QML test harness supports them
-- [ ] 4.3 Run targeted tests for domain/viewmodel/QML library coverage
-- [ ] 4.4 Run `just format` and `just test` before marking the change ready for implementation
+- [x] 4.1 Extend `tests/viewmodel/TestMainViewModel.cpp` to cover library-detail navigation and detail VM lifecycle
+- [x] 4.2 Add or update QML tests for new overview/detail page loading and key interactions if the existing QML test harness supports them
+- [x] 4.3 Run targeted tests for domain/viewmodel/QML library coverage
+- [x] 4.4 Run `just format` and `just test` before marking the change ready for implementation
