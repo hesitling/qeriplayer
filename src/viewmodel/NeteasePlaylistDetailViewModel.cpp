@@ -48,56 +48,58 @@ ViewModelError NeteasePlaylistDetailViewModel::error() const
     return m_error;
 }
 
-void NeteasePlaylistDetailViewModel::loadPlaylist(const QString &playlistId)
+QCoro::QmlTask NeteasePlaylistDetailViewModel::loadPlaylist(const QString &playlistId)
 {
     m_lastPlaylistId = playlistId;
     m_lastAlbumId.clear();
     m_isAlbum = false;
-    loadPlaylistImpl(playlistId);
+    return QCoro::QmlTask(loadPlaylistImpl(playlistId));
 }
 
-void NeteasePlaylistDetailViewModel::loadAlbum(const QString &albumId)
+QCoro::QmlTask NeteasePlaylistDetailViewModel::loadAlbum(const QString &albumId)
 {
     m_lastAlbumId = albumId;
     m_lastPlaylistId.clear();
     m_isAlbum = true;
-    loadAlbumImpl(albumId);
+    return QCoro::QmlTask(loadAlbumImpl(albumId));
 }
 
-void NeteasePlaylistDetailViewModel::retry()
+QCoro::QmlTask NeteasePlaylistDetailViewModel::retry()
 {
     if (m_isAlbum) {
         if (m_lastAlbumId.isEmpty()) {
-            return;
+            return QCoro::QmlTask(QCoro::Task<void>());
         }
-        loadAlbum(m_lastAlbumId);
+        return QCoro::QmlTask(loadAlbumImpl(m_lastAlbumId));
     } else {
         if (m_lastPlaylistId.isEmpty()) {
-            return;
+            return QCoro::QmlTask(QCoro::Task<void>());
         }
-        loadPlaylist(m_lastPlaylistId);
+        return QCoro::QmlTask(loadPlaylistImpl(m_lastPlaylistId));
     }
 }
 
-void NeteasePlaylistDetailViewModel::saveToLocal()
+QCoro::QmlTask NeteasePlaylistDetailViewModel::saveToLocal()
 {
-    if (m_headerName.isEmpty())
-        return;
+    return QCoro::QmlTask([this]() -> QCoro::Task<void> {
+        if (m_headerName.isEmpty())
+            co_return;
 
-    try {
-        // Create local playlist
-        Playlist localPlaylist = m_playlistRepo->create(m_headerName);
+        try {
+            // Create local playlist
+            Playlist localPlaylist = m_playlistRepo->create(m_headerName);
 
-        // Cache all songs
-        m_songRepo->saveBatch(m_songs->songs());
+            // Cache all songs
+            m_songRepo->saveBatch(m_songs->songs());
 
-        // Add songs to playlist
-        for (const Song &song : m_songs->songs()) {
-            m_playlistRepo->addSong(localPlaylist.id, song.id);
+            // Add songs to playlist
+            for (const Song &song : m_songs->songs()) {
+                m_playlistRepo->addSong(localPlaylist.id, song.id);
+            }
+        } catch (const std::exception &ex) {
+            Logger::get("viewmodel")->warn("Failed to save playlist to local: {}", ex.what());
         }
-    } catch (const std::exception &ex) {
-        Logger::get("viewmodel")->warn("Failed to save playlist to local: {}", ex.what());
-    }
+    }());
 }
 
 void NeteasePlaylistDetailViewModel::playSong(int index)

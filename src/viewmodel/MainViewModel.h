@@ -12,6 +12,8 @@
 #include "viewmodel/SearchViewModel.h"
 #include "viewmodel/SettingsViewModel.h"
 
+#include <QCoroQmlTask>
+#include <QCoroTask>
 #include <QObject>
 
 namespace QeriPlayerQt {
@@ -45,10 +47,10 @@ public:
     NeteasePlaylistDetailViewModel *neteasePlaylistDetail() const;
 
     Q_INVOKABLE void navigateTo(QeriPlayerQt::MainViewModel::View view);
-    Q_INVOKABLE void openLocalPlaylist(const QString &id);
-    Q_INVOKABLE void openNeteasePlaylist(const QeriPlayerQt::PlaylistSummary &summary);
-    Q_INVOKABLE void openNeteaseAlbum(const QeriPlayerQt::AlbumSummary &summary);
-    Q_INVOKABLE void initialize();
+    Q_INVOKABLE QCoro::QmlTask openLocalPlaylist(const QString &id);
+    Q_INVOKABLE QCoro::QmlTask openNeteasePlaylist(const QeriPlayerQt::PlaylistSummary &summary);
+    Q_INVOKABLE QCoro::QmlTask openNeteaseAlbum(const QeriPlayerQt::AlbumSummary &summary);
+    Q_INVOKABLE QCoro::QmlTask initialize();
 
 Q_SIGNALS:
     void currentViewChanged();
@@ -67,6 +69,7 @@ private:
     SettingsViewModel *m_settingsVm;
     LocalPlaylistDetailViewModel *m_localPlaylistDetail = nullptr;
     NeteasePlaylistDetailViewModel *m_neteasePlaylistDetail = nullptr;
+    QCoro::QmlTask m_pendingTask;
 };
 
 } // namespace QeriPlayerQt

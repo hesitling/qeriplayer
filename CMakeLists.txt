@@ -25,15 +25,15 @@ if(NOT QERIPLAYER_USE_SYSTEM_QCORO AND EXISTS "${QERIPLAYER_QCORO_SOURCE_DIR}/CM
     set(QCORO_WITH_QTNETWORK ON CACHE BOOL "Build QCoro QtNetwork support" FORCE)
     set(QCORO_WITH_QTWEBSOCKETS ON CACHE BOOL "Build QCoro QtWebSockets support" FORCE)
     set(QCORO_WITH_QTQUICK OFF CACHE BOOL "Build QCoro QtQuick support" FORCE)
-    set(QCORO_WITH_QML OFF CACHE BOOL "Build QCoro QML support" FORCE)
+    set(QCORO_WITH_QML ON CACHE BOOL "Build QCoro QML support" FORCE)
     set(QCORO_WITH_QTTEST OFF CACHE BOOL "Build QCoro QtTest support" FORCE)
 
     add_subdirectory("${QERIPLAYER_QCORO_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/_deps/qcoro")
-    set(QERIPLAYER_QCORO_LIBRARIES QCoro6::Core QCoro6::Network QCoro6::WebSockets)
+    set(QERIPLAYER_QCORO_LIBRARIES QCoro6::Core QCoro6::Network QCoro6::WebSockets QCoro6::Qml)
 else()
-    find_package(QCoro6 REQUIRED COMPONENTS Core Network WebSockets)
+    find_package(QCoro6 REQUIRED COMPONENTS Core Network WebSockets Qml)
     qcoro_enable_coroutines()
-    set(QERIPLAYER_QCORO_LIBRARIES QCoro::Core QCoro::Network QCoro::WebSockets)
+    set(QERIPLAYER_QCORO_LIBRARIES QCoro::Core QCoro::Network QCoro::WebSockets QCoro::Qml)
 endif()
 
 # SQLite

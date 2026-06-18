@@ -9,6 +9,7 @@
 #include "repo/IPlaylistRepository.h"
 #include "viewmodel/ViewModelError.h"
 
+#include <QCoroQmlTask>
 #include <QCoroTask>
 #include <QObject>
 #include <QString>
@@ -46,14 +47,14 @@ public:
     ViewModelError error() const;
 
     // --- Loading ---
-    Q_INVOKABLE void loadLocalPlaylists();
-    Q_INVOKABLE void loadNeteasePlaylists();
-    Q_INVOKABLE void loadNeteaseAlbums();
+    Q_INVOKABLE QCoro::QmlTask loadLocalPlaylists();
+    Q_INVOKABLE QCoro::QmlTask loadNeteasePlaylists();
+    Q_INVOKABLE QCoro::QmlTask loadNeteaseAlbums();
 
     // --- Local playlist CRUD ---
-    Q_INVOKABLE void createLocalPlaylist(const QString &name);
-    Q_INVOKABLE void deleteLocalPlaylist(const QString &id);
-    Q_INVOKABLE void renameLocalPlaylist(const QString &id, const QString &name);
+    Q_INVOKABLE QCoro::QmlTask createLocalPlaylist(const QString &name);
+    Q_INVOKABLE QCoro::QmlTask deleteLocalPlaylist(const QString &id);
+    Q_INVOKABLE QCoro::QmlTask renameLocalPlaylist(const QString &id, const QString &name);
 
     // --- Error ---
     Q_INVOKABLE void clearError();
@@ -75,6 +76,7 @@ Q_SIGNALS:
     void neteaseAlbumSelected(const QeriPlayerQt::AlbumSummary &summary);
 
 private:
+    QCoro::Task<void> loadLocalPlaylistsImpl();
     QCoro::Task<void> loadNeteasePlaylistsImpl();
     QCoro::Task<void> loadNeteaseAlbumsImpl();
 
