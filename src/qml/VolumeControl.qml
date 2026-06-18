@@ -10,7 +10,7 @@ RowLayout {
     property bool isMuted: false
 
     // --- Signals ---
-    signal volumeChanged(double volume)
+    signal volumeChangeRequested(double volume)
     signal muteToggled()
 
     spacing: 4
@@ -39,6 +39,6 @@ RowLayout {
         from: 0.0
         to: 1.0
         value: root.isMuted ? 0.0 : root.volume
-        onMoved: root.volumeChanged(value)
+        onMoved: root.volumeChangeRequested(value)
     }
 }

@@ -70,7 +70,7 @@ Rectangle {
             volume: root.volume
             isMuted: root.isMuted
 
-            onVolumeChanged: function(vol) { playerVm.volume = vol }
+            onVolumeChangeRequested: function(vol) { playerVm.volume = vol }
             onMuteToggled: playerVm.toggleMute()
         }
     }
