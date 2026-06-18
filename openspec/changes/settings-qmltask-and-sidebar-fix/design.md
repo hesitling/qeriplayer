@@ -36,7 +36,7 @@ The QML infrastructure is in place with `main.qml`, `Sidebar.qml`, and placehold
 
 ### Decision 2: Sidebar Vertical Alignment Fix
 
-**Choice:** Use `Layout.alignment: Qt.AlignVCenter` on navigation items and expand Sidebar vertically
+**Choice:** Use `anchors.verticalCenter: parent.verticalCenter` on navigation items and expand Sidebar vertically
 
 **Rationale:**
 - Current implementation uses `anchors.fill: parent` with fixed margins
@@ -44,8 +44,8 @@ The QML infrastructure is in place with `main.qml`, `Sidebar.qml`, and placehold
 - Vertical centering ensures consistent visual weight across all items
 
 **Implementation approach:**
-- Add `Layout.alignment: Qt.AlignVCenter` to the RowLayout in ItemDelegate
-- Alternatively, use `anchors.verticalCenter: parent.verticalCenter` on contentItem
+- Add `anchors.verticalCenter: parent.verticalCenter` to the RowLayout in ItemDelegate
+- This anchors the contentItem directly to the parent ItemDelegate's vertical center
 - Consider expanding Sidebar height to fill available space better
 
 **Alternatives considered:**
