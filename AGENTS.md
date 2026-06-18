@@ -19,12 +19,15 @@ Guidelines for AI agents working on QeriPlayer Qt.
 Use the `justfile` for all build, test, and format commands:
 
 ```bash
-just build        # configure + build
-just test         # build + run all tests
-just test Foo     # run tests matching "Foo"
-just format       # format changed files
-just check        # format check (CI-friendly, no writes)
-just ci           # build + test + format check
+just build              # configure + build
+just test               # build + run all tests
+just test-match Foo     # run tests matching "Foo"
+just test-run TestName  # run a single test binary directly
+just format             # format changed files
+just check              # format check (CI-friendly, no writes)
+just format-against main  # format C++ files changed since main
+just check-against main   # check formatting for files changed since main
+just ci                 # build + test + format check
 ```
 
 ### Build Directory
