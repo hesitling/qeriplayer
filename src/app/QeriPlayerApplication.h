@@ -34,10 +34,10 @@ public:
 
 private:
     void initializeCoreServices();
-    void initializeUi();
+    bool initializeUi();
 
     ServiceLocator m_services;
-    QQmlApplicationEngine *m_qmlEngine = nullptr;
+    std::unique_ptr<QQmlApplicationEngine> m_qmlEngine;
 };
 
 } // namespace QeriPlayerQt

@@ -39,16 +39,13 @@ QeriPlayerApplication::QeriPlayerApplication(int &argc, char **argv)
 
 QeriPlayerApplication::~QeriPlayerApplication()
 {
-    // QML engine must be destroyed before services
-    delete m_qmlEngine;
-    m_services.clear();
+    // m_qmlEngine (unique_ptr) is destroyed before m_services (reverse declaration order)
 }
 
 bool QeriPlayerApplication::initialize()
 {
     initializeCoreServices();
-    initializeUi();
-    return true;
+    return initializeUi();
 }
 
 ServiceLocator *QeriPlayerApplication::services()
@@ -158,7 +155,7 @@ void QeriPlayerApplication::initializeCoreServices()
     log->info("Core services initialized");
 }
 
-void QeriPlayerApplication::initializeUi()
+bool QeriPlayerApplication::initializeUi()
 {
     auto log = Logger::get("app");
 
@@ -169,6 +166,11 @@ void QeriPlayerApplication::initializeUi()
     auto *playlistRepo = m_services.service<PlaylistRepository>();
     auto *settingsRepo = m_services.service<SettingsRepository>();
     auto *neteaseClient = m_services.service<NeteaseClient>();
+
+    if (!ctrl || !historyRepo || !songRepo || !playlistRepo || !settingsRepo) {
+        log->error("Missing required services for UI initialization");
+        return false;
+    }
 
     // Create ViewModels
     auto *playerVm = new PlayerViewModel(ctrl, historyRepo, this);
@@ -188,16 +190,16 @@ void QeriPlayerApplication::initializeUi()
     qputenv("QT_QUICK_CONTROLS_STYLE", "Material");
 
     // Create QML engine and register context properties
-    m_qmlEngine = new QQmlApplicationEngine(this);
+    m_qmlEngine = std::make_unique<QQmlApplicationEngine>();
 
     // Log QML warnings
-    connect(m_qmlEngine, &QQmlApplicationEngine::warnings, this, [log](const QList<QQmlError> &warnings) {
+    connect(m_qmlEngine.get(), &QQmlApplicationEngine::warnings, this, [log](const QList<QQmlError> &warnings) {
         for (const auto &warning : warnings) {
             log->warn("QML: {}", warning.toString().toStdString());
         }
     });
 
-    auto *ctx = m_qmlEngine->rootContext();
+    auto *ctx = m_qmlEngine->rootContext(); // NOLINT: unique_ptr lifetime covers usage
     ctx->setContextProperty(QStringLiteral("mainVm"), mainVm);
     ctx->setContextProperty(QStringLiteral("playerVm"), playerVm);
     ctx->setContextProperty(QStringLiteral("searchVm"), searchVm);
@@ -209,9 +211,11 @@ void QeriPlayerApplication::initializeUi()
 
     if (m_qmlEngine->rootObjects().isEmpty()) {
         log->error("Failed to load QML UI — no root objects");
-    } else {
-        log->info("QML UI loaded successfully");
+        return false;
     }
+
+    log->info("QML UI loaded successfully");
+    return true;
 }
 
 } // namespace QeriPlayerQt
