@@ -6,9 +6,9 @@
 
 ## 2. Sidebar Vertical Alignment Fix
 
-- [ ] 2.1 Update `src/qml/Sidebar.qml`: add vertical centering to navigation items using `Layout.alignment: Qt.AlignVCenter` or `anchors.verticalCenter: parent.verticalCenter`
-- [ ] 2.2 Update `src/qml/Sidebar.qml`: expand sidebar to fill available vertical space with proper distribution
-- [ ] 2.3 Verify all navigation items (Home, Search, Library, Settings) have consistent vertical positioning
+- [x] 2.1 Update `src/qml/Sidebar.qml`: add vertical centering to navigation items using `Layout.alignment: Qt.AlignVCenter` or `anchors.verticalCenter: parent.verticalCenter`
+- [x] 2.2 Update `src/qml/Sidebar.qml`: expand sidebar to fill available vertical space with proper distribution
+- [x] 2.3 Verify all navigation items (Home, Search, Library, Settings) have consistent vertical positioning
 
 ## 3. Build and Test Verification
 
