@@ -53,13 +53,11 @@ For each valid finding, in order of dependency (leaf changes first):
 1. **Implement the fix** — minimal, targeted change
 2. **Build** — `just build`
 3. **Test** — `just test` (full suite, not just affected tests)
-4. **Commit** — one commit per logical fix with conventional commit message
+4. **Commit** — exactly one commit per valid finding/fix; do not batch multiple fixes into one commit and do not split one fix across multiple commits unless the user explicitly asks.
 
 Commit message format:
 ```
 <type>(<scope>): <imperative description>
-
-<body explaining what and why, not how>
 ```
 
 ### Phase 4: Regression Tests
@@ -84,7 +82,7 @@ git commit                       # commit formatting if needed
 ## Key Principles
 
 - **Test before fix** — establish baseline to catch regressions
-- **One commit per fix** — clean history, easy to review/revert
+- **Exactly one commit per fix** — each valid finding gets its own commit for clean review and easy reverts
 - **Fix leaf dependencies first** — e.g., fix SongListModel before ViewModels that use it
 - **Skip with reasons** — don't silently drop findings; explain why
 - **Minimal changes** — fix the reported issue, don't refactor adjacent code

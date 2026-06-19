@@ -215,6 +215,8 @@ docs: update architecture documentation
 - No capitalization on first letter
 - No period at end
 - Max 50 characters for subject
+- Keep the commit message about only the actual code change
+- Do not include branch names, OpenSpec change names, review labels, or other process metadata
 - Reference issues: `Fixes #123`
 
 ## Doxygen Documentation
