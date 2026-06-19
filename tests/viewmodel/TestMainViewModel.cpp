@@ -336,11 +336,11 @@ void TestMainViewModel::openLocalPlaylist_createsDetailAndNavigates()
 
     vm->openLocalPlaylist(QStringLiteral("abc"));
 
-    QCOMPARE(vm->currentView(), MainViewModel::View::LocalPlaylist);
-    QVERIFY(vm->localPlaylistDetail() != nullptr);
-    QCOMPARE(vm->localPlaylistDetail()->playlistId(), QStringLiteral("abc"));
-    QCOMPARE(vm->localPlaylistDetail()->playlistName(), QStringLiteral("Road Trip"));
-    QCOMPARE(vm->localPlaylistDetail()->songs()->count(), 1);
+    QTRY_COMPARE(vm->currentView(), MainViewModel::View::LocalPlaylist);
+    QTRY_VERIFY(vm->localPlaylistDetail() != nullptr);
+    QTRY_COMPARE(vm->localPlaylistDetail()->playlistId(), QStringLiteral("abc"));
+    QTRY_COMPARE(vm->localPlaylistDetail()->playlistName(), QStringLiteral("Road Trip"));
+    QTRY_COMPARE(vm->localPlaylistDetail()->songs()->count(), 1);
     QVERIFY(currentViewSpy.count() >= 1);
     QVERIFY(detailSpy.count() >= 1);
 
@@ -364,10 +364,11 @@ void TestMainViewModel::renameLocalPlaylist_refreshesLibrary()
     vm->openLocalPlaylist(QStringLiteral("abc"));
 
     QSignalSpy listSpy(m_playlistVm, &PlaylistViewModel::localPlaylistsChanged);
+    QTRY_VERIFY(vm->localPlaylistDetail() != nullptr);
     vm->localPlaylistDetail()->rename(QStringLiteral("Evening Mix"));
 
-    QCOMPARE(m_playlistVm->localPlaylists().size(), 1);
-    QCOMPARE(m_playlistVm->localPlaylists().first().value<PlaylistSummary>().name, QStringLiteral("Evening Mix"));
+    QTRY_COMPARE(m_playlistVm->localPlaylists().size(), 1);
+    QTRY_COMPARE(m_playlistVm->localPlaylists().first().value<PlaylistSummary>().name, QStringLiteral("Evening Mix"));
     QVERIFY(listSpy.count() >= 1);
 
     delete vm;
@@ -388,14 +389,14 @@ void TestMainViewModel::deleteLocalPlaylist_refreshesLibraryAndNavigates()
     auto *vm = createViewModel();
     m_playlistVm->loadLocalPlaylists();
     vm->openLocalPlaylist(QStringLiteral("abc"));
-    QVERIFY(vm->localPlaylistDetail() != nullptr);
+    QTRY_VERIFY(vm->localPlaylistDetail() != nullptr);
 
     QSignalSpy listSpy(m_playlistVm, &PlaylistViewModel::localPlaylistsChanged);
     vm->localPlaylistDetail()->deletePlaylist();
 
-    QCOMPARE(vm->currentView(), MainViewModel::View::Library);
-    QVERIFY(vm->localPlaylistDetail() == nullptr);
-    QCOMPARE(m_playlistVm->localPlaylists().size(), 0);
+    QTRY_COMPARE(vm->currentView(), MainViewModel::View::Library);
+    QTRY_VERIFY(vm->localPlaylistDetail() == nullptr);
+    QTRY_COMPARE(m_playlistVm->localPlaylists().size(), 0);
     QVERIFY(listSpy.count() >= 1);
 
     delete vm;

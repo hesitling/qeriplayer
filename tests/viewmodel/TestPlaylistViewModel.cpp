@@ -239,6 +239,7 @@ void TestPlaylistViewModel::openNeteasePlaylist_validIndex_emitsSignal()
     vm.loadNeteasePlaylists();
 
     QSignalSpy selectSpy(&vm, &PlaylistViewModel::neteasePlaylistSelected);
+    QTRY_COMPARE(vm.neteasePlaylists().size(), 2);
     vm.openNeteasePlaylist(1);
 
     QCOMPARE(selectSpy.count(), 1);
@@ -264,6 +265,7 @@ void TestPlaylistViewModel::openNeteaseAlbum_validIndex_emitsSignal()
     vm.loadNeteaseAlbums();
 
     QSignalSpy selectSpy(&vm, &PlaylistViewModel::neteaseAlbumSelected);
+    QTRY_COMPARE(vm.neteaseAlbums().size(), 1);
     vm.openNeteaseAlbum(0);
 
     QCOMPARE(selectSpy.count(), 1);

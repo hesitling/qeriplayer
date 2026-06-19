@@ -345,8 +345,10 @@ void TestDomainModels::playlistSummary_qmlProperties()
 
     const QMetaObject *metaObject = QMetaType::fromType<PlaylistSummary>().metaObject();
     QVERIFY(metaObject != nullptr);
+    QVERIFY(metaObject->indexOfProperty("id") >= 0);
     QVERIFY(metaObject->indexOfProperty("name") >= 0);
     QVERIFY(metaObject->indexOfProperty("coverUrl") >= 0);
+    QVERIFY(metaObject->indexOfProperty("playCount") >= 0);
     QVERIFY(metaObject->indexOfProperty("trackCount") >= 0);
 }
 
@@ -367,6 +369,7 @@ void TestDomainModels::albumSummary_qmlProperties()
 
     const QMetaObject *metaObject = QMetaType::fromType<AlbumSummary>().metaObject();
     QVERIFY(metaObject != nullptr);
+    QVERIFY(metaObject->indexOfProperty("id") >= 0);
     QVERIFY(metaObject->indexOfProperty("name") >= 0);
     QVERIFY(metaObject->indexOfProperty("coverUrl") >= 0);
     QVERIFY(metaObject->indexOfProperty("size") >= 0);
