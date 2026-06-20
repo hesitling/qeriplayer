@@ -203,11 +203,11 @@ QCoro::Task<ApiResult<VoidResult>> NeteaseClient::verifyCaptcha(const QString &p
 
 QCoro::Task<ApiResult<QrCodeData>> NeteaseClient::generateQrKey()
 {
-    // Step 1: Get a unique key for QR login
+    // Get a unique key for QR login
     QJsonObject keyParams;
     keyParams[QLatin1String("type")] = 1;
 
-    auto keyResult = co_await makeRequest(QStringLiteral("/login/qr/key"), keyParams);
+    auto keyResult = co_await makeRequest(QStringLiteral("/weapi/login/qrcode/unikey"), keyParams);
     if (keyResult.isError()) {
         co_return ApiResult<QrCodeData>(keyResult.error());
     }
@@ -217,33 +217,16 @@ QCoro::Task<ApiResult<QrCodeData>> NeteaseClient::generateQrKey()
         co_return ApiResult<QrCodeData>(ApiError(-1, QStringLiteral("Failed to get QR key")));
     }
 
-    // Step 2: Generate QR code image
-    QJsonObject qrParams;
-    qrParams[QLatin1String("key")] = unikey;
-    qrParams[QLatin1String("qrimg")] = true;
-    qrParams[QLatin1String("type")] = 1;
-
-    auto qrResult = co_await makeRequest(QStringLiteral("/login/qr/create"), qrParams);
-    if (qrResult.isError()) {
-        co_return ApiResult<QrCodeData>(qrResult.error());
-    }
-
-    QJsonObject qrData = qrResult.data();
-    QString qrimg = qrData[QLatin1String("qrimg")].toString();
-    QString qrurl = qrData[QLatin1String("qrurl")].toString();
+    // The QR code URL for NetEase scan login
+    QString qrData = QStringLiteral("https://music.163.com/st/platform/scanlogin?codekey=") + unikey
+                     + QStringLiteral("&hdw_device=web&hdw_appid=web");
+    QString qrImageUrl = QStringLiteral("https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=")
+                         + QUrl::toPercentEncoding(qrData);
 
     QrCodeData result;
     result.key = unikey;
+    result.qrUrl = QUrl(qrImageUrl);
     result.expiresInSeconds = 300; // 5 minutes
-
-    // Use base64 image as data URL if available, otherwise use the URL
-    if (!qrimg.isEmpty()) {
-        result.qrUrl = QUrl(QStringLiteral("data:image/png;base64,") + qrimg);
-    } else if (!qrurl.isEmpty()) {
-        result.qrUrl = QUrl(qrurl);
-    } else {
-        co_return ApiResult<QrCodeData>(ApiError(-1, QStringLiteral("No QR code data in response")));
-    }
 
     co_return ApiResult<QrCodeData>(result);
 }
@@ -254,7 +237,7 @@ QCoro::Task<ApiResult<LoginResult>> NeteaseClient::pollQrStatus(const QString &k
     params[QLatin1String("key")] = key;
     params[QLatin1String("type")] = 1;
 
-    auto result = co_await makeRequest(QStringLiteral("/login/qr/check"), params);
+    auto result = co_await makeRequest(QStringLiteral("/weapi/login/qrcode/client/login"), params);
     if (result.isError()) {
         co_return ApiResult<LoginResult>(result.error());
     }
@@ -268,23 +251,29 @@ QCoro::Task<ApiResult<LoginResult>> NeteaseClient::pollQrStatus(const QString &k
             co_return ApiResult<LoginResult>(ApiError(800, QStringLiteral("QR code expired")));
         case 801: // Waiting for scan
             co_return ApiResult<LoginResult>(ApiError(801, QStringLiteral("Waiting for scan")));
-        case 802: // Scanned, waiting for confirm
-            co_return ApiResult<LoginResult>(ApiError(802, QStringLiteral("Scanned, waiting for confirmation")));
-        case 803: { // Confirmed — login success
-            // Parse cookies from response
-            QString cookie = data[QLatin1String("cookie")].toString();
-            if (!cookie.isEmpty()) {
-                persistCookies(cookie);
-                co_await ensureWeapiSession();
-            }
-
+        case 802: { // Scanned, waiting for confirm
+            // Extract nickname from response if available
             LoginResult loginResult;
-            loginResult.cookie = cookie;
-            // Try to get user info from the response
-            QJsonObject profile = data[QLatin1String("profile")].toObject();
-            if (!profile.isEmpty()) {
-                loginResult.userId = QString::number(profile[QLatin1String("userId")].toVariant().toLongLong());
-                loginResult.nickname = profile[QLatin1String("nickname")].toString();
+            loginResult.nickname = data[QLatin1String("nickname")].toString();
+            loginResult.avatarUrl = QUrl(data[QLatin1String("avatarUrl")].toString());
+            co_return ApiResult<LoginResult>(loginResult);
+        }
+        case 803: { // Confirmed — login success
+            // Cookies are in HTTP response headers, extracted by makeRequest
+            // Mark as authenticated
+            m_authenticated = true;
+            co_await ensureWeapiSession();
+
+            // Get user info
+            LoginResult loginResult;
+            auto accountResult = co_await getCurrentUserAccount();
+            if (accountResult.isSuccess()) {
+                QJsonObject profile = accountResult.data()[QLatin1String("profile")].toObject();
+                if (!profile.isEmpty()) {
+                    loginResult.userId = QString::number(profile[QLatin1String("userId")].toVariant().toLongLong());
+                    loginResult.nickname = profile[QLatin1String("nickname")].toString();
+                    loginResult.avatarUrl = QUrl(profile[QLatin1String("avatarUrl")].toString());
+                }
             }
 
             co_return ApiResult<LoginResult>(loginResult);

@@ -365,10 +365,6 @@ QCoro::Task<void> SettingsViewModel::pollQrLoginImpl()
                 m_qrLoginStatus = QrLoginStatus::Waiting;
                 Q_EMIT qrLoginStatusChanged();
                 break;
-            case 802: // Scanned
-                m_qrLoginStatus = QrLoginStatus::Scanned;
-                Q_EMIT qrLoginStatusChanged();
-                break;
             default:
                 // Other errors — keep polling
                 break;
@@ -376,19 +372,25 @@ QCoro::Task<void> SettingsViewModel::pollQrLoginImpl()
         co_return;
     }
 
-    // 803 — Confirmed, login success
-    m_qrLoginStatus = QrLoginStatus::Confirmed;
-    m_qrPollingActive = false;
-    m_hasError = false;
-
+    // Success — either 802 (scanned) or 803 (confirmed)
     if (!result.data().nickname.isEmpty()) {
         m_neteaseUsername = result.data().nickname;
     }
 
-    Q_EMIT qrLoginStatusChanged();
-    Q_EMIT qrPollingActiveChanged();
-    Q_EMIT neteaseAuthChanged();
-    Q_EMIT errorChanged();
+    if (m_neteaseClient->isAuthenticated()) {
+        // 803 — Confirmed, login success
+        m_qrLoginStatus = QrLoginStatus::Confirmed;
+        m_qrPollingActive = false;
+        m_hasError = false;
+        Q_EMIT qrLoginStatusChanged();
+        Q_EMIT qrPollingActiveChanged();
+        Q_EMIT neteaseAuthChanged();
+        Q_EMIT errorChanged();
+    } else {
+        // 802 — Scanned, waiting for confirmation
+        m_qrLoginStatus = QrLoginStatus::Scanned;
+        Q_EMIT qrLoginStatusChanged();
+    }
 }
 
 void SettingsViewModel::cancelQrLogin()
