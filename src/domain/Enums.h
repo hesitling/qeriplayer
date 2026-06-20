@@ -49,6 +49,18 @@ enum class PlaybackAudioSource : std::uint8_t { Local = 0, NetEase = 1, Bilibili
  */
 enum class BiliPlaylistKind : std::uint8_t { CreatedFavorite = 0, CollectedFavorite = 1, Collection = 2 };
 
+/**
+ * @brief QR code login polling status codes
+ *
+ * Matches NetEase API response codes for /login/qr/check.
+ */
+enum class QrLoginStatus : std::uint8_t {
+    Expired = 0,  ///< 800 — QR code expired, need new one
+    Waiting = 1,  ///< 801 — Waiting for user to scan
+    Scanned = 2,  ///< 802 — Scanned, waiting for confirmation
+    Confirmed = 3 ///< 803 — Confirmed, login successful
+};
+
 } // namespace QeriPlayerQt
 
 Q_DECLARE_METATYPE(QeriPlayerQt::MusicPlatform)
@@ -58,5 +70,6 @@ Q_DECLARE_METATYPE(QeriPlayerQt::RepeatMode)
 Q_DECLARE_METATYPE(QeriPlayerQt::AudioQuality)
 Q_DECLARE_METATYPE(QeriPlayerQt::PlaybackAudioSource)
 Q_DECLARE_METATYPE(QeriPlayerQt::BiliPlaylistKind)
+Q_DECLARE_METATYPE(QeriPlayerQt::QrLoginStatus)
 
 #endif // QERIPLAYERQT_ENUMS_H

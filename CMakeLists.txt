@@ -11,7 +11,7 @@ include(GNUInstallDirs)
 # ─── Dependencies ─────────────────────────────────────────────────
 
 # Qt 6
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets Multimedia Quick Qml QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets Multimedia Quick Qml QuickControls2 LabsPlatform)
 
 # QCoro
 set(QERIPLAYER_QCORO_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/qcoro" CACHE PATH
@@ -179,6 +179,7 @@ target_link_libraries(QeriPlayerQt PRIVATE
     Qt6::Quick
     Qt6::Qml
     Qt6::QuickControls2
+    Qt6::LabsPlatform
     qeriplayer_viewmodel
     ${QERIPLAYER_QCORO_LIBRARIES}
     ${SQLITE3_LIBRARIES}

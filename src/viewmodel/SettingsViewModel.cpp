@@ -13,7 +13,19 @@ SettingsViewModel::SettingsViewModel(ISettingsRepository *settingsRepo, NeteaseC
     , m_settingsRepo(settingsRepo)
     , m_neteaseClient(neteaseClient)
     , m_historyRepo(historyRepo)
+    , m_captchaCooldownTimer(new QTimer(this))
 {
+    m_captchaCooldownTimer->setInterval(1000);
+    connect(m_captchaCooldownTimer, &QTimer::timeout, this, [this]() {
+        if (m_captchaCooldown > 0) {
+            m_captchaCooldown--;
+            Q_EMIT captchaCooldownChanged();
+            if (m_captchaCooldown == 0) {
+                m_captchaCooldownTimer->stop();
+                Q_EMIT canSendCaptchaChanged();
+            }
+        }
+    });
 }
 
 SettingsViewModel::~SettingsViewModel() = default;
@@ -56,6 +68,36 @@ bool SettingsViewModel::hasError() const
 ViewModelError SettingsViewModel::error() const
 {
     return m_error;
+}
+
+int SettingsViewModel::captchaCooldown() const
+{
+    return m_captchaCooldown;
+}
+
+bool SettingsViewModel::canSendCaptcha() const
+{
+    return m_captchaCooldown == 0;
+}
+
+QrLoginStatus SettingsViewModel::qrLoginStatus() const
+{
+    return m_qrLoginStatus;
+}
+
+QUrl SettingsViewModel::qrImageUrl() const
+{
+    return m_qrImageUrl;
+}
+
+QString SettingsViewModel::qrKey() const
+{
+    return m_qrKey;
+}
+
+bool SettingsViewModel::qrPollingActive() const
+{
+    return m_qrPollingActive;
 }
 
 // --- Settings ---
@@ -166,19 +208,14 @@ void SettingsViewModel::setDownloadPath(const QString &path)
     Q_EMIT downloadPathChanged();
 }
 
-// --- Auth ---
+// --- Auth: Password ---
 
-QCoro::QmlTask SettingsViewModel::loginNetease(const QString &phone, const QString &password)
+QCoro::QmlTask SettingsViewModel::loginByPassword(const QString &phone, const QString &password)
 {
-    return QCoro::QmlTask(loginNeteaseImpl(phone, password));
+    return QCoro::QmlTask(loginByPasswordImpl(phone, password));
 }
 
-QCoro::QmlTask SettingsViewModel::logoutNetease()
-{
-    return QCoro::QmlTask(logoutNeteaseImpl());
-}
-
-QCoro::Task<void> SettingsViewModel::loginNeteaseImpl(const QString &phone, const QString &password)
+QCoro::Task<void> SettingsViewModel::loginByPasswordImpl(const QString &phone, const QString &password)
 {
     if (!m_neteaseClient) {
         m_error = ViewModelError(ViewModelError::ErrorType::Api, "NetEase client not available");
@@ -199,6 +236,172 @@ QCoro::Task<void> SettingsViewModel::loginNeteaseImpl(const QString &phone, cons
     m_neteaseUsername = result.data().nickname;
     Q_EMIT neteaseAuthChanged();
     Q_EMIT errorChanged();
+}
+
+// --- Auth: Captcha ---
+
+QCoro::QmlTask SettingsViewModel::sendCaptcha(const QString &phone)
+{
+    return QCoro::QmlTask(sendCaptchaImpl(phone));
+}
+
+QCoro::Task<void> SettingsViewModel::sendCaptchaImpl(const QString &phone)
+{
+    if (!m_neteaseClient) {
+        m_error = ViewModelError(ViewModelError::ErrorType::Api, "NetEase client not available");
+        m_hasError = true;
+        Q_EMIT errorChanged();
+        co_return;
+    }
+
+    auto result = co_await m_neteaseClient->sendCaptcha(phone);
+    if (result.isError()) {
+        m_error = ViewModelError::fromApiError(result.error());
+        m_hasError = true;
+        Q_EMIT errorChanged();
+        co_return;
+    }
+
+    m_hasError = false;
+    m_captchaCooldown = 60;
+    m_captchaCooldownTimer->start();
+    Q_EMIT captchaCooldownChanged();
+    Q_EMIT canSendCaptchaChanged();
+    Q_EMIT errorChanged();
+}
+
+QCoro::QmlTask SettingsViewModel::loginByCaptcha(const QString &phone, const QString &captcha)
+{
+    return QCoro::QmlTask(loginByCaptchaImpl(phone, captcha));
+}
+
+QCoro::Task<void> SettingsViewModel::loginByCaptchaImpl(const QString &phone, const QString &captcha)
+{
+    if (!m_neteaseClient) {
+        m_error = ViewModelError(ViewModelError::ErrorType::Api, "NetEase client not available");
+        m_hasError = true;
+        Q_EMIT errorChanged();
+        co_return;
+    }
+
+    auto result = co_await m_neteaseClient->loginByCaptcha(phone, captcha);
+    if (result.isError()) {
+        m_error = ViewModelError::fromApiError(result.error());
+        m_hasError = true;
+        Q_EMIT errorChanged();
+        co_return;
+    }
+
+    m_hasError = false;
+    m_neteaseUsername = result.data().nickname;
+    Q_EMIT neteaseAuthChanged();
+    Q_EMIT errorChanged();
+}
+
+// --- Auth: QR Code ---
+
+QCoro::QmlTask SettingsViewModel::generateQrLogin()
+{
+    return QCoro::QmlTask(generateQrLoginImpl());
+}
+
+QCoro::Task<void> SettingsViewModel::generateQrLoginImpl()
+{
+    if (!m_neteaseClient) {
+        m_error = ViewModelError(ViewModelError::ErrorType::Api, "NetEase client not available");
+        m_hasError = true;
+        Q_EMIT errorChanged();
+        co_return;
+    }
+
+    m_hasError = false;
+    Q_EMIT errorChanged();
+
+    auto result = co_await m_neteaseClient->generateQrKey();
+    if (result.isError()) {
+        m_error = ViewModelError::fromApiError(result.error());
+        m_hasError = true;
+        Q_EMIT errorChanged();
+        co_return;
+    }
+
+    m_qrKey = result.data().key;
+    m_qrImageUrl = result.data().qrUrl;
+    m_qrLoginStatus = QrLoginStatus::Waiting;
+    m_qrPollingActive = true;
+    Q_EMIT qrKeyChanged();
+    Q_EMIT qrImageUrlChanged();
+    Q_EMIT qrLoginStatusChanged();
+    Q_EMIT qrPollingActiveChanged();
+}
+
+QCoro::QmlTask SettingsViewModel::pollQrLogin()
+{
+    return QCoro::QmlTask(pollQrLoginImpl());
+}
+
+QCoro::Task<void> SettingsViewModel::pollQrLoginImpl()
+{
+    if (!m_qrPollingActive || !m_neteaseClient) {
+        co_return;
+    }
+
+    auto result = co_await m_neteaseClient->pollQrStatus(m_qrKey);
+    if (!m_qrPollingActive) {
+        // Cancelled while awaiting
+        co_return;
+    }
+
+    if (result.isError()) {
+        int code = result.error().code();
+        switch (code) {
+            case 800: // Expired
+                m_qrLoginStatus = QrLoginStatus::Expired;
+                m_qrPollingActive = false;
+                Q_EMIT qrLoginStatusChanged();
+                Q_EMIT qrPollingActiveChanged();
+                break;
+            case 801: // Waiting
+                m_qrLoginStatus = QrLoginStatus::Waiting;
+                Q_EMIT qrLoginStatusChanged();
+                break;
+            case 802: // Scanned
+                m_qrLoginStatus = QrLoginStatus::Scanned;
+                Q_EMIT qrLoginStatusChanged();
+                break;
+            default:
+                // Other errors — keep polling
+                break;
+        }
+        co_return;
+    }
+
+    // 803 — Confirmed, login success
+    m_qrLoginStatus = QrLoginStatus::Confirmed;
+    m_qrPollingActive = false;
+    m_hasError = false;
+
+    if (!result.data().nickname.isEmpty()) {
+        m_neteaseUsername = result.data().nickname;
+    }
+
+    Q_EMIT qrLoginStatusChanged();
+    Q_EMIT qrPollingActiveChanged();
+    Q_EMIT neteaseAuthChanged();
+    Q_EMIT errorChanged();
+}
+
+void SettingsViewModel::cancelQrLogin()
+{
+    m_qrPollingActive = false;
+    Q_EMIT qrPollingActiveChanged();
+}
+
+// --- Auth: Logout ---
+
+QCoro::QmlTask SettingsViewModel::logoutNetease()
+{
+    return QCoro::QmlTask(logoutNeteaseImpl());
 }
 
 QCoro::Task<void> SettingsViewModel::logoutNeteaseImpl()
