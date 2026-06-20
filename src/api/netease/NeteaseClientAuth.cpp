@@ -207,7 +207,7 @@ QCoro::Task<ApiResult<QrCodeData>> NeteaseClient::generateQrKey()
     QJsonObject keyParams;
     keyParams[QLatin1String("type")] = 1;
 
-    auto keyResult = co_await makeRequest(QStringLiteral("/weapi/login/qrcode/unikey"), keyParams);
+    auto keyResult = co_await makeRequest(QStringLiteral("/login/qr/key"), keyParams);
     if (keyResult.isError()) {
         co_return ApiResult<QrCodeData>(keyResult.error());
     }
@@ -223,7 +223,7 @@ QCoro::Task<ApiResult<QrCodeData>> NeteaseClient::generateQrKey()
     qrParams[QLatin1String("qrimg")] = true;
     qrParams[QLatin1String("type")] = 1;
 
-    auto qrResult = co_await makeRequest(QStringLiteral("/weapi/login/qrcode/create"), qrParams);
+    auto qrResult = co_await makeRequest(QStringLiteral("/login/qr/create"), qrParams);
     if (qrResult.isError()) {
         co_return ApiResult<QrCodeData>(qrResult.error());
     }
@@ -254,7 +254,7 @@ QCoro::Task<ApiResult<LoginResult>> NeteaseClient::pollQrStatus(const QString &k
     params[QLatin1String("key")] = key;
     params[QLatin1String("type")] = 1;
 
-    auto result = co_await makeRequest(QStringLiteral("/weapi/login/qrcode/client/login"), params);
+    auto result = co_await makeRequest(QStringLiteral("/login/qr/check"), params);
     if (result.isError()) {
         co_return ApiResult<LoginResult>(result.error());
     }
