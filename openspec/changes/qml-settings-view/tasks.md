@@ -65,10 +65,10 @@
 
 ## 9. Tests
 
-- [ ] 9.1 Create `tests/qml/data/tst_SettingsView.qml` with mock `settingsVm` QtObject
-- [ ] 9.2 Test: SettingsView component loads without error
-- [ ] 9.3 Test: Theme combo reflects VM theme property
-- [ ] 9.4 Test: Login button opens LoginDialog
-- [ ] 9.5 Test: Logout button calls `settingsVm.logoutNetease()`
-- [ ] 9.6 Test: Clear history button calls `settingsVm.clearPlayHistory()`
-- [ ] 9.7 Test: About button opens AboutDialog
+- [x] 9.1 Create `tests/qml/data/tst_SettingsView.qml` with mock `settingsVm` QtObject
+- [x] 9.2 Test: SettingsView component loads without error
+- [x] 9.3 Test: Theme combo reflects VM theme property
+- [x] 9.4 Test: Login button opens LoginDialog
+- [x] 9.5 Test: Logout button calls `settingsVm.logoutNetease()`
+- [x] 9.6 Test: Clear history button calls `settingsVm.clearPlayHistory()`
+- [x] 9.7 Test: About button opens AboutDialog
