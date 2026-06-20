@@ -28,6 +28,8 @@
 #include <QNetworkRequest>
 #include <QRegularExpression>
 
+#include "core/network/HttpClient.h"
+
 namespace QeriPlayerQt {
 
 class HttpClient;
@@ -183,6 +185,7 @@ private:
     void injectCookies(QNetworkRequest &request);
     void persistCookies(const QString &cookieString);
     void clearCookies();
+    void extractResponseCookies(const HttpResponse &response);
 
     // Members
     HttpClient *m_httpClient;

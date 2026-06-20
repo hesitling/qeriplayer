@@ -102,6 +102,9 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
     // Send request with all headers preserved
     auto response = co_await m_httpClient->post(request, postData);
 
+    // Extract cookies from response headers and merge
+    extractResponseCookies(response);
+
     if (!response.isSuccess()) {
         Logger::get("api")->warn("NeteaseClient: HTTP error at path {}: {} ({})", path.toStdString(),
                                  response.errorString.toStdString(), response.statusCode);
@@ -295,6 +298,37 @@ void NeteaseClient::persistCookies(const QString &cookieString)
 
     if (m_storage) {
         m_storage->set(COOKIE_STORAGE_KEY, cookieString);
+    }
+}
+
+void NeteaseClient::extractResponseCookies(const HttpResponse &response)
+{
+    QStringList newCookies;
+    for (const auto &header : response.headers) {
+        if (QString::fromUtf8(header.first).compare(QStringLiteral("Set-Cookie"), Qt::CaseInsensitive) == 0) {
+            QString nameValue = QString::fromUtf8(header.second).split(QLatin1Char(';')).first().trimmed();
+            newCookies.append(nameValue);
+        }
+    }
+    if (!newCookies.isEmpty()) {
+        QHash<QString, QString> cookieMap;
+        for (const QString &part : m_cookie.split(QStringLiteral("; "))) {
+            QString name = part.section(QLatin1Char('='), 0, 0);
+            QString value = part.section(QLatin1Char('='), 1);
+            if (!name.isEmpty()) {
+                cookieMap.insert(name, value);
+            }
+        }
+        for (const QString &cookie : newCookies) {
+            QString name = cookie.section(QLatin1Char('='), 0, 0);
+            QString value = cookie.section(QLatin1Char('='), 1);
+            cookieMap.insert(name, value);
+        }
+        QStringList parts;
+        for (auto it = cookieMap.constBegin(); it != cookieMap.constEnd(); ++it) {
+            parts.append(it.key() + QLatin1Char('=') + it.value());
+        }
+        persistCookies(parts.join(QStringLiteral("; ")));
     }
 }
 
