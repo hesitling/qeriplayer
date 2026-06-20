@@ -118,6 +118,15 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: settingsVm
+        function onErrorChanged() {
+            if (settingsVm.hasError) {
+                toast.show(settingsVm.error.message)
+            }
+        }
+    }
+
     Component {
         id: homePage
         Rectangle {
@@ -153,15 +162,7 @@ ApplicationWindow {
 
     Component {
         id: settingsPage
-        Rectangle {
-            color: "transparent"
-            Label {
-                anchors.centerIn: parent
-                text: "Settings (PR 5)"
-                font.pixelSize: 24
-                opacity: 0.5
-            }
-        }
+        SettingsView {}
     }
 
     Component.onCompleted: {

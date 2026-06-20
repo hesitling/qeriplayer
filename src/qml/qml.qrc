@@ -14,5 +14,8 @@
         <file>LibraryView.qml</file>
         <file>LocalPlaylistDetailView.qml</file>
         <file>NeteasePlaylistDetailView.qml</file>
+        <file>SettingsView.qml</file>
+        <file>LoginDialog.qml</file>
+        <file>AboutDialog.qml</file>
     </qresource>
 </RCC>
