@@ -11,6 +11,8 @@ Dialog {
     width: 520
     standardButtons: Dialog.NoButton
 
+    readonly property bool importInFlight: settingsVm.isImportingNeteaseCookie
+
     onOpened: {
         settingsVm.clearError()
         cookieField.text = ""
@@ -60,14 +62,15 @@ Dialog {
             Button {
                 objectName: "cancelCookieButton"
                 text: "Cancel"
+                enabled: !loginDialog.importInFlight
                 onClicked: loginDialog.close()
             }
 
             Button {
                 id: importButton
                 objectName: "importCookieButton"
-                text: "Import"
-                enabled: cookieField.text.trim().length > 0
+                text: loginDialog.importInFlight ? "Importing..." : "Import"
+                enabled: cookieField.text.trim().length > 0 && !loginDialog.importInFlight
                 onClicked: {
                     settingsVm.clearError()
                     settingsVm.importNeteaseCookie(cookieField.text.trim())

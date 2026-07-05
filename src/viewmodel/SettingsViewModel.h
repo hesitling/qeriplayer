@@ -30,6 +30,7 @@ class SettingsViewModel : public QObject {
     Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath NOTIFY downloadPathChanged)
     Q_PROPERTY(bool isNeteaseLoggedIn READ isNeteaseLoggedIn NOTIFY neteaseAuthChanged)
     Q_PROPERTY(QString neteaseUsername READ neteaseUsername NOTIFY neteaseAuthChanged)
+    Q_PROPERTY(bool isImportingNeteaseCookie READ isImportingNeteaseCookie NOTIFY neteaseCookieImportStateChanged)
     Q_PROPERTY(bool hasError READ hasError NOTIFY errorChanged)
     Q_PROPERTY(ViewModelError error READ error NOTIFY errorChanged)
 
@@ -44,6 +45,7 @@ public:
     QString downloadPath() const;
     bool isNeteaseLoggedIn() const;
     QString neteaseUsername() const;
+    bool isImportingNeteaseCookie() const;
     bool hasError() const;
     ViewModelError error() const;
 
@@ -68,6 +70,7 @@ Q_SIGNALS:
     void audioQualityChanged();
     void downloadPathChanged();
     void neteaseAuthChanged();
+    void neteaseCookieImportStateChanged();
     void errorChanged();
 
 private:
@@ -81,6 +84,7 @@ private:
     QString m_neteaseUsername;
     ViewModelError m_error;
     bool m_hasError = false;
+    bool m_isImportingNeteaseCookie = false;
 
     QCoro::Task<void> importNeteaseCookieImpl(const QString &cookieString);
     QCoro::Task<void> logoutNeteaseImpl();

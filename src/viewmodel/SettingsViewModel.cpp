@@ -48,6 +48,11 @@ QString SettingsViewModel::neteaseUsername() const
     return m_neteaseUsername;
 }
 
+bool SettingsViewModel::isImportingNeteaseCookie() const
+{
+    return m_isImportingNeteaseCookie;
+}
+
 bool SettingsViewModel::hasError() const
 {
     return m_hasError;
@@ -173,7 +178,8 @@ void SettingsViewModel::setDownloadPath(const QString &path)
 
 QCoro::QmlTask SettingsViewModel::importNeteaseCookie(const QString &cookieString)
 {
-    return QCoro::QmlTask(importNeteaseCookieImpl(cookieString));
+    m_pendingTask = QCoro::QmlTask(importNeteaseCookieImpl(cookieString));
+    return m_pendingTask;
 }
 
 QCoro::Task<void> SettingsViewModel::importNeteaseCookieImpl(const QString &cookieString)
@@ -187,21 +193,44 @@ QCoro::Task<void> SettingsViewModel::importNeteaseCookieImpl(const QString &cook
 
     clearError();
 
-    auto result = co_await m_neteaseClient->importCookies(cookieString);
-    if (result.isError()) {
+    m_isImportingNeteaseCookie = true;
+    Q_EMIT neteaseCookieImportStateChanged();
+
+    auto resetImportState = [this]() {
+        if (!m_isImportingNeteaseCookie) {
+            return;
+        }
+        m_isImportingNeteaseCookie = false;
+        Q_EMIT neteaseCookieImportStateChanged();
+    };
+
+    try {
+        auto result = co_await m_neteaseClient->importCookies(cookieString);
+        if (result.isError()) {
+            resetImportState();
+            m_neteaseClient->clearLocalSession();
+            m_neteaseUsername.clear();
+            m_error = ViewModelError::fromApiError(result.error());
+            m_hasError = true;
+            Q_EMIT neteaseAuthChanged();
+            Q_EMIT errorChanged();
+            co_return;
+        }
+
+        resetImportState();
+        m_hasError = false;
+        m_neteaseUsername = result.data().nickname;
+        Q_EMIT neteaseAuthChanged();
+        Q_EMIT errorChanged();
+    } catch (const std::exception &ex) {
+        resetImportState();
         m_neteaseClient->clearLocalSession();
         m_neteaseUsername.clear();
-        m_error = ViewModelError::fromApiError(result.error());
+        m_error = ViewModelError(ViewModelError::ErrorType::Unknown, QString::fromUtf8(ex.what()));
         m_hasError = true;
         Q_EMIT neteaseAuthChanged();
         Q_EMIT errorChanged();
-        co_return;
     }
-
-    m_hasError = false;
-    m_neteaseUsername = result.data().nickname;
-    Q_EMIT neteaseAuthChanged();
-    Q_EMIT errorChanged();
 }
 
 QCoro::QmlTask SettingsViewModel::logoutNetease()

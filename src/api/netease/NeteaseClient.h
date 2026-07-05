@@ -200,6 +200,7 @@ private:
     QString m_cookie;
     QString m_csrfToken;
     bool m_authenticated = false;
+    bool m_importCookiesInFlight = false;
 };
 
 } // namespace QeriPlayerQt

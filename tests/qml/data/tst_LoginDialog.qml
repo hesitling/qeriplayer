@@ -9,6 +9,7 @@ Item {
     QtObject {
         id: settingsVm
         property bool isNeteaseLoggedIn: false
+        property bool isImportingNeteaseCookie: false
         property bool hasError: false
         property var error: ({ message: "", type: 0 })
         property string lastCookie: ""
@@ -22,6 +23,7 @@ Item {
 
         function importNeteaseCookie(cookie) {
             lastCookie = cookie
+            isImportingNeteaseCookie = true
         }
     }
 
@@ -84,13 +86,48 @@ Item {
 
         function test_success_closes_dialog() {
             settingsVm.isNeteaseLoggedIn = false
+            settingsVm.isImportingNeteaseCookie = false
 
             var dialog = createDialog()
             dialog.open()
             tryVerify(function() { return dialog.visible })
 
             settingsVm.isNeteaseLoggedIn = true
+            settingsVm.isImportingNeteaseCookie = false
             tryVerify(function() { return !dialog.visible })
+
+            dialog.destroy()
+        }
+
+        function test_import_disabled_while_request_in_flight() {
+            settingsVm.lastCookie = ""
+            settingsVm.isImportingNeteaseCookie = false
+
+            var dialog = createDialog()
+            dialog.open()
+            tryVerify(function() { return dialog.visible })
+
+            var field = findObject(dialog, "cookieField")
+            var importButton = findObject(dialog, "importCookieButton")
+            var cancelButton = findObject(dialog, "cancelCookieButton")
+            verify(field !== null)
+            verify(importButton !== null)
+            verify(cancelButton !== null)
+
+            field.text = "MUSIC_U=abc; __csrf=xyz"
+            verify(importButton.enabled)
+            verify(cancelButton.enabled)
+
+            importButton.clicked()
+
+            compare(settingsVm.lastCookie, "MUSIC_U=abc; __csrf=xyz")
+            verify(!importButton.enabled)
+            verify(!cancelButton.enabled)
+            compare(importButton.text, "Importing...")
+
+            settingsVm.isImportingNeteaseCookie = false
+            tryVerify(function() { return importButton.enabled })
+            compare(importButton.text, "Import")
 
             dialog.destroy()
         }

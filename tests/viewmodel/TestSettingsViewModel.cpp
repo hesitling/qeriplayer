@@ -7,8 +7,11 @@
 #include "repo/ISettingsRepository.h"
 #include "viewmodel/SettingsViewModel.h"
 
+#include <QCoroTimer>
 #include <QSignalSpy>
 #include <QTest>
+
+using namespace std::chrono_literals;
 
 using namespace QeriPlayerQt;
 
@@ -89,6 +92,9 @@ public:
     QCoro::Task<ApiResult<LoginResult>> importCookies(const QString &cookieString) override
     {
         m_lastImportedCookie = cookieString;
+        if (m_importDelay > 0ms) {
+            co_await QCoro::sleepFor(m_importDelay);
+        }
         if (m_importError.has_value()) {
             m_authenticatedState = false;
             co_return ApiResult<LoginResult>(m_importError.value());
@@ -122,10 +128,35 @@ public:
     int m_clearLocalSessionCount = 0;
     int m_ensureWeapiSessionCount = 0;
     bool m_authenticatedState = false;
+    std::chrono::milliseconds m_importDelay = 0ms;
     LoginResult m_importResult;
     std::optional<ApiError> m_importError;
     QJsonObject m_accountResponse;
     std::optional<ApiError> m_accountError;
+};
+
+class GuardedImportNeteaseClient : public NeteaseClient {
+public:
+    explicit GuardedImportNeteaseClient(HttpClient *httpClient)
+        : NeteaseClient(httpClient)
+    {
+    }
+
+    QCoro::Task<void> ensureWeapiSession() override
+    {
+        co_await QCoro::sleepFor(20ms);
+        co_return;
+    }
+
+    QCoro::Task<ApiResult<QJsonObject>> getCurrentUserAccount() override
+    {
+        QJsonObject profile;
+        profile[QLatin1String("nickname")] = QStringLiteral("GuardedUser");
+        profile[QLatin1String("userId")] = 99;
+        QJsonObject account;
+        account[QLatin1String("profile")] = profile;
+        co_return ApiResult<QJsonObject>(account);
+    }
 };
 
 class TestSettingsViewModel : public QObject {
@@ -148,7 +179,9 @@ private Q_SLOTS:
     void setTheme_validValues();
     void clearPlayHistory_repoException_doesNotCrash();
     void importCookie_success_setsAuthState();
+    void importCookie_tracksLoadingState();
     void importCookie_failure_clearsSessionAndSetsError();
+    void importCookies_overlapRejectedAtClient();
     void logout_localOnly_clearsSession();
     void loadSettings_hydratesRestoredProfile();
     void loadSettings_refreshesWeapiSessionBeforeHydration();
@@ -372,6 +405,26 @@ void TestSettingsViewModel::importCookie_success_setsAuthState()
     QCOMPARE(authSpy.count(), 1);
 }
 
+void TestSettingsViewModel::importCookie_tracksLoadingState()
+{
+    HttpClient http;
+    FakeNeteaseClient client(&http);
+    client.m_importDelay = 20ms;
+    client.m_importResult.nickname = QStringLiteral("TestUser");
+    client.m_importResult.userId = QStringLiteral("42");
+
+    MockSettingsRepo settingsRepo;
+    MockPlayHistoryRepo historyRepo;
+    SettingsViewModel vm(&settingsRepo, &client, &historyRepo);
+
+    auto importTask = vm.importNeteaseCookie(QStringLiteral("MUSIC_U=abc; __csrf=xyz"));
+    Q_UNUSED(importTask);
+
+    QVERIFY(vm.isImportingNeteaseCookie());
+    QTRY_VERIFY(vm.isNeteaseLoggedIn());
+    QTRY_VERIFY(!vm.isImportingNeteaseCookie());
+}
+
 void TestSettingsViewModel::importCookie_failure_clearsSessionAndSetsError()
 {
     HttpClient http;
@@ -389,6 +442,21 @@ void TestSettingsViewModel::importCookie_failure_clearsSessionAndSetsError()
     QVERIFY(!vm.isNeteaseLoggedIn());
     QCOMPARE(vm.error().type(), ViewModelError::ErrorType::Auth);
     QCOMPARE(client.m_clearLocalSessionCount, 1);
+    QVERIFY(!vm.isImportingNeteaseCookie());
+}
+
+void TestSettingsViewModel::importCookies_overlapRejectedAtClient()
+{
+    HttpClient http;
+    GuardedImportNeteaseClient client(&http);
+
+    auto firstImport = client.importCookies(QStringLiteral("MUSIC_U=abc; __csrf=xyz"));
+    auto secondResult = QCoro::waitFor(client.importCookies(QStringLiteral("MUSIC_U=def; __csrf=uvw")));
+    auto firstResult = QCoro::waitFor(std::move(firstImport));
+
+    QVERIFY(firstResult.isSuccess());
+    QVERIFY(secondResult.isError());
+    QCOMPARE(secondResult.error().code(), 409);
 }
 
 void TestSettingsViewModel::logout_localOnly_clearsSession()

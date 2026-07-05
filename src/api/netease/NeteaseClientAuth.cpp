@@ -66,6 +66,21 @@ QCoro::Task<ApiResult<VoidResult>> NeteaseClient::logout()
 
 QCoro::Task<ApiResult<LoginResult>> NeteaseClient::importCookies(const QString &cookieString)
 {
+    if (m_importCookiesInFlight) {
+        co_return ApiResult<LoginResult>(ApiError(409, QStringLiteral("Cookie import already in progress")));
+    }
+
+    struct ImportGuard {
+        bool &flag;
+        ~ImportGuard()
+        {
+            flag = false;
+        }
+    };
+
+    m_importCookiesInFlight = true;
+    ImportGuard guard {m_importCookiesInFlight};
+
     clearLocalSession();
     persistCookies(cookieString, false, false);
     co_await ensureWeapiSession();
