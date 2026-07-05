@@ -8,6 +8,9 @@ ItemDelegate {
     width: ListView.view ? ListView.view.width : 0
     height: 64
 
+    required property int index
+    required property var model
+
     // Playing highlight
     property bool isCurrentSong: playerVm && playerVm.currentSong
                                  && model.id === playerVm.currentSong.id
