@@ -7,7 +7,6 @@
 #include "api/common/ApiResult.h"
 #include "api/common/IMusicPlatformPlugin.h"
 #include "api/common/LoginResult.h"
-#include "api/common/QrCodeData.h"
 #include "api/common/VoidResult.h"
 #include "domain/Album.h"
 #include "domain/Enums.h"
@@ -143,11 +142,6 @@ public:
     QCoro::Task<ApiResult<LoginResult>> loginByCaptcha(const QString &phone, const QString &captcha, int ctcode = 86);
     QCoro::Task<ApiResult<VoidResult>> sendCaptcha(const QString &phone, int ctcode = 86);
     QCoro::Task<ApiResult<VoidResult>> verifyCaptcha(const QString &phone, const QString &captcha, int ctcode = 86);
-
-    // ─── QR Code Login ───────────────────────────────────────────────────
-
-    QCoro::Task<ApiResult<QrCodeData>> generateQrKey();
-    QCoro::Task<ApiResult<LoginResult>> pollQrStatus(const QString &key);
 
     // ─── Download ─────────────────────────────────────────────────────────
 
