@@ -114,6 +114,7 @@ private:
     void connectBackendSignals();
     void connectQueueSignals();
     void persistState();
+    void pruneCompletedPreResolveTasks();
     QCoro::Task<QString> resolveUrl(const Song &song);
 
     std::unique_ptr<IPlayerBackend> m_backend;

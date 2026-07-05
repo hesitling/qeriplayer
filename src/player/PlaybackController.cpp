@@ -12,6 +12,7 @@
 #include <QPointer>
 #include <QTimer>
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace QeriPlayerQt {
@@ -192,6 +193,13 @@ void PlaybackController::preResolveUrl(const Song &song)
         return; // No platform plugin available
     }
 
+    pruneCompletedPreResolveTasks();
+
+    constexpr qsizetype MAX_BACKGROUND_TASKS = 32;
+    if (m_preResolveTasks.size() >= MAX_BACKGROUND_TASKS) {
+        return;
+    }
+
     // Background resolution with safe lifetime via QPointer.
     // Keep the task object alive; destroying a suspended QCoro::Task can corrupt
     // the coroutine frame that resumes when the network request finishes.
@@ -216,14 +224,16 @@ void PlaybackController::preResolveUrl(const Song &song)
         }
     }(QPointer<PlaybackController>(this), song);
     m_preResolveTasks.push_back(std::move(task));
-
-    constexpr qsizetype MAX_BACKGROUND_TASKS = 32;
-    if (m_preResolveTasks.size() > MAX_BACKGROUND_TASKS) {
-        m_preResolveTasks.erase(m_preResolveTasks.begin());
-    }
 }
 
 // --- Private ---
+
+void PlaybackController::pruneCompletedPreResolveTasks()
+{
+    auto isCompleted = [](const QCoro::Task<void> &task) { return task.isReady(); };
+    m_preResolveTasks.erase(std::remove_if(m_preResolveTasks.begin(), m_preResolveTasks.end(), isCompleted),
+                            m_preResolveTasks.end());
+}
 
 void PlaybackController::connectBackendSignals()
 {

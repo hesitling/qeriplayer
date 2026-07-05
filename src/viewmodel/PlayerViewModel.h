@@ -14,6 +14,8 @@
 #include <QCoroTask>
 #include <QObject>
 
+#include <optional>
+
 namespace QeriPlayerQt {
 
 /**
@@ -100,6 +102,7 @@ Q_SIGNALS:
 
 private:
     QCoro::Task<void> playTask(Song song);
+    QCoro::Task<void> drainPlaybackRequests();
     void startPlayback(const Song &song);
     void connectControllerSignals();
     void connectQueueSignals();
@@ -112,6 +115,8 @@ private:
     bool m_hasError = false;
     qint64 m_positionMs = 0;
     qint64 m_durationMs = 0;
+    bool m_playTaskActive = false;
+    std::optional<Song> m_pendingPlaybackRequest;
     QCoro::Task<void> m_pendingPlayTask;
 };
 

@@ -273,6 +273,7 @@ private Q_SLOTS:
     void playHistory_recordedOnSongChange();
     void loadQueueAndPlay_keepsCoroutineAlive();
     void next_keepsCoroutineAlive();
+    void next_twice_keepsLatestRequest();
     void errorFromController();
 };
 
@@ -465,6 +466,7 @@ void TestPlayerViewModel::loadQueueAndPlay_keepsCoroutineAlive()
 {
     DelayedMockPlugin delayedPlugin;
     auto controller = createController(&delayedPlugin);
+    m_historyRepo.m_recordedIds.clear();
     PlayerViewModel vm(controller.get(), &m_historyRepo);
 
     QVector<Song> songs = {makeSong("1", "First"), makeSong("2", "Second")};
@@ -473,6 +475,8 @@ void TestPlayerViewModel::loadQueueAndPlay_keepsCoroutineAlive()
     QTRY_COMPARE(vm.playbackState(), PlaybackState::Playing);
     QTRY_COMPARE(vm.currentSong().id, QStringLiteral("1"));
     QTRY_COMPARE(vm.queue()->count(), 2);
+    QVERIFY(!m_historyRepo.m_recordedIds.isEmpty());
+    QCOMPARE(m_historyRepo.m_recordedIds.first(), QStringLiteral("1"));
 }
 
 void TestPlayerViewModel::next_keepsCoroutineAlive()
@@ -489,6 +493,25 @@ void TestPlayerViewModel::next_keepsCoroutineAlive()
 
     QTRY_COMPARE(vm.playbackState(), PlaybackState::Playing);
     QTRY_COMPARE(vm.currentSong().id, QStringLiteral("2"));
+}
+
+void TestPlayerViewModel::next_twice_keepsLatestRequest()
+{
+    DelayedMockPlugin delayedPlugin;
+    auto controller = createController(&delayedPlugin);
+    PlayerViewModel vm(controller.get(), &m_historyRepo);
+
+    vm.addToQueue(makeSong("1", "First"));
+    vm.addToQueue(makeSong("2", "Second"));
+    vm.addToQueue(makeSong("3", "Third"));
+    controller->queue()->setCurrentIndex(0);
+
+    vm.next();
+    vm.next();
+
+    QTRY_COMPARE(vm.playbackState(), PlaybackState::Playing);
+    QTRY_COMPARE(vm.currentSong().id, QStringLiteral("3"));
+    QTRY_COMPARE(controller->queue()->currentIndex(), 2);
 }
 
 void TestPlayerViewModel::errorFromController()

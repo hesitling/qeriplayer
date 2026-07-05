@@ -108,9 +108,26 @@ QCoro::Task<void> PlayerViewModel::playTask(Song song)
     }
 }
 
+QCoro::Task<void> PlayerViewModel::drainPlaybackRequests()
+{
+    while (m_pendingPlaybackRequest.has_value()) {
+        Song song = *m_pendingPlaybackRequest;
+        m_pendingPlaybackRequest.reset();
+        co_await playTask(song);
+    }
+
+    m_playTaskActive = false;
+}
+
 void PlayerViewModel::startPlayback(const Song &song)
 {
-    m_pendingPlayTask = playTask(song);
+    m_pendingPlaybackRequest = song;
+    if (m_playTaskActive) {
+        return;
+    }
+
+    m_playTaskActive = true;
+    m_pendingPlayTask = drainPlaybackRequests();
 }
 
 void PlayerViewModel::loadQueueAndPlay(const QVector<Song> &songs, int startIndex)
