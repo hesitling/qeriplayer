@@ -99,6 +99,11 @@ QCoro::Task<void> PlayerViewModel::play(const Song &song)
     co_await playTask(song);
 }
 
+void PlayerViewModel::playNow(const Song &song)
+{
+    startPlayback(song);
+}
+
 QCoro::Task<void> PlayerViewModel::playTask(Song song)
 {
     try {

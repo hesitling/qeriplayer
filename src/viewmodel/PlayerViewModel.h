@@ -66,6 +66,7 @@ public:
 
     // --- Playback control ---
     Q_INVOKABLE QCoro::Task<void> play(const QeriPlayerQt::Song &song);
+    Q_INVOKABLE void playNow(const QeriPlayerQt::Song &song);
     Q_INVOKABLE void loadQueueAndPlay(const QVector<QeriPlayerQt::Song> &songs, int startIndex);
     Q_INVOKABLE void pause();
     Q_INVOKABLE void resume();
