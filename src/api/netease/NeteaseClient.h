@@ -84,6 +84,16 @@ public:
     QCoro::Task<ApiResult<VoidResult>> logout();
 
     /**
+     * @brief Import a raw cookie string and validate it against the current account endpoint
+     *
+     * The cookie is only treated as authenticated after validation succeeds.
+     */
+    virtual QCoro::Task<ApiResult<LoginResult>> importCookies(const QString &cookieString);
+
+    /// @brief Clear only local session state without calling remote logout.
+    virtual void clearLocalSession();
+
+    /**
      * @brief Set cookies directly (bypass login)
      *
      * Use when cookies are obtained externally (e.g., browser export).
@@ -98,7 +108,7 @@ public:
      * Call after setCookies() if __csrf is not provided.
      * Matches Kotlin ensureWeapiSession().
      */
-    QCoro::Task<void> ensureWeapiSession();
+    virtual QCoro::Task<void> ensureWeapiSession();
 
     // ─── Search ───────────────────────────────────────────────────────────
 
@@ -120,7 +130,7 @@ public:
     QCoro::Task<ApiResult<VoidResult>> likeSong(const QString &songId);
     QCoro::Task<ApiResult<VoidResult>> unlikeSong(const QString &songId);
     QCoro::Task<ApiResult<QStringList>> getLikedSongIds(const QString &userId);
-    QCoro::Task<ApiResult<QJsonObject>> getCurrentUserAccount();
+    virtual QCoro::Task<ApiResult<QJsonObject>> getCurrentUserAccount();
 
     /**
      * @brief Get the current logged-in user's userId
@@ -180,10 +190,12 @@ private:
                                                         = QStringLiteral("https://interface.music.163.com"),
                                                         bool returnRawOnNon200 = false, bool retried = false);
 
-    QCoro::Task<ApiResult<QJsonObject>> makeUnencryptedRequest(const QString &path, const QJsonObject &params = {});
+    QCoro::Task<ApiResult<QJsonObject>> makeUnencryptedRequest(const QString &path, const QJsonObject &params = {},
+                                                               bool useGet = false);
+    QCoro::Task<ApiResult<QString>> resolveUserId(const QString &userId);
 
     void injectCookies(QNetworkRequest &request);
-    void persistCookies(const QString &cookieString);
+    void persistCookies(const QString &cookieString, bool authenticated = true, bool persistToStorage = true);
     void clearCookies();
     void extractResponseCookies(const HttpResponse &response);
 

@@ -15,6 +15,21 @@
 
 namespace QeriPlayerQt {
 
+QCoro::Task<ApiResult<QString>> NeteaseClient::resolveUserId(const QString &userId)
+{
+    const QString trimmed = userId.trimmed();
+    if (!trimmed.isEmpty()) {
+        co_return ApiResult<QString>(trimmed);
+    }
+
+    auto currentUserId = co_await getCurrentUserId();
+    if (currentUserId.isError()) {
+        co_return ApiResult<QString>(currentUserId.error());
+    }
+
+    co_return ApiResult<QString>(QString::number(currentUserId.data()));
+}
+
 // ─── User Operations ───────────────────────────────────────────────────────
 
 QCoro::Task<ApiResult<VoidResult>> NeteaseClient::likeSong(const QString &songId)
@@ -108,8 +123,13 @@ QCoro::Task<ApiResult<QStringList>> NeteaseClient::getHighQualityTags()
 
 QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserAlbums(const QString &userId, int limit, int offset)
 {
+    auto resolvedUserId = co_await resolveUserId(userId);
+    if (resolvedUserId.isError()) {
+        co_return ApiResult<QJsonObject>(resolvedUserId.error());
+    }
+
     QJsonObject params;
-    params[QLatin1String("userId")] = userId;
+    params[QLatin1String("userId")] = resolvedUserId.data();
     params[QLatin1String("offset")] = offset;
     params[QLatin1String("limit")] = limit;
     params[QLatin1String("pageType")] = QStringLiteral("3");
@@ -128,8 +148,13 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserAlbums(const QString &
 
 QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserDjRadios(const QString &userId, int limit, int offset)
 {
+    auto resolvedUserId = co_await resolveUserId(userId);
+    if (resolvedUserId.isError()) {
+        co_return ApiResult<QJsonObject>(resolvedUserId.error());
+    }
+
     QJsonObject params;
-    params[QLatin1String("uid")] = userId;
+    params[QLatin1String("uid")] = resolvedUserId.data();
     params[QLatin1String("offset")] = offset;
     params[QLatin1String("limit")] = limit;
 
@@ -229,8 +254,13 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getRelatedPlaylists(const QSt
 QCoro::Task<ApiResult<QVector<Playlist>>> NeteaseClient::getUserCreatedPlaylists(const QString &userId, int limit,
                                                                                  int offset)
 {
+    auto resolvedUserId = co_await resolveUserId(userId);
+    if (resolvedUserId.isError()) {
+        co_return ApiResult<QVector<Playlist>>(resolvedUserId.error());
+    }
+
     QJsonObject params;
-    params[QLatin1String("uid")] = userId;
+    params[QLatin1String("uid")] = resolvedUserId.data();
     params[QLatin1String("limit")] = limit;
     params[QLatin1String("offset")] = offset;
     params[QLatin1String("includeVideo")] = QStringLiteral("true");
@@ -240,7 +270,7 @@ QCoro::Task<ApiResult<QVector<Playlist>>> NeteaseClient::getUserCreatedPlaylists
         co_return ApiResult<QVector<Playlist>>(raw.error());
     }
 
-    long long uid = userId.toLongLong();
+    long long uid = resolvedUserId.data().toLongLong();
     QJsonArray playlistArray = raw.data()[QLatin1String("playlist")].toArray();
     QVector<Playlist> playlists;
     playlists.reserve(playlistArray.size());
@@ -259,8 +289,13 @@ QCoro::Task<ApiResult<QVector<Playlist>>> NeteaseClient::getUserCreatedPlaylists
 QCoro::Task<ApiResult<QVector<Playlist>>> NeteaseClient::getUserSubscribedPlaylists(const QString &userId, int limit,
                                                                                     int offset)
 {
+    auto resolvedUserId = co_await resolveUserId(userId);
+    if (resolvedUserId.isError()) {
+        co_return ApiResult<QVector<Playlist>>(resolvedUserId.error());
+    }
+
     QJsonObject params;
-    params[QLatin1String("uid")] = userId;
+    params[QLatin1String("uid")] = resolvedUserId.data();
     params[QLatin1String("limit")] = limit;
     params[QLatin1String("offset")] = offset;
     params[QLatin1String("includeVideo")] = QStringLiteral("true");
@@ -310,8 +345,13 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getUserStarredAlbums(const QS
 
 QCoro::Task<ApiResult<QString>> NeteaseClient::getLikedPlaylistId(const QString &userId)
 {
+    auto resolvedUserId = co_await resolveUserId(userId);
+    if (resolvedUserId.isError()) {
+        co_return ApiResult<QString>(resolvedUserId.error());
+    }
+
     QJsonObject params;
-    params[QLatin1String("uid")] = userId;
+    params[QLatin1String("uid")] = resolvedUserId.data();
     params[QLatin1String("limit")] = 1000;
     params[QLatin1String("offset")] = 0;
     params[QLatin1String("includeVideo")] = QStringLiteral("true");
@@ -321,7 +361,7 @@ QCoro::Task<ApiResult<QString>> NeteaseClient::getLikedPlaylistId(const QString 
         co_return ApiResult<QString>(raw.error());
     }
 
-    long long uid = userId.toLongLong();
+    long long uid = resolvedUserId.data().toLongLong();
     QJsonArray playlistArray = raw.data()[QLatin1String("playlist")].toArray();
     for (const auto &item : playlistArray) {
         QJsonObject pl = item.toObject();

@@ -156,8 +156,13 @@ QCoro::Task<ApiResult<Playlist>> NeteaseClient::getPlaylistDetail(const QString 
 
 QCoro::Task<ApiResult<QVector<Playlist>>> NeteaseClient::getUserPlaylists(const QString &userId)
 {
+    auto resolvedUserId = co_await resolveUserId(userId);
+    if (resolvedUserId.isError()) {
+        co_return ApiResult<QVector<Playlist>>(resolvedUserId.error());
+    }
+
     QJsonObject params;
-    params[QLatin1String("uid")] = userId;
+    params[QLatin1String("uid")] = resolvedUserId.data();
     params[QLatin1String("limit")] = 1000;
     params[QLatin1String("offset")] = 0;
 

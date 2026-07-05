@@ -27,8 +27,30 @@
 #include <QDebug>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QtGlobal>
 
 namespace QeriPlayerQt {
+
+static LogLevel logLevelFromEnvironment()
+{
+    const QString value = qEnvironmentVariable("QERIPLAYER_LOG_LEVEL").trimmed().toLower();
+    if (value == QStringLiteral("trace")) {
+        return LogLevel::Trace;
+    }
+    if (value == QStringLiteral("debug")) {
+        return LogLevel::Debug;
+    }
+    if (value == QStringLiteral("warn") || value == QStringLiteral("warning")) {
+        return LogLevel::Warn;
+    }
+    if (value == QStringLiteral("error")) {
+        return LogLevel::Error;
+    }
+    if (value == QStringLiteral("fatal")) {
+        return LogLevel::Fatal;
+    }
+    return LogLevel::Info;
+}
 
 QeriPlayerApplication::QeriPlayerApplication(int &argc, char **argv)
     : QApplication(argc, argv)
@@ -64,7 +86,7 @@ void QeriPlayerApplication::initializeCoreServices()
     // 1. Logger (first — other services may log)
     LoggerConfig logConfig;
     logConfig.logDir = AppPaths::cacheDir() + QStringLiteral("/logs");
-    logConfig.level = LogLevel::Info;
+    logConfig.level = logLevelFromEnvironment();
     logConfig.enableConsole = true;
 
     try {
