@@ -159,6 +159,21 @@ public:
     }
 };
 
+class DelayedHydrationNeteaseClient : public FakeNeteaseClient {
+public:
+    explicit DelayedHydrationNeteaseClient(HttpClient *httpClient)
+        : FakeNeteaseClient(httpClient)
+    {
+    }
+
+    QCoro::Task<void> ensureWeapiSession() override
+    {
+        m_ensureWeapiSessionCount++;
+        co_await QCoro::sleepFor(20ms);
+        co_return;
+    }
+};
+
 class TestSettingsViewModel : public QObject {
     Q_OBJECT
 
@@ -185,6 +200,7 @@ private Q_SLOTS:
     void logout_localOnly_clearsSession();
     void loadSettings_hydratesRestoredProfile();
     void loadSettings_refreshesWeapiSessionBeforeHydration();
+    void loadSettings_overlappingCalls_doNotDuplicateHydration();
     void loadSettings_authFailureClearsRestoredSession();
 };
 
@@ -522,6 +538,30 @@ void TestSettingsViewModel::loadSettings_refreshesWeapiSessionBeforeHydration()
     MockPlayHistoryRepo historyRepo;
     SettingsViewModel vm(&settingsRepo, &client, &historyRepo);
 
+    vm.loadSettings();
+
+    QTRY_COMPARE(client.m_ensureWeapiSessionCount, 1);
+    QTRY_COMPARE(vm.neteaseUsername(), QStringLiteral("RestoredUser"));
+}
+
+void TestSettingsViewModel::loadSettings_overlappingCalls_doNotDuplicateHydration()
+{
+    HttpClient http;
+    DelayedHydrationNeteaseClient client(&http);
+    client.m_authenticatedState = true;
+
+    QJsonObject profile;
+    profile[QLatin1String("nickname")] = QStringLiteral("RestoredUser");
+    profile[QLatin1String("userId")] = 7;
+    QJsonObject account;
+    account[QLatin1String("profile")] = profile;
+    client.m_accountResponse = account;
+
+    MockSettingsRepo settingsRepo;
+    MockPlayHistoryRepo historyRepo;
+    SettingsViewModel vm(&settingsRepo, &client, &historyRepo);
+
+    vm.loadSettings();
     vm.loadSettings();
 
     QTRY_COMPARE(client.m_ensureWeapiSessionCount, 1);

@@ -1,3 +1,9 @@
+## Superseded
+
+This change set was superseded by `openspec/changes/netease-cookie-auth-settings`.
+The checklist below reflects the original password/SMS/QR design and should not be
+read as the current shipped settings/auth behavior.
+
 ## 1. Domain — QrLoginStatus enum
 
 - [x] 1.1 Add `QrLoginStatus` enum to `src/domain/Enums.h` with values `Expired=0`, `Waiting=1`, `Scanned=2`, `Confirmed=3`

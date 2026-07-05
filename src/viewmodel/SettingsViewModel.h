@@ -87,6 +87,7 @@ private:
     ViewModelError m_error;
     bool m_hasError = false;
     bool m_isImportingNeteaseCookie = false;
+    bool m_isHydratingNeteaseProfile = false;
 
     QCoro::Task<void> importNeteaseCookieImpl(const QString &cookieString);
     QCoro::Task<void> logoutNeteaseImpl();

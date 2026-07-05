@@ -31,9 +31,14 @@
 
 namespace QeriPlayerQt {
 
+/// @brief Determine the logger level from `QERIPLAYER_LOG_LEVEL`.
+/// @return The parsed log level, or `LogLevel::Info` when unset or unrecognized.
 static LogLevel logLevelFromEnvironment()
 {
     const QString value = qEnvironmentVariable("QERIPLAYER_LOG_LEVEL").trimmed().toLower();
+    if (value.isEmpty()) {
+        return LogLevel::Info;
+    }
     if (value == QStringLiteral("trace")) {
         return LogLevel::Trace;
     }
@@ -49,6 +54,8 @@ static LogLevel logLevelFromEnvironment()
     if (value == QStringLiteral("fatal")) {
         return LogLevel::Fatal;
     }
+
+    qWarning().noquote() << "Unknown QERIPLAYER_LOG_LEVEL value, falling back to info:" << value;
     return LogLevel::Info;
 }
 

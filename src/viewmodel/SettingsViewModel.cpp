@@ -114,7 +114,7 @@ void SettingsViewModel::loadSettings()
         Logger::get("viewmodel")->warn("Failed to load downloadPath setting: {}", ex.what());
     }
 
-    if (m_neteaseClient && m_neteaseClient->isAuthenticated()) {
+    if (m_neteaseClient && m_neteaseClient->isAuthenticated() && !m_isHydratingNeteaseProfile) {
         m_pendingTask = QCoro::QmlTask(hydrateNeteaseProfile());
     }
 }
@@ -265,9 +265,20 @@ QCoro::Task<void> SettingsViewModel::logoutNeteaseImpl()
 
 QCoro::Task<void> SettingsViewModel::hydrateNeteaseProfile()
 {
-    if (!m_neteaseClient || !m_neteaseClient->isAuthenticated()) {
+    if (!m_neteaseClient || !m_neteaseClient->isAuthenticated() || m_isHydratingNeteaseProfile) {
         co_return;
     }
+
+    struct HydrationGuard {
+        bool &flag;
+        ~HydrationGuard()
+        {
+            flag = false;
+        }
+    };
+
+    m_isHydratingNeteaseProfile = true;
+    HydrationGuard guard {m_isHydratingNeteaseProfile};
 
     // Refresh the WeAPI session on startup so restored cookies pick up a fresh
     // __csrf token before we validate and hydrate the profile.
