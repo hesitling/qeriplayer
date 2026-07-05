@@ -11,6 +11,7 @@ Item {
         property string theme: "dark"
         property int audioQuality: 2
         property string downloadPath: "/home/user/Music"
+        property url downloadPathUrl: "file:///home/user/Music"
         property bool isNeteaseLoggedIn: false
         property string neteaseUsername: ""
         property bool hasError: false
@@ -32,6 +33,7 @@ Item {
         }
         function setDownloadPath(p) {
             downloadPath = p
+            downloadPathUrl = p ? "file://" + p : ""
         }
         function logoutNetease() {
             logoutCount += 1

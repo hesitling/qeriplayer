@@ -184,14 +184,8 @@ Page {
 
     Platform.FolderDialog {
         id: folderDialog
-        folder: settingsVm.downloadPath ? "file://" + settingsVm.downloadPath : ""
-        onAccepted: {
-            var path = folder.toString()
-            if (path.startsWith("file://")) {
-                path = path.substring(7)
-            }
-            settingsVm.setDownloadPath(path)
-        }
+        folder: settingsVm.downloadPathUrl
+        onAccepted: settingsVm.setDownloadPath(folder.toLocalFile())
     }
 
     LoginDialog {

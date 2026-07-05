@@ -28,6 +28,7 @@ class SettingsViewModel : public QObject {
     Q_PROPERTY(QString theme READ theme WRITE setTheme NOTIFY themeChanged)
     Q_PROPERTY(AudioQuality audioQuality READ audioQuality WRITE setAudioQuality NOTIFY audioQualityChanged)
     Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath NOTIFY downloadPathChanged)
+    Q_PROPERTY(QUrl downloadPathUrl READ downloadPathUrl NOTIFY downloadPathChanged)
     Q_PROPERTY(bool isNeteaseLoggedIn READ isNeteaseLoggedIn NOTIFY neteaseAuthChanged)
     Q_PROPERTY(QString neteaseUsername READ neteaseUsername NOTIFY neteaseAuthChanged)
     Q_PROPERTY(bool isImportingNeteaseCookie READ isImportingNeteaseCookie NOTIFY neteaseCookieImportStateChanged)
@@ -43,6 +44,7 @@ public:
     QString theme() const;
     AudioQuality audioQuality() const;
     QString downloadPath() const;
+    QUrl downloadPathUrl() const;
     bool isNeteaseLoggedIn() const;
     QString neteaseUsername() const;
     bool isImportingNeteaseCookie() const;

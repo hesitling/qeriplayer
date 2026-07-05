@@ -117,8 +117,25 @@ static QString redactCookieHeaderForLog(const QByteArray &cookieHeader)
 static QString responseBodyForLog(const QByteArray &body)
 {
     constexpr qsizetype MAX_LOG_BODY_BYTES = 500;
-    QString text = QString::fromUtf8(body.left(MAX_LOG_BODY_BYTES));
-    if (body.size() > MAX_LOG_BODY_BYTES) {
+
+    QByteArray toLog = body;
+    QJsonParseError parseError;
+    const QJsonDocument doc = QJsonDocument::fromJson(body, &parseError);
+    if (parseError.error == QJsonParseError::NoError) {
+        if (doc.isObject()) {
+            toLog = compactJsonForLog(doc.object()).toUtf8();
+        } else if (doc.isArray()) {
+            QJsonArray redactedArray;
+            const QJsonArray input = doc.array();
+            for (const QJsonValue &item : input) {
+                redactedArray.append(redactJsonValue(QString(), item));
+            }
+            toLog = QJsonDocument(redactedArray).toJson(QJsonDocument::Compact);
+        }
+    }
+
+    QString text = QString::fromUtf8(toLog.left(MAX_LOG_BODY_BYTES));
+    if (toLog.size() > MAX_LOG_BODY_BYTES) {
         text += QStringLiteral("...");
     }
     return text;
@@ -222,8 +239,8 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
     extractResponseCookies(response);
 
     if (!response.isSuccess()) {
-        Logger::get("api")->warn("NeteaseClient: HTTP error at path {}: {} ({})", path.toStdString(),
-                                 response.errorString.toStdString(), response.statusCode);
+        log->warn("NeteaseClient: HTTP error at path {}: {} ({})", path.toStdString(),
+                  response.errorString.toStdString(), response.statusCode);
         co_return ApiResult<QJsonObject>(ApiError(response.statusCode, response.errorString));
     }
 
@@ -231,8 +248,8 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
     QJsonParseError parseError;
     QJsonDocument doc = QJsonDocument::fromJson(response.body, &parseError);
     if (parseError.error != QJsonParseError::NoError) {
-        Logger::get("api")->warn("NeteaseClient: JSON parse error at path {}: {} (body: {})", path.toStdString(),
-                                 parseError.errorString().toStdString(), response.body.left(200).toStdString());
+        log->warn("NeteaseClient: JSON parse error at path {}: {} (body: {})", path.toStdString(),
+                  parseError.errorString().toStdString(), response.body.left(200).toStdString());
         co_return ApiResult<QJsonObject>(
             ApiError(-1, QStringLiteral("Invalid JSON response"), parseError.errorString()));
     }
@@ -244,7 +261,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
     if (code != 200) {
         // Auto-retry 301 (session expired) once, like Kotlin
         if (code == 301 && !retried && isAuthenticated()) {
-            Logger::get("api")->info("NeteaseClient: 301 at {}, refreshing session", path.toStdString());
+            log->info("NeteaseClient: 301 at {}, refreshing session", path.toStdString());
             co_await ensureWeapiSession();
             co_return co_await makeRequest(path, params, host, true);
         }
@@ -252,7 +269,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
         if (msg.isEmpty()) {
             msg = json[QLatin1String("message")].toString();
         }
-        Logger::get("api")->warn("NeteaseClient: API error {} at {}: {}", code, path.toStdString(), msg.toStdString());
+        log->warn("NeteaseClient: API error {} at {}: {}", code, path.toStdString(), msg.toStdString());
         co_return ApiResult<QJsonObject>(ApiError(code, msg));
     }
 
@@ -277,8 +294,8 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeUnencryptedRequest(const 
     }
     if (useGet && !query.isEmpty()) {
         QUrlQuery urlQuery(url.query());
-        for (auto it = params.constBegin(); it != params.constEnd(); ++it) {
-            urlQuery.addQueryItem(it.key(), it.value().toVariant().toString());
+        for (const auto &item : query.queryItems()) {
+            urlQuery.addQueryItem(item.first, item.second);
         }
         url.setQuery(urlQuery);
     }
@@ -375,8 +392,8 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeEapiRequest(const QString
                responseBodyForLog(response.body).toStdString());
 
     if (!response.isSuccess()) {
-        Logger::get("api")->warn("NeteaseClient: EAPI HTTP error at {}: {} ({})", path.toStdString(),
-                                 response.errorString.toStdString(), response.statusCode);
+        log->warn("NeteaseClient: EAPI HTTP error at {}: {} ({})", path.toStdString(),
+                  response.errorString.toStdString(), response.statusCode);
         co_return ApiResult<QJsonObject>(ApiError(response.statusCode, response.errorString));
     }
 
@@ -384,8 +401,8 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeEapiRequest(const QString
     QJsonParseError parseError;
     QJsonDocument doc = QJsonDocument::fromJson(response.body, &parseError);
     if (parseError.error != QJsonParseError::NoError) {
-        Logger::get("api")->warn("NeteaseClient: EAPI JSON parse error: {} (body: {})",
-                                 parseError.errorString().toStdString(), response.body.left(200).toStdString());
+        log->warn("NeteaseClient: EAPI JSON parse error: {} (body: {})", parseError.errorString().toStdString(),
+                  response.body.left(200).toStdString());
         co_return ApiResult<QJsonObject>(
             ApiError(-1, QStringLiteral("Invalid JSON response"), parseError.errorString()));
     }
@@ -400,7 +417,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeEapiRequest(const QString
         }
         // Auto-retry 301 (session expired) once, like Kotlin
         if (code == 301 && !retried && isAuthenticated()) {
-            Logger::get("api")->info("NeteaseClient: 301 at {}, refreshing session", path.toStdString());
+            log->info("NeteaseClient: 301 at {}, refreshing session", path.toStdString());
             co_await ensureWeapiSession();
             co_return co_await makeEapiRequest(path, params, host, returnRawOnNon200, true);
         }
@@ -408,7 +425,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeEapiRequest(const QString
         if (msg.isEmpty()) {
             msg = json[QLatin1String("message")].toString();
         }
-        Logger::get("api")->warn("NeteaseClient: EAPI error {} at {}: {}", code, path.toStdString(), msg.toStdString());
+        log->warn("NeteaseClient: EAPI error {} at {}: {}", code, path.toStdString(), msg.toStdString());
         co_return ApiResult<QJsonObject>(ApiError(code, msg));
     }
 

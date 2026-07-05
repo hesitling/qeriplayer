@@ -35,6 +35,14 @@ QString SettingsViewModel::downloadPath() const
     return m_downloadPath;
 }
 
+QUrl SettingsViewModel::downloadPathUrl() const
+{
+    if (m_downloadPath.isEmpty()) {
+        return {};
+    }
+    return QUrl::fromLocalFile(m_downloadPath);
+}
+
 bool SettingsViewModel::isNeteaseLoggedIn() const
 {
     if (!m_neteaseClient) {
