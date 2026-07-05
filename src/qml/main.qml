@@ -24,12 +24,14 @@ ApplicationWindow {
                 id: sidebar
                 Layout.fillHeight: true
                 Layout.preferredWidth: 200
+                z: 1
             }
 
             StackView {
                 id: contentStack
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                clip: true
                 initialItem: homePage
             }
         }
