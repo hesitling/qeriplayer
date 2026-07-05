@@ -9,8 +9,11 @@
 #include "viewmodel/PlayerViewModel.h"
 
 #include <QCoroTask>
+#include <QCoroTimer>
 #include <QSignalSpy>
 #include <QTest>
+
+using namespace std::chrono_literals;
 
 #include <memory>
 
@@ -137,6 +140,15 @@ public:
     }
 };
 
+class DelayedMockPlugin : public MockPlugin {
+public:
+    QCoro::Task<ApiResult<SongUrlResult>> getSongUrl(const QString &, AudioQuality) override
+    {
+        co_await QCoro::sleepFor(5ms);
+        co_return co_await MockPlugin::getSongUrl(QString(), AudioQuality::High);
+    }
+};
+
 // --- Mock IPlayerStateRepository ---
 
 class MockPlayerStateRepo : public IPlayerStateRepository {
@@ -238,10 +250,11 @@ private:
     MockSettingsRepo m_settingsRepo;
     MockPlayHistoryRepo m_historyRepo;
 
-    std::unique_ptr<PlaybackController> createController()
+    std::unique_ptr<PlaybackController> createController(IMusicPlatformPlugin *plugin = nullptr)
     {
         auto backend = std::make_unique<MockPlayerBackend>();
-        return std::make_unique<PlaybackController>(std::move(backend), &m_plugin, &m_stateRepo, &m_settingsRepo);
+        return std::make_unique<PlaybackController>(std::move(backend), plugin ? plugin : &m_plugin, &m_stateRepo,
+                                                    &m_settingsRepo);
     }
 
 private Q_SLOTS:
@@ -258,6 +271,8 @@ private Q_SLOTS:
     void queue_clearQueue();
     void queue_moveInQueue();
     void playHistory_recordedOnSongChange();
+    void loadQueueAndPlay_keepsCoroutineAlive();
+    void next_keepsCoroutineAlive();
     void errorFromController();
 };
 
@@ -444,6 +459,36 @@ void TestPlayerViewModel::playHistory_recordedOnSongChange()
 
     QCOMPARE(m_historyRepo.m_recordedIds.size(), 1);
     QCOMPARE(m_historyRepo.m_recordedIds.first(), QStringLiteral("abc"));
+}
+
+void TestPlayerViewModel::loadQueueAndPlay_keepsCoroutineAlive()
+{
+    DelayedMockPlugin delayedPlugin;
+    auto controller = createController(&delayedPlugin);
+    PlayerViewModel vm(controller.get(), &m_historyRepo);
+
+    QVector<Song> songs = {makeSong("1", "First"), makeSong("2", "Second")};
+    vm.loadQueueAndPlay(songs, 0);
+
+    QTRY_COMPARE(vm.playbackState(), PlaybackState::Playing);
+    QTRY_COMPARE(vm.currentSong().id, QStringLiteral("1"));
+    QTRY_COMPARE(vm.queue()->count(), 2);
+}
+
+void TestPlayerViewModel::next_keepsCoroutineAlive()
+{
+    DelayedMockPlugin delayedPlugin;
+    auto controller = createController(&delayedPlugin);
+    PlayerViewModel vm(controller.get(), &m_historyRepo);
+
+    vm.addToQueue(makeSong("1", "First"));
+    vm.addToQueue(makeSong("2", "Second"));
+    controller->queue()->setCurrentIndex(0);
+
+    vm.next();
+
+    QTRY_COMPARE(vm.playbackState(), PlaybackState::Playing);
+    QTRY_COMPARE(vm.currentSong().id, QStringLiteral("2"));
 }
 
 void TestPlayerViewModel::errorFromController()

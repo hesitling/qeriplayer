@@ -96,11 +96,21 @@ ViewModelError PlayerViewModel::error() const
 
 QCoro::Task<void> PlayerViewModel::play(const Song &song)
 {
+    co_await playTask(song);
+}
+
+QCoro::Task<void> PlayerViewModel::playTask(Song song)
+{
     try {
         co_await m_controller->play(song);
     } catch (const std::exception &ex) {
         Logger::get("viewmodel")->warn("play() failed: {}", ex.what());
     }
+}
+
+void PlayerViewModel::startPlayback(const Song &song)
+{
+    m_pendingPlayTask = playTask(song);
 }
 
 void PlayerViewModel::loadQueueAndPlay(const QVector<Song> &songs, int startIndex)
@@ -113,7 +123,7 @@ void PlayerViewModel::loadQueueAndPlay(const QVector<Song> &songs, int startInde
     updateQueueModel();
 
     if (startIndex >= 0 && startIndex < songs.size()) {
-        play(songs.at(startIndex));
+        startPlayback(songs.at(startIndex));
     }
 }
 
@@ -141,8 +151,7 @@ void PlayerViewModel::next()
 {
     auto nextSong = m_controller->queue()->next();
     if (nextSong.has_value()) {
-        // Fire and forget coroutine
-        play(nextSong.value());
+        startPlayback(nextSong.value());
     }
 }
 
@@ -150,8 +159,7 @@ void PlayerViewModel::prev()
 {
     auto prevSong = m_controller->queue()->prev();
     if (prevSong.has_value()) {
-        // Fire and forget coroutine
-        play(prevSong.value());
+        startPlayback(prevSong.value());
     }
 }
 

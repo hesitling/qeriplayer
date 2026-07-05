@@ -19,6 +19,7 @@
 #include <QTimer>
 
 #include <memory>
+#include <vector>
 
 namespace QeriPlayerQt {
 
@@ -136,6 +137,7 @@ private:
     // Running async tasks (prevent premature destruction)
     QCoro::Task<void> m_restoreState;
     QCoro::Task<void> m_autoAdvanceTask;
+    std::vector<QCoro::Task<void>> m_preResolveTasks;
 };
 
 } // namespace QeriPlayerQt

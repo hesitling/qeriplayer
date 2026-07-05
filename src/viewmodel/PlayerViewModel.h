@@ -99,6 +99,8 @@ Q_SIGNALS:
     void errorChanged();
 
 private:
+    QCoro::Task<void> playTask(Song song);
+    void startPlayback(const Song &song);
     void connectControllerSignals();
     void connectQueueSignals();
     void updateQueueModel();
@@ -110,6 +112,7 @@ private:
     bool m_hasError = false;
     qint64 m_positionMs = 0;
     qint64 m_durationMs = 0;
+    QCoro::Task<void> m_pendingPlayTask;
 };
 
 } // namespace QeriPlayerQt

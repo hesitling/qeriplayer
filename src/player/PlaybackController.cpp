@@ -192,7 +192,9 @@ void PlaybackController::preResolveUrl(const Song &song)
         return; // No platform plugin available
     }
 
-    // Background resolution with safe lifetime via QPointer
+    // Background resolution with safe lifetime via QPointer.
+    // Keep the task object alive; destroying a suspended QCoro::Task can corrupt
+    // the coroutine frame that resumes when the network request finishes.
     auto task = [](QPointer<PlaybackController> self, Song s) -> QCoro::Task<void> {
         if (!self || !self->m_plugin) {
             co_return;
@@ -213,7 +215,12 @@ void PlaybackController::preResolveUrl(const Song &song)
             Logger::get("player")->warn("Pre-resolve exception for {}: {}", s.name.toStdString(), ex.what());
         }
     }(QPointer<PlaybackController>(this), song);
-    Q_UNUSED(task);
+    m_preResolveTasks.push_back(std::move(task));
+
+    constexpr qsizetype MAX_BACKGROUND_TASKS = 32;
+    if (m_preResolveTasks.size() > MAX_BACKGROUND_TASKS) {
+        m_preResolveTasks.erase(m_preResolveTasks.begin());
+    }
 }
 
 // --- Private ---
