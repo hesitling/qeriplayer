@@ -10,7 +10,6 @@ Page {
         anchors.fill: parent
         spacing: 0
 
-        // Header
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 64
@@ -26,7 +25,6 @@ Page {
             }
         }
 
-        // Scrollable content
         Flickable {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -42,7 +40,6 @@ Page {
                 spacing: 24
                 padding: 16
 
-                // ─── General ──────────────────────────────────────
                 GroupBox {
                     width: parent.width - 32
                     title: "General"
@@ -51,7 +48,6 @@ Page {
                         anchors.fill: parent
                         spacing: 16
 
-                        // Theme
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: 12
@@ -71,7 +67,6 @@ Page {
                             }
                         }
 
-                        // Audio Quality
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: 12
@@ -91,7 +86,6 @@ Page {
                             }
                         }
 
-                        // Download Path
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: 12
@@ -118,7 +112,6 @@ Page {
                     }
                 }
 
-                // ─── NetEase Account ─────────────────────────────
                 GroupBox {
                     width: parent.width - 32
                     title: "NetEase Account"
@@ -128,6 +121,7 @@ Page {
                         spacing: 12
 
                         Label {
+                            objectName: "neteaseStatusLabel"
                             text: settingsVm.isNeteaseLoggedIn ? "Logged in as " + settingsVm.neteaseUsername : "Not logged in"
                         }
 
@@ -136,7 +130,9 @@ Page {
                             spacing: 12
 
                             Button {
-                                text: settingsVm.isNeteaseLoggedIn ? "Logout" : "Login"
+                                id: accountActionButton
+                                objectName: "accountActionButton"
+                                text: settingsVm.isNeteaseLoggedIn ? "Clear Session" : "Import Cookie"
                                 onClicked: {
                                     if (settingsVm.isNeteaseLoggedIn) {
                                         settingsVm.logoutNetease()
@@ -161,7 +157,6 @@ Page {
                     }
                 }
 
-                // ─── Storage ─────────────────────────────────────
                 GroupBox {
                     width: parent.width - 32
                     title: "Storage"
@@ -171,14 +166,15 @@ Page {
                         spacing: 12
 
                         Button {
+                            objectName: "clearHistoryButton"
                             text: "Clear Play History"
                             onClicked: settingsVm.clearPlayHistory()
                         }
                     }
                 }
 
-                // ─── About ───────────────────────────────────────
                 Button {
+                    objectName: "aboutButton"
                     text: "About QeriPlayer"
                     onClicked: aboutDialog.open()
                 }
@@ -191,7 +187,6 @@ Page {
         folder: settingsVm.downloadPath ? "file://" + settingsVm.downloadPath : ""
         onAccepted: {
             var path = folder.toString()
-            // Remove "file://" prefix
             if (path.startsWith("file://")) {
                 path = path.substring(7)
             }

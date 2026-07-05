@@ -9,23 +9,18 @@ Item {
     QtObject {
         id: settingsVm
         property string theme: "dark"
-        property int audioQuality: 2 // High
+        property int audioQuality: 2
         property string downloadPath: "/home/user/Music"
         property bool isNeteaseLoggedIn: false
         property string neteaseUsername: ""
         property bool hasError: false
         property var error: ({ message: "", type: 0 })
-        property int captchaCooldown: 0
-        property bool canSendCaptcha: true
-        property int qrLoginStatus: 1 // Waiting
-        property url qrImageUrl: ""
-        property string qrKey: ""
-        property bool qrPollingActive: false
 
         property int logoutCount: 0
         property int clearHistoryCount: 0
         property string lastTheme: ""
         property int lastAudioQuality: -1
+        property string lastCookie: ""
 
         function setTheme(t) {
             lastTheme = t
@@ -40,19 +35,19 @@ Item {
         }
         function logoutNetease() {
             logoutCount += 1
+            isNeteaseLoggedIn = false
+            neteaseUsername = ""
         }
         function clearPlayHistory() {
             clearHistoryCount += 1
         }
         function clearError() {
             hasError = false
+            error = ({ message: "", type: 0 })
         }
-        function loginByPassword(phone, pass) {}
-        function sendCaptcha(phone) {}
-        function loginByCaptcha(phone, captcha) {}
-        function generateQrLogin() {}
-        function pollQrLogin() {}
-        function cancelQrLogin() {}
+        function importNeteaseCookie(cookie) {
+            lastCookie = cookie
+        }
     }
 
     QtObject {
@@ -71,11 +66,6 @@ Item {
             var instance = component.createObject(root, props || {})
             verify(instance !== null)
             return instance
-        }
-
-        function test_component_loads() {
-            var instance = createView()
-            instance.destroy()
         }
 
         function findObject(parent, name) {
@@ -101,17 +91,26 @@ Item {
             return null
         }
 
-        function test_theme_combo_reflects_vm() {
-            settingsVm.theme = "dark"
+        function test_component_loads() {
             var instance = createView()
-            waitForRendering(instance)
-
-            // The SettingsView should load without error
-            verify(instance !== null)
             instance.destroy()
         }
 
-        function test_logout_calls_vm() {
+        function test_logged_out_action_label() {
+            settingsVm.isNeteaseLoggedIn = false
+            settingsVm.neteaseUsername = ""
+
+            var instance = createView()
+            waitForRendering(instance)
+
+            var button = findObject(instance, "accountActionButton")
+            verify(button !== null)
+            compare(button.text, "Import Cookie")
+
+            instance.destroy()
+        }
+
+        function test_clear_session_calls_vm() {
             settingsVm.isNeteaseLoggedIn = true
             settingsVm.neteaseUsername = "TestUser"
             settingsVm.logoutCount = 0
@@ -119,10 +118,11 @@ Item {
             var instance = createView()
             waitForRendering(instance)
 
-            // Find and click logout button
-            var logoutBtn = findObject(instance, "logoutButton")
-            // Note: Button doesn't have objectName set in SettingsView,
-            // so we verify the view loads correctly
+            var button = findObject(instance, "accountActionButton")
+            verify(button !== null)
+
+            button.clicked()
+            compare(settingsVm.logoutCount, 1)
 
             instance.destroy()
         }
@@ -133,8 +133,12 @@ Item {
             var instance = createView()
             waitForRendering(instance)
 
-            // Verify the view loads
-            verify(instance !== null)
+            var button = findObject(instance, "clearHistoryButton")
+            verify(button !== null)
+            button.clicked()
+
+            compare(settingsVm.clearHistoryCount, 1)
+
             instance.destroy()
         }
     }

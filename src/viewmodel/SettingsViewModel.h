@@ -13,8 +13,6 @@
 #include <QCoroQmlTask>
 #include <QCoroTask>
 #include <QObject>
-#include <QTimer>
-#include <QUrl>
 
 namespace QeriPlayerQt {
 
@@ -22,8 +20,7 @@ namespace QeriPlayerQt {
  * @brief ViewModel managing settings persistence and platform auth
  *
  * Reads/writes settings via ISettingsRepository.
- * Manages NeteaseClient login/logout/auth status.
- * Supports password, captcha, and QR code login methods.
+ * Manages NeteaseClient cookie import, local logout, and auth status.
  */
 class SettingsViewModel : public QObject {
     Q_OBJECT
@@ -35,12 +32,6 @@ class SettingsViewModel : public QObject {
     Q_PROPERTY(QString neteaseUsername READ neteaseUsername NOTIFY neteaseAuthChanged)
     Q_PROPERTY(bool hasError READ hasError NOTIFY errorChanged)
     Q_PROPERTY(ViewModelError error READ error NOTIFY errorChanged)
-    Q_PROPERTY(int captchaCooldown READ captchaCooldown NOTIFY captchaCooldownChanged)
-    Q_PROPERTY(bool canSendCaptcha READ canSendCaptcha NOTIFY canSendCaptchaChanged)
-    Q_PROPERTY(QrLoginStatus qrLoginStatus READ qrLoginStatus NOTIFY qrLoginStatusChanged)
-    Q_PROPERTY(QUrl qrImageUrl READ qrImageUrl NOTIFY qrImageUrlChanged)
-    Q_PROPERTY(QString qrKey READ qrKey NOTIFY qrKeyChanged)
-    Q_PROPERTY(bool qrPollingActive READ qrPollingActive NOTIFY qrPollingActiveChanged)
 
 public:
     explicit SettingsViewModel(ISettingsRepository *settingsRepo, NeteaseClient *neteaseClient,
@@ -55,12 +46,6 @@ public:
     QString neteaseUsername() const;
     bool hasError() const;
     ViewModelError error() const;
-    int captchaCooldown() const;
-    bool canSendCaptcha() const;
-    QrLoginStatus qrLoginStatus() const;
-    QUrl qrImageUrl() const;
-    QString qrKey() const;
-    bool qrPollingActive() const;
 
     // --- Settings ---
     Q_INVOKABLE void loadSettings();
@@ -68,19 +53,8 @@ public:
     Q_INVOKABLE void setAudioQuality(QeriPlayerQt::AudioQuality quality);
     Q_INVOKABLE void setDownloadPath(const QString &path);
 
-    // --- Auth: Password ---
-    Q_INVOKABLE QCoro::QmlTask loginByPassword(const QString &phone, const QString &password);
-
-    // --- Auth: Captcha ---
-    Q_INVOKABLE QCoro::QmlTask sendCaptcha(const QString &phone);
-    Q_INVOKABLE QCoro::QmlTask loginByCaptcha(const QString &phone, const QString &captcha);
-
-    // --- Auth: QR Code ---
-    Q_INVOKABLE QCoro::QmlTask generateQrLogin();
-    Q_INVOKABLE QCoro::QmlTask pollQrLogin();
-    Q_INVOKABLE void cancelQrLogin();
-
-    // --- Auth: Logout ---
+    // --- Auth ---
+    Q_INVOKABLE QCoro::QmlTask importNeteaseCookie(const QString &cookieString);
     Q_INVOKABLE QCoro::QmlTask logoutNetease();
 
     // --- History ---
@@ -95,12 +69,6 @@ Q_SIGNALS:
     void downloadPathChanged();
     void neteaseAuthChanged();
     void errorChanged();
-    void captchaCooldownChanged();
-    void canSendCaptchaChanged();
-    void qrLoginStatusChanged();
-    void qrImageUrlChanged();
-    void qrKeyChanged();
-    void qrPollingActiveChanged();
 
 private:
     ISettingsRepository *m_settingsRepo;
@@ -114,22 +82,11 @@ private:
     ViewModelError m_error;
     bool m_hasError = false;
 
-    // Captcha
-    int m_captchaCooldown = 0;
-    QTimer *m_captchaCooldownTimer;
-
-    // QR Code
-    QrLoginStatus m_qrLoginStatus = QrLoginStatus::Waiting;
-    QUrl m_qrImageUrl;
-    QString m_qrKey;
-    bool m_qrPollingActive = false;
-
-    QCoro::Task<void> loginByPasswordImpl(const QString &phone, const QString &password);
-    QCoro::Task<void> sendCaptchaImpl(const QString &phone);
-    QCoro::Task<void> loginByCaptchaImpl(const QString &phone, const QString &captcha);
-    QCoro::Task<void> generateQrLoginImpl();
-    QCoro::Task<void> pollQrLoginImpl();
+    QCoro::Task<void> importNeteaseCookieImpl(const QString &cookieString);
     QCoro::Task<void> logoutNeteaseImpl();
+    QCoro::Task<void> hydrateNeteaseProfile();
+
+    QCoro::QmlTask m_pendingTask;
 };
 
 } // namespace QeriPlayerQt
