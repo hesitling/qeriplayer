@@ -55,32 +55,7 @@ QCoro::QmlTask NeteasePlaylistDetailViewModel::loadPlaylist(const QString &playl
     m_lastPlaylistId = playlistId;
     m_lastAlbumId.clear();
     m_isAlbum = false;
-    m_pendingTask
-        = QCoro::QmlTask([self = QPointer<NeteasePlaylistDetailViewModel>(this), playlistId]() -> QCoro::Task<void> {
-              if (!self) {
-                  co_return;
-              }
-
-              self->beginLoad();
-
-              try {
-                  if (!self->ensureClientAvailable()) {
-                      co_return;
-                  }
-
-                  auto result = co_await self->m_neteaseClient->getPlaylistDetail(playlistId);
-                  if (!self || !self->finalizeLoad(result)) {
-                      co_return;
-                  }
-
-                  self->applyPlaylist(result.data());
-              } catch (const std::exception &ex) {
-                  if (!self) {
-                      co_return;
-                  }
-                  self->handleLoadException(ex, "playlist");
-              }
-          }());
+    m_pendingTask = QCoro::QmlTask(loadPlaylistTask(QPointer<NeteasePlaylistDetailViewModel>(this), playlistId));
     return m_pendingTask;
 }
 
@@ -89,33 +64,91 @@ QCoro::QmlTask NeteasePlaylistDetailViewModel::loadAlbum(const QString &albumId)
     m_lastAlbumId = albumId;
     m_lastPlaylistId.clear();
     m_isAlbum = true;
-    m_pendingTask
-        = QCoro::QmlTask([self = QPointer<NeteasePlaylistDetailViewModel>(this), albumId]() -> QCoro::Task<void> {
-              if (!self) {
-                  co_return;
-              }
-
-              self->beginLoad();
-
-              try {
-                  if (!self->ensureClientAvailable()) {
-                      co_return;
-                  }
-
-                  auto result = co_await self->m_neteaseClient->getAlbumDetail(albumId);
-                  if (!self || !self->finalizeLoad(result)) {
-                      co_return;
-                  }
-
-                  self->applyAlbumSongs(result.data());
-              } catch (const std::exception &ex) {
-                  if (!self) {
-                      co_return;
-                  }
-                  self->handleLoadException(ex, "album");
-              }
-          }());
+    m_pendingTask = QCoro::QmlTask(loadAlbumTask(QPointer<NeteasePlaylistDetailViewModel>(this), albumId));
     return m_pendingTask;
+}
+
+QCoro::Task<void> NeteasePlaylistDetailViewModel::loadPlaylistTask(QPointer<NeteasePlaylistDetailViewModel> self,
+                                                                   QString playlistId)
+{
+    if (!self) {
+        co_return;
+    }
+
+    self->beginLoad();
+
+    try {
+        if (!self->ensureClientAvailable()) {
+            co_return;
+        }
+
+        NeteaseClient *client = self->m_neteaseClient;
+        auto result = co_await client->getPlaylistDetail(playlistId);
+        if (!self || !self->finalizeLoad(result)) {
+            co_return;
+        }
+
+        self->applyPlaylist(result.data());
+    } catch (const std::exception &ex) {
+        if (!self) {
+            co_return;
+        }
+        self->handleLoadException(ex, "playlist");
+    }
+}
+
+QCoro::Task<void> NeteasePlaylistDetailViewModel::loadAlbumTask(QPointer<NeteasePlaylistDetailViewModel> self,
+                                                                QString albumId)
+{
+    if (!self) {
+        co_return;
+    }
+
+    self->beginLoad();
+
+    try {
+        if (!self->ensureClientAvailable()) {
+            co_return;
+        }
+
+        NeteaseClient *client = self->m_neteaseClient;
+        auto result = co_await client->getAlbumDetail(albumId);
+        if (!self || !self->finalizeLoad(result)) {
+            co_return;
+        }
+
+        self->applyAlbumSongs(result.data());
+    } catch (const std::exception &ex) {
+        if (!self) {
+            co_return;
+        }
+        self->handleLoadException(ex, "album");
+    }
+}
+
+QCoro::Task<void> NeteasePlaylistDetailViewModel::saveToLocalTask(QPointer<NeteasePlaylistDetailViewModel> self)
+{
+    if (!self || self->m_headerName.isEmpty()) {
+        co_return;
+    }
+
+    try {
+        Playlist localPlaylist = self->m_playlistRepo->create(self->m_headerName);
+        self->m_songRepo->saveBatch(self->m_songs->songs());
+
+        for (const Song &song : self->m_songs->songs()) {
+            if (!self) {
+                co_return;
+            }
+            self->m_playlistRepo->addSong(localPlaylist.id, song.id);
+        }
+    } catch (const std::exception &ex) {
+        if (!self) {
+            co_return;
+        }
+        Logger::get("viewmodel")->warn("Failed to save playlist to local: {}", ex.what());
+        self->setErrorState(ViewModelError(ViewModelError::ErrorType::Unknown, QString::fromUtf8(ex.what())));
+    }
 }
 
 namespace {
@@ -142,22 +175,7 @@ QCoro::QmlTask NeteasePlaylistDetailViewModel::retry()
 
 QCoro::QmlTask NeteasePlaylistDetailViewModel::saveToLocal()
 {
-    m_pendingTask = QCoro::QmlTask([this]() -> QCoro::Task<void> {
-        if (m_headerName.isEmpty())
-            co_return;
-
-        try {
-            Playlist localPlaylist = m_playlistRepo->create(m_headerName);
-            m_songRepo->saveBatch(m_songs->songs());
-
-            for (const Song &song : m_songs->songs()) {
-                m_playlistRepo->addSong(localPlaylist.id, song.id);
-            }
-        } catch (const std::exception &ex) {
-            Logger::get("viewmodel")->warn("Failed to save playlist to local: {}", ex.what());
-            setErrorState(ViewModelError(ViewModelError::ErrorType::Unknown, QString::fromUtf8(ex.what())));
-        }
-    }());
+    m_pendingTask = QCoro::QmlTask(saveToLocalTask(QPointer<NeteasePlaylistDetailViewModel>(this)));
     return m_pendingTask;
 }
 
