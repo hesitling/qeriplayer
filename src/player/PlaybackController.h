@@ -53,7 +53,7 @@ public:
      * @brief Play a song (resolves URL if needed, loads into backend, starts playback)
      * @param song The song to play
      */
-    QCoro::Task<void> play(const Song &song);
+    QCoro::Task<void> play(Song song);
 
     /// @brief Pause playback
     void pause();
@@ -115,7 +115,7 @@ private:
     void connectQueueSignals();
     void persistState();
     void pruneCompletedPreResolveTasks();
-    QCoro::Task<QString> resolveUrl(const Song &song);
+    QCoro::Task<QString> resolveUrl(Song song);
 
     std::unique_ptr<IPlayerBackend> m_backend;
     IMusicPlatformPlugin *m_plugin;

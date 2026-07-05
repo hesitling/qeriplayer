@@ -57,7 +57,7 @@ PlaybackController::~PlaybackController() = default;
 
 // --- Playback control ---
 
-QCoro::Task<void> PlaybackController::play(const Song &song)
+QCoro::Task<void> PlaybackController::play(Song song)
 {
     m_currentSong = song;
     Q_EMIT currentSongChanged(song);
@@ -362,7 +362,7 @@ void PlaybackController::restoreState()
     }(QPointer<PlaybackController>(this));
 }
 
-QCoro::Task<QString> PlaybackController::resolveUrl(const Song &song)
+QCoro::Task<QString> PlaybackController::resolveUrl(Song song)
 {
     // Check cache first
     auto cacheIt = m_urlCache.find(song.id);
