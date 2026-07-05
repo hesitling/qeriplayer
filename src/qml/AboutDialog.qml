@@ -39,7 +39,7 @@ Dialog {
         }
 
         Label {
-            text: "• Qt " + qtVersionStr
+            text: "• Qt " + Qt.version
             color: Material.foreground
         }
 
