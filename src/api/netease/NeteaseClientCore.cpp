@@ -164,11 +164,10 @@ NeteaseClient::NeteaseClient(HttpClient *httpClient, SecureStorage *storage, QOb
             const QHash<QString, QString> cookieMap = parseCookieString(m_cookie);
             m_csrfToken = cookieMap.value(QStringLiteral("__csrf"));
             m_authenticated = !m_csrfToken.isEmpty();
-            if (m_authenticated) {
-                Logger::get("api")->info("NeteaseClient: restored session from storage");
-            }
         }
     }
+    Logger::get("api")->info("NeteaseClient: restored login status authenticated={} cookie={}", m_authenticated,
+                             m_cookie.toStdString());
 }
 
 // ─── Configuration ──────────────────────────────────────────────────────────
@@ -458,6 +457,9 @@ void NeteaseClient::persistCookies(const QString &cookieString, bool authenticat
     const QHash<QString, QString> cookieMap = parseCookieString(cookieString);
     m_csrfToken = cookieMap.value(QStringLiteral("__csrf"));
 
+    Logger::get("api")->info("NeteaseClient: login status authenticated={} cookie={}", m_authenticated,
+                             m_cookie.toStdString());
+
     if (m_storage && persistToStorage) {
         m_storage->set(COOKIE_STORAGE_KEY, cookieString);
     }
@@ -493,6 +495,8 @@ void NeteaseClient::extractResponseCookies(const HttpResponse &response)
 
 void NeteaseClient::clearCookies()
 {
+    Logger::get("api")->info("NeteaseClient: login status authenticated=false cookie={}", m_cookie.toStdString());
+
     m_cookie.clear();
     m_csrfToken.clear();
     m_authenticated = false;
