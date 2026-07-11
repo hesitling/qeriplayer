@@ -9,6 +9,7 @@
 #include <QTest>
 
 #include <memory>
+#include <stdexcept>
 
 using namespace QeriPlayerQt;
 
@@ -30,6 +31,10 @@ public:
     {
         m_lastLoadedUrl = url;
         m_loadCount++;
+        if (m_failNextLoad) {
+            m_failNextLoad = false;
+            throw std::runtime_error("mock load failure");
+        }
         co_return;
     }
 
@@ -108,6 +113,7 @@ public:
     qint64 m_duration = 300000;
     double m_volume = 1.0;
     bool m_muted = false;
+    bool m_failNextLoad = false;
 };
 
 /**
@@ -364,6 +370,32 @@ private Q_SLOTS:
         QCOMPARE(backendPtr->m_loadCount, 1);
         QCOMPARE(backendPtr->m_lastLoadedUrl, QUrl(QStringLiteral("https://media.example.com/song.mp3")));
         QCOMPARE(backendPtr->m_playCount, 1);
+    }
+
+    void play_cachedUrlRejectedByBackend_refreshesUrlOnce()
+    {
+        MockPlugin plugin;
+        plugin.m_songUrlResult.status = SongUrlResult::Status::Success;
+        plugin.m_songUrlResult.url = QStringLiteral("https://media.example.com/first.mp3");
+
+        auto backend = std::make_unique<MockBackend>();
+        auto *backendPtr = backend.get();
+        auto controller = std::make_unique<PlaybackController>(std::move(backend), &plugin, m_playerStateRepo.get(),
+                                                               m_settingsRepo.get());
+        const Song song = makeSong(QStringLiteral("refresh"));
+
+        QCoro::waitFor(
+            [&song](PlaybackController *ctrl) -> QCoro::Task<void> { co_await ctrl->play(song); }(controller.get()));
+        QCOMPARE(plugin.m_getSongUrlCount, 1);
+
+        plugin.m_songUrlResult.url = QStringLiteral("https://media.example.com/refreshed.mp3");
+        backendPtr->m_failNextLoad = true;
+        QCoro::waitFor(
+            [&song](PlaybackController *ctrl) -> QCoro::Task<void> { co_await ctrl->play(song); }(controller.get()));
+
+        QCOMPARE(plugin.m_getSongUrlCount, 2);
+        QCOMPARE(backendPtr->m_lastLoadedUrl, QUrl(QStringLiteral("https://media.example.com/refreshed.mp3")));
+        QCOMPARE(backendPtr->m_playCount, 2);
     }
 
     // --- Pause / Resume / Stop / Seek ---

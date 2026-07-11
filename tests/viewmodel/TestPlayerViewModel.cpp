@@ -142,11 +142,14 @@ public:
 
 class DelayedMockPlugin : public MockPlugin {
 public:
-    QCoro::Task<ApiResult<SongUrlResult>> getSongUrl(const QString &, AudioQuality) override
+    QCoro::Task<ApiResult<SongUrlResult>> getSongUrl(const QString &songId, AudioQuality) override
     {
+        ++m_callCounts[songId];
         co_await QCoro::sleepFor(5ms);
-        co_return co_await MockPlugin::getSongUrl(QString(), AudioQuality::High);
+        co_return co_await MockPlugin::getSongUrl(songId, AudioQuality::High);
     }
+
+    QHash<QString, int> m_callCounts;
 };
 
 // --- Mock IPlayerStateRepository ---
@@ -272,6 +275,7 @@ private Q_SLOTS:
     void queue_moveInQueue();
     void playHistory_recordedOnSongChange();
     void loadQueueAndPlay_keepsCoroutineAlive();
+    void loadQueueAndPlay_preResolvesEachSongOnce();
     void next_keepsCoroutineAlive();
     void next_twice_keepsLatestRequest();
     void errorFromController();
@@ -477,6 +481,23 @@ void TestPlayerViewModel::loadQueueAndPlay_keepsCoroutineAlive()
     QTRY_COMPARE(vm.queue()->count(), 2);
     QVERIFY(!m_historyRepo.m_recordedIds.isEmpty());
     QCOMPARE(m_historyRepo.m_recordedIds.first(), QStringLiteral("1"));
+}
+
+void TestPlayerViewModel::loadQueueAndPlay_preResolvesEachSongOnce()
+{
+    DelayedMockPlugin delayedPlugin;
+    auto controller = createController(&delayedPlugin);
+    PlayerViewModel vm(controller.get(), &m_historyRepo);
+    QVector<Song> songs
+        = {makeSong("1", "First"), makeSong("2", "Second"), makeSong("3", "Third"), makeSong("4", "Fourth")};
+
+    vm.loadQueueAndPlay(songs, 0);
+
+    QTRY_COMPARE(vm.playbackState(), PlaybackState::Playing);
+    QTRY_COMPARE(delayedPlugin.m_callCounts.size(), 4);
+    for (const Song &song : songs) {
+        QCOMPARE(delayedPlugin.m_callCounts.value(song.id), 1);
+    }
 }
 
 void TestPlayerViewModel::next_keepsCoroutineAlive()

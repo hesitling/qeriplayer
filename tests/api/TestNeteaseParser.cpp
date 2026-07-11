@@ -300,6 +300,7 @@ void TestNeteaseParser::parseSongUrl_success()
     QCOMPARE(result.mimeType, QStringLiteral("mp3"));
     QCOMPARE(result.audioInfo.bitrateKbps, 320);
     QCOMPARE(result.expectedContentLength, 9600000);
+    QCOMPARE(result.expiresInMs, 1200000);
     QCOMPARE(result.cacheKeyOverride, QStringLiteral("abc123def456"));
 }
 

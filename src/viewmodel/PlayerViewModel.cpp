@@ -137,10 +137,7 @@ void PlayerViewModel::startPlayback(const Song &song)
 
 void PlayerViewModel::loadQueueAndPlay(const QVector<Song> &songs, int startIndex)
 {
-    m_controller->queue()->clear();
-    for (const Song &song : songs) {
-        m_controller->queue()->addSong(song);
-    }
+    m_controller->queue()->setSongs(songs);
     m_controller->queue()->setCurrentIndex(startIndex);
     updateQueueModel();
 

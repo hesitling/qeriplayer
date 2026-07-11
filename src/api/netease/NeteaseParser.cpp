@@ -399,6 +399,7 @@ SongUrlResult NeteaseParser::parseSongUrl(const QJsonObject &json)
     result.durationMs = data[QLatin1String("time")].toInteger();
     result.mimeType = data[QLatin1String("type")].toString();
     result.expectedContentLength = data[QLatin1String("size")].toInteger();
+    result.expiresInMs = data[QLatin1String("expi")].toInteger() * 1000;
 
     // Audio info
     result.audioInfo.bitrateKbps = data[QLatin1String("br")].toInt() / 1000;

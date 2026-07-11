@@ -41,6 +41,7 @@ struct SongUrlResult {
     QString mimeType;
     QString noticeMessage;
     qint64 expectedContentLength = 0;
+    qint64 expiresInMs = 0;
     AudioInfo audioInfo;
     QString cacheKeyOverride;
 };

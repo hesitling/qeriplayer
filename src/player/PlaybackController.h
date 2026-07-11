@@ -15,6 +15,7 @@
 #include <QCoroTask>
 #include <QHash>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QTimer>
 
@@ -113,9 +114,17 @@ Q_SIGNALS:
 private:
     void connectBackendSignals();
     void connectQueueSignals();
+    struct CachedUrl {
+        QString url;
+        qint64 expiresAtMs = 0;
+    };
+
+    void cacheResolvedUrl(const Song &song, const SongUrlResult &result);
+    void evictCachedUrl(const Song &song);
+    [[nodiscard]] QString songCacheKey(const Song &song) const;
     void persistState();
     void pruneCompletedPreResolveTasks();
-    QCoro::Task<QString> resolveUrl(Song song);
+    QCoro::Task<QString> resolveUrl(Song song, bool forceRefresh = false);
 
     std::unique_ptr<IPlayerBackend> m_backend;
     IMusicPlatformPlugin *m_plugin;
@@ -126,11 +135,11 @@ private:
     Song m_currentSong;
     PlaybackState m_state = PlaybackState::Stopped;
 
-    // URL cache: songId -> url
-    QHash<QString, QString> m_urlCache;
-    // TTL timestamps: songId -> expiry time (epoch ms)
-    QHash<QString, qint64> m_urlCacheExpiry;
-    static constexpr qint64 URL_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
+    // Platform-qualified song key -> URL and expiry.
+    QHash<QString, CachedUrl> m_urlCache;
+    QSet<QString> m_preResolveInFlight;
+    static constexpr qint64 DEFAULT_URL_CACHE_TTL_MS = 10 * 60 * 1000;
+    static constexpr qint64 URL_EXPIRY_SAFETY_MARGIN_MS = 30 * 1000;
 
     // Debounced save for seek operations
     QTimer *m_seekSaveTimer;
