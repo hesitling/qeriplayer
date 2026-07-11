@@ -13,7 +13,7 @@ docs/
 │   ├── layers.md          # Layered architecture
 │   ├── coroutines.md      # C++20 coroutines & QCoro
 │   └── porting-from-android.md
-└── modules/               # Module design documents
+├── modules/               # Module design documents
     ├── index.md           # Module overview & architecture layers
     ├── app.md             # Application module (QeriPlayerApplication, ServiceLocator)
     ├── domain.md          # Domain models (Song, Playlist, Lyrics, enums, etc.)
@@ -33,6 +33,8 @@ docs/
     │   └── qqmusic.md     # (planned)
     └── repo/              # Repository layer
         └── index.md       # ISongRepository, IPlaylistRepository, etc.
+├── troubleshooting/       # Incident analyses and debugging guides
+│   └── netease-playback-url-cache.md
 ```
 
 ## Core Modules
@@ -57,6 +59,12 @@ docs/
 | Bilibili | [api/bilibili.md](modules/api/bilibili.md) | (planned) |
 | YouTube Music | [api/youtube.md](modules/api/youtube.md) | (planned) |
 | QQ Music | [api/qqmusic.md](modules/api/qqmusic.md) | (planned) |
+
+## Troubleshooting
+
+| Topic | Document | Description |
+|-------|----------|-------------|
+| NetEase playback URL cache | [netease-playback-url-cache.md](troubleshooting/netease-playback-url-cache.md) | Duplicate pre-resolution, URL lifetime, cache invalidation, and backend retry analysis |
 
 ## References
 
