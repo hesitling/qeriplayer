@@ -115,23 +115,30 @@ ColumnLayout {
         // Seek slider with drag-latch
         Slider {
             id: seekSlider
+            objectName: "seekSlider"
             Layout.fillWidth: true
             from: 0
             to: root.durationMs > 0 ? root.durationMs : 1
             enabled: root.durationMs > 0
 
             property bool seeking: false
+            property real pendingPosition: root.positionMs
 
-            value: seeking ? value : root.positionMs
+            // Follow playback except while the user chooses a new position.
+            value: seeking ? pendingPosition : root.positionMs
 
             onPressedChanged: {
                 if (pressed) {
+                    pendingPosition = value
                     seeking = true
                 } else {
+                    // Capture before reenabling the playback-position binding.
+                    root.seekRequested(Math.round(pendingPosition))
                     seeking = false
-                    root.seekRequested(Math.round(value))
                 }
             }
+
+            onMoved: pendingPosition = value
         }
 
         // Duration label

@@ -80,5 +80,44 @@ Item {
 
             instance.destroy()
         }
+
+        function test_seek_emitsDraggedPositionAfterPlaybackUpdate() {
+            var ctrl = Qt.createComponent("../../../src/qml/TransportControls.qml")
+            verify(ctrl.status === Component.Ready, "Component should load: " + ctrl.errorString())
+
+            var instance = ctrl.createObject(root, {
+                "positionMs": 30000,
+                "durationMs": 180000
+            })
+            verify(instance !== null, "Object should be created")
+            wait(0)
+
+            var slider = findChild(instance, "seekSlider")
+            verify(slider !== null, "Seek slider should be available")
+            var requestedPositions = []
+            function recordSeek(positionMs) {
+                requestedPositions.push(positionMs)
+            }
+            instance.seekRequested.connect(recordSeek)
+
+            mousePress(slider, slider.width / 6, slider.height / 2)
+            verify(slider.seeking)
+
+            mouseMove(slider, slider.width / 2, slider.height / 2, 0, Qt.LeftButton)
+            verify(slider.pendingPosition > 80000 && slider.pendingPosition < 100000,
+                   "Drag should choose the midpoint position")
+
+            instance.positionMs = 45000
+            compare(Math.round(slider.value), Math.round(slider.pendingPosition))
+
+            mouseRelease(slider, slider.width / 2, slider.height / 2)
+            compare(requestedPositions.length, 1)
+            verify(requestedPositions[0] > 80000 && requestedPositions[0] < 100000,
+                   "Release must seek to the dragged position, not the playback update")
+            verify(!slider.seeking)
+
+            instance.seekRequested.disconnect(recordSeek)
+            instance.destroy()
+        }
     }
 }
