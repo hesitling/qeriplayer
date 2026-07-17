@@ -3,6 +3,7 @@
 
 #include "core/logger/Logger.h"
 
+#include <QDate>
 #include <QDir>
 #include <QFile>
 #include <QTemporaryDir>
@@ -108,7 +109,7 @@ void TestLogger::log_createsLogFile()
     QStringList filters;
     filters << "qeriplayer-*.log";
     auto files = logDir.entryList(filters, QDir::Files);
-    QVERIFY(!files.isEmpty());
+    QCOMPARE(files, QStringList {QStringLiteral("qeriplayer-%1.log").arg(QDate::currentDate().toString(Qt::ISODate))});
 }
 
 void TestLogger::log_format()

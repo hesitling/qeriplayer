@@ -372,6 +372,27 @@ private Q_SLOTS:
         QCOMPARE(backendPtr->m_playCount, 1);
     }
 
+    void play_cachedUrlCanBeReusedMultipleTimes()
+    {
+        MockPlugin plugin;
+        plugin.m_songUrlResult.status = SongUrlResult::Status::Success;
+        plugin.m_songUrlResult.url = QStringLiteral("https://media.example.com/reusable.mp3");
+
+        auto backend = std::make_unique<MockBackend>();
+        auto *backendPtr = backend.get();
+        auto controller = std::make_unique<PlaybackController>(std::move(backend), &plugin, m_playerStateRepo.get(),
+                                                               m_settingsRepo.get());
+        const Song song = makeSong(QStringLiteral("reusable"));
+
+        for (int playCount = 1; playCount <= 3; ++playCount) {
+            QCoro::waitFor([&song](PlaybackController *ctrl) -> QCoro::Task<void> {
+                co_await ctrl->play(song);
+            }(controller.get()));
+            QCOMPARE(plugin.m_getSongUrlCount, 1);
+            QCOMPARE(backendPtr->m_playCount, playCount);
+        }
+    }
+
     void play_cachedUrlRejectedByBackend_refreshesUrlOnce()
     {
         MockPlugin plugin;

@@ -109,6 +109,18 @@ A URL can remain syntactically valid while its CDN token is no longer accepted. 
 
 The same rejected URL could consequently be selected again on the next playback attempt.
 
+### 6. Returning a cached QString moved it out of the cache
+
+The coroutine returned a cache member directly:
+
+```cpp
+co_return cacheIt->url;
+```
+
+Because the coroutine promise accepts the returned value by value, overload resolution could move the non-const `QString` out of the cache entry. The current playback still received the URL and succeeded, but the cached string became empty. A later lookup then logged an invalid cached URL with no value.
+
+The cache-hit path now makes an explicit copy before returning, preserving the stored URL for subsequent plays.
+
 ## Resolution
 
 ### Atomic queue replacement
@@ -220,6 +232,7 @@ Tests cover the following behavior:
 - A malformed pre-resolved URL is not cached.
 - Loading a queue resolves each current/near-future song at most once.
 - A backend-rejected cached URL is evicted and refreshed exactly once.
+- The same cached URL can be reused across multiple playback requests without becoming empty.
 - A `RequiresLogin` result is surfaced as a specific playback error.
 
 The complete test suite passes after the changes.

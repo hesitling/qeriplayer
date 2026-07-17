@@ -93,7 +93,7 @@ void QeriPlayerApplication::initializeCoreServices()
     // 1. Logger (first — other services may log)
     LoggerConfig logConfig;
 #ifndef NDEBUG
-    logConfig.logDir = QStringLiteral("/tmp");
+    logConfig.logDir = QStringLiteral("/tmp/qeriplayer-logs");
 #else
     logConfig.logDir = AppPaths::cacheDir() + QStringLiteral("/logs");
 #endif

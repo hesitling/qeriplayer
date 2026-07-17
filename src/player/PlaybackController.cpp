@@ -455,7 +455,8 @@ QCoro::Task<QString> PlaybackController::resolveUrl(Song song, bool forceRefresh
             if (cacheIt->expiresAtMs > now && isPlayableRemoteUrl(cacheIt->url)) {
                 Logger::get("player")->debug("Using cached playback URL for {} (remainingMs={})",
                                              song.name.toStdString(), cacheIt->expiresAtMs - now);
-                co_return cacheIt->url;
+                const QString cachedUrl = cacheIt->url;
+                co_return cachedUrl;
             }
 
             const char *reason = cacheIt->expiresAtMs <= now ? "expired" : "invalid";

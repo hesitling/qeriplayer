@@ -73,7 +73,7 @@ void NamedLogger::fatal(const char *msg)
 std::mutex Logger::s_mutex;
 bool Logger::s_initialized = false;
 LoggerConfig Logger::s_config;
-std::shared_ptr<spdlog::sinks::daily_file_sink_mt> Logger::s_fileSink;
+std::shared_ptr<spdlog::sinks::daily_file_format_sink_mt> Logger::s_fileSink;
 std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> Logger::s_consoleSink;
 std::unordered_map<std::string, std::shared_ptr<NamedLogger>> Logger::s_loggers;
 
@@ -94,9 +94,9 @@ void Logger::initialize(const LoggerConfig &config)
         if (!logDir.exists()) {
             logDir.mkpath(".");
         }
-        QString logPath = logDir.filePath("qeriplayer-%Y-%m-%d.log");
-        s_fileSink
-            = std::make_shared<spdlog::sinks::daily_file_sink_mt>(logPath.toStdString(), 0, 0, false, config.maxDays);
+        QString logPath = logDir.filePath(QStringLiteral("qeriplayer-%Y-%m-%d.log"));
+        s_fileSink = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(logPath.toStdString(), 0, 0, false,
+                                                                                config.maxDays);
         sinks.push_back(s_fileSink);
     }
 
