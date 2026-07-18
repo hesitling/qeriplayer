@@ -22,13 +22,14 @@ private Q_SLOTS:
     // AppPaths
     void dataDir_returnsValidPath();
     void appPaths_useStandardLocations();
-    void dataDir_usesIsolatedHome();
+    void appPaths_useIsolatedLocations();
     void dataDir_autoCreates();
     void configDir_returnsValidPath();
     void configDir_autoCreates();
     void cacheDir_returnsValidPath();
     void cacheDir_autoCreates();
     void tempDir_returnsValidPath();
+    void tempDir_usesIsolatedTemp();
     void tempDir_autoCreates();
 
     // FileUtils
@@ -61,12 +62,18 @@ void TestFileSystem::appPaths_useStandardLocations()
              QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QStringLiteral("/QeriPlayer"));
 }
 
-void TestFileSystem::dataDir_usesIsolatedHome()
+void TestFileSystem::appPaths_useIsolatedLocations()
 {
     const QString testDataHome = QString::fromUtf8(qgetenv("XDG_DATA_HOME"));
-    const QString path = AppPaths::dataDir();
+    const QString testConfigHome = QString::fromUtf8(qgetenv("XDG_CONFIG_HOME"));
+    const QString testCacheHome = QString::fromUtf8(qgetenv("XDG_CACHE_HOME"));
+
     QVERIFY(!testDataHome.isEmpty());
-    QVERIFY(path.startsWith(testDataHome));
+    QVERIFY(!testConfigHome.isEmpty());
+    QVERIFY(!testCacheHome.isEmpty());
+    QVERIFY(AppPaths::dataDir().startsWith(testDataHome));
+    QVERIFY(AppPaths::configDir().startsWith(testConfigHome));
+    QVERIFY(AppPaths::cacheDir().startsWith(testCacheHome));
 }
 
 void TestFileSystem::dataDir_autoCreates()
@@ -118,6 +125,13 @@ void TestFileSystem::tempDir_returnsValidPath()
     QString path = AppPaths::tempDir();
     QVERIFY(!path.isEmpty());
     QVERIFY(QDir(path).exists());
+}
+
+void TestFileSystem::tempDir_usesIsolatedTemp()
+{
+    const QString testTempDir = QString::fromUtf8(qgetenv("TMPDIR"));
+    QVERIFY(!testTempDir.isEmpty());
+    QVERIFY(AppPaths::tempDir().startsWith(testTempDir));
 }
 
 void TestFileSystem::tempDir_autoCreates()
