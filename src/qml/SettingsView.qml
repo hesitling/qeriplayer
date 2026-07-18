@@ -2,9 +2,25 @@ import QtQuick
 import QtQuick.Controls.Material
 import QtQuick.Layouts
 import Qt.labs.platform as Platform
+import QeriPlayer 1.0
 
 Page {
     id: root
+
+    readonly property var audioQualityOptions: [
+        { name: "Low", value: AudioQuality.Low },
+        { name: "Standard", value: AudioQuality.Standard },
+        { name: "High", value: AudioQuality.High },
+        { name: "Lossless", value: AudioQuality.Lossless }
+    ]
+
+    function audioQualityIndex(quality) {
+        for (var index = 0; index < audioQualityOptions.length; ++index) {
+            if (audioQualityOptions[index].value === quality)
+                return index
+        }
+        return -1
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -77,12 +93,13 @@ Page {
                             }
 
                             ComboBox {
+                                objectName: "audioQualityCombo"
                                 Layout.fillWidth: true
-                                model: ["Low", "Standard", "High", "Lossless"]
-                                currentIndex: settingsVm.audioQuality
-                                onActivated: index => {
-                                    settingsVm.setAudioQuality(index)
-                                }
+                                model: root.audioQualityOptions
+                                textRole: "name"
+                                valueRole: "value"
+                                currentIndex: root.audioQualityIndex(settingsVm.audioQuality)
+                                onActivated: settingsVm.setAudioQuality(currentValue)
                             }
                         }
 

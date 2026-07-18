@@ -73,6 +73,7 @@ set(CMAKE_AUTORCC ON)
 set(SOURCES
     src/main.cpp
     src/app/QeriPlayerApplication.cpp
+    src/app/QmlEnums.cpp
     src/core/crypto/CryptoUtils.cpp
     src/core/crypto/Encryptor.cpp
     src/core/crypto/Decryptor.cpp
@@ -109,6 +110,7 @@ set(SOURCES
 
 set(HEADERS
     src/app/QeriPlayerApplication.h
+    src/app/QmlEnums.h
     src/app/ServiceLocator.h
     src/core/crypto/CryptoUtils.h
     src/core/crypto/Encryptor.h

@@ -8,12 +8,15 @@ set(QML_TEST_ENV "QT_QPA_PLATFORM=offscreen")
 # Test executable
 add_executable(TestPlayerBar
     test_main.cpp
+    ${CMAKE_SOURCE_DIR}/src/app/QmlEnums.cpp
+    ${CMAKE_SOURCE_DIR}/src/app/QmlEnums.h
 )
 target_include_directories(TestPlayerBar PRIVATE
     ${CMAKE_SOURCE_DIR}/src
 )
 target_link_libraries(TestPlayerBar PRIVATE
     Qt6::Core
+    Qt6::Qml
     Qt6::Quick
     Qt6::QuickTest
     Qt6::QuickControls2

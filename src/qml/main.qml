@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Material
 import QtQuick.Layouts
+import QeriPlayer 1.0
 
 ApplicationWindow {
     id: root
@@ -177,22 +178,22 @@ ApplicationWindow {
         function onCurrentViewChanged() {
             var page
             switch (mainVm.currentView) {
-            case 0:
+            case MainView.Home:
                 page = homePage
                 break
-            case 1:
+            case MainView.Search:
                 page = searchPage
                 break
-            case 2:
+            case MainView.Library:
                 page = libraryPage
                 break
-            case 3:
+            case MainView.LocalPlaylist:
                 page = localPlaylistPage
                 break
-            case 4:
+            case MainView.NeteasePlaylist:
                 page = neteasePlaylistPage
                 break
-            case 5:
+            case MainView.Settings:
                 page = settingsPage
                 break
             default:

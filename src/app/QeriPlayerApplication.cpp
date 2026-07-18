@@ -3,6 +3,8 @@
 
 #include "app/QeriPlayerApplication.h"
 
+#include "app/QmlEnums.h"
+
 #include "api/common/IMusicPlatformPlugin.h"
 #include "api/netease/NeteaseClient.h"
 #include "core/crypto/SecureStorage.h"
@@ -30,6 +32,13 @@
 #include <QtGlobal>
 
 namespace QeriPlayerQt {
+
+static_assert(QmlMainView::Home == static_cast<quint8>(MainViewModel::View::Home));
+static_assert(QmlMainView::Search == static_cast<quint8>(MainViewModel::View::Search));
+static_assert(QmlMainView::Library == static_cast<quint8>(MainViewModel::View::Library));
+static_assert(QmlMainView::LocalPlaylist == static_cast<quint8>(MainViewModel::View::LocalPlaylist));
+static_assert(QmlMainView::NeteasePlaylist == static_cast<quint8>(MainViewModel::View::NeteasePlaylist));
+static_assert(QmlMainView::Settings == static_cast<quint8>(MainViewModel::View::Settings));
 
 /// @brief Determine the logger level from `QERIPLAYER_LOG_LEVEL`.
 /// @return The parsed log level, or `LogLevel::Info` when unset or unrecognized.
@@ -229,6 +238,7 @@ bool QeriPlayerApplication::initializeUi()
     qputenv("QT_QUICK_CONTROLS_STYLE", "Material");
 
     // Create QML engine and register context properties
+    registerQmlEnums();
     m_qmlEngine = std::make_unique<QQmlApplicationEngine>();
 
     // Log QML warnings

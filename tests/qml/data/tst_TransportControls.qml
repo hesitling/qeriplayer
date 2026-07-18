@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import QeriPlayer 1.0
 
 Item {
     id: root
@@ -18,7 +19,7 @@ Item {
                 "isPlaying": false,
                 "isLoading": false,
                 "isShuffleEnabled": false,
-                "repeatMode": 0,
+                "repeatMode": RepeatMode.Off,
                 "positionMs": 0,
                 "durationMs": 0
             })
@@ -28,7 +29,7 @@ Item {
             compare(instance.isPlaying, false)
             compare(instance.isLoading, false)
             compare(instance.isShuffleEnabled, false)
-            compare(instance.repeatMode, 0)
+            compare(instance.repeatMode, RepeatMode.Off)
             compare(instance.positionMs, 0)
             compare(instance.durationMs, 0)
 
@@ -43,7 +44,7 @@ Item {
                 "isPlaying": true,
                 "isLoading": false,
                 "isShuffleEnabled": true,
-                "repeatMode": 2,
+                "repeatMode": RepeatMode.All,
                 "positionMs": 30000,
                 "durationMs": 180000
             })
@@ -52,7 +53,7 @@ Item {
             // Verify playing state
             compare(instance.isPlaying, true)
             compare(instance.isShuffleEnabled, true)
-            compare(instance.repeatMode, 2) // Repeat All
+            compare(instance.repeatMode, RepeatMode.All)
             compare(instance.positionMs, 30000)
             compare(instance.durationMs, 180000)
 

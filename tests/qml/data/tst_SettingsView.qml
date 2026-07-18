@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import QeriPlayer 1.0
 
 Item {
     id: root
@@ -9,7 +10,7 @@ Item {
     QtObject {
         id: settingsVm
         property string theme: "dark"
-        property int audioQuality: 2
+        property int audioQuality: AudioQuality.High
         property string downloadPath: "/home/user/Music"
         property url downloadPathUrl: "file:///home/user/Music"
         property bool isNeteaseLoggedIn: false
@@ -54,7 +55,7 @@ Item {
 
     QtObject {
         id: mainVm
-        property int currentView: 5
+        property int currentView: MainView.Settings
         function navigateTo(view) {}
     }
 
@@ -125,6 +126,24 @@ Item {
 
             button.clicked()
             compare(settingsVm.logoutCount, 1)
+
+            instance.destroy()
+        }
+
+        function test_audio_quality_usesEnumValue() {
+            settingsVm.audioQuality = AudioQuality.High
+            settingsVm.lastAudioQuality = -1
+
+            var instance = createView()
+            waitForRendering(instance)
+
+            var combo = findObject(instance, "audioQualityCombo")
+            verify(combo !== null)
+            compare(combo.currentValue, AudioQuality.High)
+
+            combo.currentIndex = 3
+            combo.activated(3)
+            compare(settingsVm.lastAudioQuality, AudioQuality.Lossless)
 
             instance.destroy()
         }
