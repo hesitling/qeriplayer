@@ -3,47 +3,33 @@
 
 #include "core/filesystem/AppPaths.h"
 
-#include <QCoreApplication>
-#include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
 
 namespace QeriPlayerQt {
 
+namespace {
+
+QString appPath(QStandardPaths::StandardLocation location)
+{
+    return QStandardPaths::writableLocation(location) + QStringLiteral("/QeriPlayer");
+}
+
+} // namespace
+
 QString AppPaths::dataDir()
 {
-#if defined(Q_OS_WIN)
-    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-#elif defined(Q_OS_MACOS)
-    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-#else // Linux
-    QString path = QDir::homePath() + QStringLiteral("/.local/share/QeriPlayer");
-#endif
-    return ensureCreated(path);
+    return ensureCreated(appPath(QStandardPaths::GenericDataLocation));
 }
 
 QString AppPaths::configDir()
 {
-#if defined(Q_OS_WIN)
-    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-#elif defined(Q_OS_MACOS)
-    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-#else // Linux
-    QString path = QDir::homePath() + QStringLiteral("/.config/QeriPlayer");
-#endif
-    return ensureCreated(path);
+    return ensureCreated(appPath(QStandardPaths::GenericConfigLocation));
 }
 
 QString AppPaths::cacheDir()
 {
-#if defined(Q_OS_WIN)
-    QString path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-#elif defined(Q_OS_MACOS)
-    QString path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-#else // Linux
-    QString path = QDir::homePath() + QStringLiteral("/.cache/QeriPlayer");
-#endif
-    return ensureCreated(path);
+    return ensureCreated(appPath(QStandardPaths::GenericCacheLocation));
 }
 
 QString AppPaths::tempDir()

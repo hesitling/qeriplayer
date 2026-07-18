@@ -5,14 +5,13 @@
 #include "core/filesystem/FileUtils.h"
 #include "core/filesystem/FileWatcher.h"
 
-#include <QByteArray>
+#include <QCoreApplication>
 #include <QDir>
 #include <QFile>
 #include <QSignalSpy>
+#include <QStandardPaths>
 #include <QTemporaryDir>
 #include <QTest>
-
-#include <memory>
 
 using namespace QeriPlayerQt;
 
@@ -20,11 +19,9 @@ class TestFileSystem : public QObject {
     Q_OBJECT
 
 private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-
     // AppPaths
     void dataDir_returnsValidPath();
+    void appPaths_useStandardLocations();
     void dataDir_usesIsolatedHome();
     void dataDir_autoCreates();
     void configDir_returnsValidPath();
@@ -45,29 +42,7 @@ private Q_SLOTS:
     // FileWatcher
     void fileWatcher_emitsSignalOnChange();
     void fileWatcher_stop();
-
-private:
-    std::unique_ptr<QTemporaryDir> m_testHome;
-    QByteArray m_originalHome;
 };
-
-void TestFileSystem::initTestCase()
-{
-    m_originalHome = qgetenv("HOME");
-    m_testHome = std::make_unique<QTemporaryDir>();
-    QVERIFY2(m_testHome->isValid(), "Failed to create isolated test home directory");
-    qputenv("HOME", m_testHome->path().toUtf8());
-}
-
-void TestFileSystem::cleanupTestCase()
-{
-    if (m_originalHome.isEmpty()) {
-        qunsetenv("HOME");
-    } else {
-        qputenv("HOME", m_originalHome);
-    }
-    m_testHome.reset();
-}
 
 void TestFileSystem::dataDir_returnsValidPath()
 {
@@ -76,13 +51,22 @@ void TestFileSystem::dataDir_returnsValidPath()
     QVERIFY(QDir(path).exists());
 }
 
+void TestFileSystem::appPaths_useStandardLocations()
+{
+    QCOMPARE(AppPaths::dataDir(),
+             QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QStringLiteral("/QeriPlayer"));
+    QCOMPARE(AppPaths::configDir(),
+             QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QStringLiteral("/QeriPlayer"));
+    QCOMPARE(AppPaths::cacheDir(),
+             QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QStringLiteral("/QeriPlayer"));
+}
+
 void TestFileSystem::dataDir_usesIsolatedHome()
 {
+    const QString testDataHome = QString::fromUtf8(qgetenv("XDG_DATA_HOME"));
     const QString path = AppPaths::dataDir();
-    QVERIFY(path.startsWith(m_testHome->path()));
-    if (!m_originalHome.isEmpty()) {
-        QVERIFY(path != QString::fromUtf8(m_originalHome) + QStringLiteral("/.local/share/QeriPlayer"));
-    }
+    QVERIFY(!testDataHome.isEmpty());
+    QVERIFY(path.startsWith(testDataHome));
 }
 
 void TestFileSystem::dataDir_autoCreates()
@@ -265,5 +249,23 @@ void TestFileSystem::fileWatcher_stop()
     QVERIFY(!watcher.isWatching());
 }
 
-QTEST_MAIN(TestFileSystem)
+int main(int argc, char **argv)
+{
+    QTemporaryDir testRoot;
+    if (!testRoot.isValid()) {
+        return 1;
+    }
+
+    const QByteArray rootPath = testRoot.path().toUtf8();
+    qputenv("HOME", rootPath);
+    qputenv("XDG_DATA_HOME", rootPath + "/data");
+    qputenv("XDG_CONFIG_HOME", rootPath + "/config");
+    qputenv("XDG_CACHE_HOME", rootPath + "/cache");
+    qputenv("TMPDIR", rootPath + "/temp");
+
+    QCoreApplication app(argc, argv);
+    TestFileSystem test;
+    return QTest::qExec(&test, argc, argv);
+}
+
 #include "TestFileSystem.moc"
