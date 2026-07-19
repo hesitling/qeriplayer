@@ -11,11 +11,11 @@ namespace QeriPlayerQt {
 void registerQmlEnums()
 {
     qmlRegisterUncreatableType<QmlMusicPlatform>("QeriPlayer", 1, 0, "MusicPlatform",
-                                                  QStringLiteral("MusicPlatform only provides enum values"));
+                                                 QStringLiteral("MusicPlatform only provides enum values"));
     qmlRegisterUncreatableType<QmlRepeatMode>("QeriPlayer", 1, 0, "RepeatMode",
-                                               QStringLiteral("RepeatMode only provides enum values"));
+                                              QStringLiteral("RepeatMode only provides enum values"));
     qmlRegisterUncreatableType<QmlAudioQuality>("QeriPlayer", 1, 0, "AudioQuality",
-                                                 QStringLiteral("AudioQuality only provides enum values"));
+                                                QStringLiteral("AudioQuality only provides enum values"));
     qmlRegisterUncreatableType<QmlMainView>("QeriPlayer", 1, 0, "MainView",
                                             QStringLiteral("MainView only provides enum values"));
 }
