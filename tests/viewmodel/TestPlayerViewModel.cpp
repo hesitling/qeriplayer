@@ -152,6 +152,15 @@ public:
     QHash<QString, int> m_callCounts;
 };
 
+class FailingMockPlugin : public MockPlugin {
+public:
+    QCoro::Task<ApiResult<SongUrlResult>> getSongUrl(const QString &, AudioQuality) override
+    {
+        co_await QCoro::sleepFor(5ms);
+        co_return ApiResult<SongUrlResult>(ApiError(-1, QStringLiteral("Playback URL unavailable")));
+    }
+};
+
 // --- Mock IPlayerStateRepository ---
 
 class MockPlayerStateRepo : public IPlayerStateRepository {
@@ -278,6 +287,7 @@ private Q_SLOTS:
     void loadQueueAndPlay_preResolvesEachSongOnce();
     void next_keepsCoroutineAlive();
     void next_twice_keepsLatestRequest();
+    void next_handlesUrlResolutionFailure();
     void errorFromController();
 };
 
@@ -533,6 +543,29 @@ void TestPlayerViewModel::next_twice_keepsLatestRequest()
     QTRY_COMPARE(vm.playbackState(), PlaybackState::Playing);
     QTRY_COMPARE(vm.currentSong().id, QStringLiteral("3"));
     QTRY_COMPARE(controller->queue()->currentIndex(), 2);
+}
+
+void TestPlayerViewModel::next_handlesUrlResolutionFailure()
+{
+    FailingMockPlugin failingPlugin;
+    auto controller = createController(&failingPlugin);
+    PlayerViewModel vm(controller.get(), &m_historyRepo);
+    QSignalSpy errorSpy(&vm, &PlayerViewModel::errorChanged);
+
+    vm.addToQueue(makeSong("1", "First"));
+    vm.addToQueue(makeSong("2", "Second"));
+    controller->queue()->setCurrentIndex(0);
+
+    vm.next();
+
+    QTRY_COMPARE(errorSpy.count(), 1);
+    QVERIFY(vm.hasError());
+    QCOMPARE(vm.error().message(), QStringLiteral("Playback URL unavailable"));
+    QCOMPARE(vm.queue()->count(), 2);
+    QCOMPARE(controller->queue()->currentIndex(), 1);
+    QCOMPARE(vm.currentSong().id, QStringLiteral("2"));
+    QVERIFY(vm.playbackState() != PlaybackState::Playing);
+    QVERIFY(!vm.isPlaying());
 }
 
 void TestPlayerViewModel::errorFromController()
