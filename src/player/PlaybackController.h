@@ -24,6 +24,8 @@
 
 namespace QeriPlayerQt {
 
+class NamedLogger;
+
 /**
  * @brief High-level playback orchestrator
  *
@@ -127,6 +129,7 @@ private:
     QCoro::Task<QString> resolveUrl(Song song, bool forceRefresh = false);
 
     std::unique_ptr<IPlayerBackend> m_backend;
+    std::shared_ptr<NamedLogger> m_log;
     IMusicPlatformPlugin *m_plugin;
     IPlayerStateRepository *m_playerStateRepo;
     ISettingsRepository *m_settingsRepo;
