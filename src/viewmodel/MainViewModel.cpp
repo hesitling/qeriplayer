@@ -128,7 +128,7 @@ void MainViewModel::connectSignals()
 {
     // Search → Player
     connect(m_searchVm, &SearchViewModel::requestPlay, m_playerVm,
-            [this](const Song &song) { m_playerVm->play(song); });
+            [this](const Song &song) { m_playerVm->playNow(song); });
 
     // Playlist → Navigation (store QmlTask to keep coroutine alive)
     connect(m_playlistVm, &PlaylistViewModel::localPlaylistSelected, this,
@@ -143,7 +143,7 @@ void MainViewModel::wireDetailVmSignals()
 {
     if (m_localPlaylistDetail) {
         connect(m_localPlaylistDetail, &LocalPlaylistDetailViewModel::requestPlay, m_playerVm,
-                [this](const Song &song) { m_playerVm->play(song); });
+                [this](const Song &song) { m_playerVm->playNow(song); });
         connect(
             m_localPlaylistDetail, &LocalPlaylistDetailViewModel::requestPlayPlaylist, m_playerVm,
             [this](const QVector<Song> &songs, int startIndex) { m_playerVm->loadQueueAndPlay(songs, startIndex); });
@@ -156,7 +156,7 @@ void MainViewModel::wireDetailVmSignals()
     }
     if (m_neteasePlaylistDetail) {
         connect(m_neteasePlaylistDetail, &NeteasePlaylistDetailViewModel::requestPlay, m_playerVm,
-                [this](const Song &song) { m_playerVm->play(song); });
+                [this](const Song &song) { m_playerVm->playNow(song); });
         connect(
             m_neteasePlaylistDetail, &NeteasePlaylistDetailViewModel::requestPlayPlaylist, m_playerVm,
             [this](const QVector<Song> &songs, int startIndex) { m_playerVm->loadQueueAndPlay(songs, startIndex); });

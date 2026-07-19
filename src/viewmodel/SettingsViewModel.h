@@ -20,7 +20,7 @@ namespace QeriPlayerQt {
  * @brief ViewModel managing settings persistence and platform auth
  *
  * Reads/writes settings via ISettingsRepository.
- * Manages NeteaseClient login/logout/auth status.
+ * Manages NeteaseClient cookie import, local logout, and auth status.
  */
 class SettingsViewModel : public QObject {
     Q_OBJECT
@@ -28,8 +28,10 @@ class SettingsViewModel : public QObject {
     Q_PROPERTY(QString theme READ theme WRITE setTheme NOTIFY themeChanged)
     Q_PROPERTY(AudioQuality audioQuality READ audioQuality WRITE setAudioQuality NOTIFY audioQualityChanged)
     Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath NOTIFY downloadPathChanged)
+    Q_PROPERTY(QUrl downloadPathUrl READ downloadPathUrl NOTIFY downloadPathChanged)
     Q_PROPERTY(bool isNeteaseLoggedIn READ isNeteaseLoggedIn NOTIFY neteaseAuthChanged)
     Q_PROPERTY(QString neteaseUsername READ neteaseUsername NOTIFY neteaseAuthChanged)
+    Q_PROPERTY(bool isImportingNeteaseCookie READ isImportingNeteaseCookie NOTIFY neteaseCookieImportStateChanged)
     Q_PROPERTY(bool hasError READ hasError NOTIFY errorChanged)
     Q_PROPERTY(ViewModelError error READ error NOTIFY errorChanged)
 
@@ -42,8 +44,10 @@ public:
     QString theme() const;
     AudioQuality audioQuality() const;
     QString downloadPath() const;
+    QUrl downloadPathUrl() const;
     bool isNeteaseLoggedIn() const;
     QString neteaseUsername() const;
+    bool isImportingNeteaseCookie() const;
     bool hasError() const;
     ViewModelError error() const;
 
@@ -54,7 +58,7 @@ public:
     Q_INVOKABLE void setDownloadPath(const QString &path);
 
     // --- Auth ---
-    Q_INVOKABLE QCoro::QmlTask loginNetease(const QString &phone, const QString &password);
+    Q_INVOKABLE QCoro::QmlTask importNeteaseCookie(const QString &cookieString);
     Q_INVOKABLE QCoro::QmlTask logoutNetease();
 
     // --- History ---
@@ -68,6 +72,7 @@ Q_SIGNALS:
     void audioQualityChanged();
     void downloadPathChanged();
     void neteaseAuthChanged();
+    void neteaseCookieImportStateChanged();
     void errorChanged();
 
 private:
@@ -81,9 +86,14 @@ private:
     QString m_neteaseUsername;
     ViewModelError m_error;
     bool m_hasError = false;
+    bool m_isImportingNeteaseCookie = false;
+    bool m_isHydratingNeteaseProfile = false;
 
-    QCoro::Task<void> loginNeteaseImpl(const QString &phone, const QString &password);
+    QCoro::Task<void> importNeteaseCookieImpl(const QString &cookieString);
     QCoro::Task<void> logoutNeteaseImpl();
+    QCoro::Task<void> hydrateNeteaseProfile();
+
+    QCoro::QmlTask m_pendingTask;
 };
 
 } // namespace QeriPlayerQt

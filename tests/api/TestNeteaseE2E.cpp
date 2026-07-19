@@ -211,8 +211,12 @@ void TestNeteaseE2E::testGetUserPlaylists()
 
     if (result.isError()) {
         // May fail due to privacy settings
-        return;
     }
+
+    // The app passes an empty userId to mean "current user". Cover that path
+    // explicitly; the public-user smoke check above would not catch it.
+    auto currentUserResult = QCoro::waitFor(m_client->getUserPlaylists(QString()));
+    QVERIFY_RESULT(currentUserResult);
 }
 
 // ─── User Operations ──────────────────────────────────────────────────────

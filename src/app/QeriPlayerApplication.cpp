@@ -3,6 +3,8 @@
 
 #include "app/QeriPlayerApplication.h"
 
+#include "app/QmlEnums.h"
+
 #include "api/common/IMusicPlatformPlugin.h"
 #include "api/netease/NeteaseClient.h"
 #include "core/crypto/SecureStorage.h"
@@ -27,8 +29,44 @@
 #include <QDebug>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QtGlobal>
 
 namespace QeriPlayerQt {
+
+static_assert(QmlMainView::Home == static_cast<quint8>(MainViewModel::View::Home));
+static_assert(QmlMainView::Search == static_cast<quint8>(MainViewModel::View::Search));
+static_assert(QmlMainView::Library == static_cast<quint8>(MainViewModel::View::Library));
+static_assert(QmlMainView::LocalPlaylist == static_cast<quint8>(MainViewModel::View::LocalPlaylist));
+static_assert(QmlMainView::NeteasePlaylist == static_cast<quint8>(MainViewModel::View::NeteasePlaylist));
+static_assert(QmlMainView::Settings == static_cast<quint8>(MainViewModel::View::Settings));
+
+/// @brief Determine the logger level from `QERIPLAYER_LOG_LEVEL`.
+/// @return The parsed log level, or `LogLevel::Info` when unset or unrecognized.
+static LogLevel logLevelFromEnvironment()
+{
+    const QString value = qEnvironmentVariable("QERIPLAYER_LOG_LEVEL").trimmed().toLower();
+    if (value.isEmpty()) {
+        return LogLevel::Info;
+    }
+    if (value == QStringLiteral("trace")) {
+        return LogLevel::Trace;
+    }
+    if (value == QStringLiteral("debug")) {
+        return LogLevel::Debug;
+    }
+    if (value == QStringLiteral("warn") || value == QStringLiteral("warning")) {
+        return LogLevel::Warn;
+    }
+    if (value == QStringLiteral("error")) {
+        return LogLevel::Error;
+    }
+    if (value == QStringLiteral("fatal")) {
+        return LogLevel::Fatal;
+    }
+
+    qWarning().noquote() << "Unknown QERIPLAYER_LOG_LEVEL value, falling back to info:" << value;
+    return LogLevel::Info;
+}
 
 QeriPlayerApplication::QeriPlayerApplication(int &argc, char **argv)
     : QApplication(argc, argv)
@@ -63,8 +101,12 @@ void QeriPlayerApplication::initializeCoreServices()
 {
     // 1. Logger (first — other services may log)
     LoggerConfig logConfig;
+#ifndef NDEBUG
+    logConfig.logDir = QStringLiteral("/tmp/qeriplayer-logs");
+#else
     logConfig.logDir = AppPaths::cacheDir() + QStringLiteral("/logs");
-    logConfig.level = LogLevel::Info;
+#endif
+    logConfig.level = logLevelFromEnvironment();
     logConfig.enableConsole = true;
 
     try {
@@ -196,6 +238,7 @@ bool QeriPlayerApplication::initializeUi()
     qputenv("QT_QUICK_CONTROLS_STYLE", "Material");
 
     // Create QML engine and register context properties
+    registerQmlEnums();
     m_qmlEngine = std::make_unique<QQmlApplicationEngine>();
 
     // Log QML warnings

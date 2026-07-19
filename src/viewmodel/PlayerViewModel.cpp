@@ -96,6 +96,16 @@ ViewModelError PlayerViewModel::error() const
 
 QCoro::Task<void> PlayerViewModel::play(const Song &song)
 {
+    co_await playTask(song);
+}
+
+void PlayerViewModel::playNow(const Song &song)
+{
+    startPlayback(song);
+}
+
+QCoro::Task<void> PlayerViewModel::playTask(Song song)
+{
     try {
         co_await m_controller->play(song);
     } catch (const std::exception &ex) {
@@ -103,17 +113,36 @@ QCoro::Task<void> PlayerViewModel::play(const Song &song)
     }
 }
 
+QCoro::Task<void> PlayerViewModel::drainPlaybackRequests()
+{
+    while (m_pendingPlaybackRequest.has_value()) {
+        Song song = *m_pendingPlaybackRequest;
+        m_pendingPlaybackRequest.reset();
+        co_await playTask(song);
+    }
+
+    m_playTaskActive = false;
+}
+
+void PlayerViewModel::startPlayback(const Song &song)
+{
+    m_pendingPlaybackRequest = song;
+    if (m_playTaskActive) {
+        return;
+    }
+
+    m_playTaskActive = true;
+    m_pendingPlayTask = drainPlaybackRequests();
+}
+
 void PlayerViewModel::loadQueueAndPlay(const QVector<Song> &songs, int startIndex)
 {
-    m_controller->queue()->clear();
-    for (const Song &song : songs) {
-        m_controller->queue()->addSong(song);
-    }
+    m_controller->queue()->setSongs(songs);
     m_controller->queue()->setCurrentIndex(startIndex);
     updateQueueModel();
 
     if (startIndex >= 0 && startIndex < songs.size()) {
-        play(songs.at(startIndex));
+        startPlayback(songs.at(startIndex));
     }
 }
 
@@ -141,8 +170,7 @@ void PlayerViewModel::next()
 {
     auto nextSong = m_controller->queue()->next();
     if (nextSong.has_value()) {
-        // Fire and forget coroutine
-        play(nextSong.value());
+        startPlayback(nextSong.value());
     }
 }
 
@@ -150,8 +178,7 @@ void PlayerViewModel::prev()
 {
     auto prevSong = m_controller->queue()->prev();
     if (prevSong.has_value()) {
-        // Fire and forget coroutine
-        play(prevSong.value());
+        startPlayback(prevSong.value());
     }
 }
 

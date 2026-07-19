@@ -35,6 +35,14 @@ QString SettingsViewModel::downloadPath() const
     return m_downloadPath;
 }
 
+QUrl SettingsViewModel::downloadPathUrl() const
+{
+    if (m_downloadPath.isEmpty()) {
+        return {};
+    }
+    return QUrl::fromLocalFile(m_downloadPath);
+}
+
 bool SettingsViewModel::isNeteaseLoggedIn() const
 {
     if (!m_neteaseClient) {
@@ -46,6 +54,11 @@ bool SettingsViewModel::isNeteaseLoggedIn() const
 QString SettingsViewModel::neteaseUsername() const
 {
     return m_neteaseUsername;
+}
+
+bool SettingsViewModel::isImportingNeteaseCookie() const
+{
+    return m_isImportingNeteaseCookie;
 }
 
 bool SettingsViewModel::hasError() const
@@ -100,6 +113,10 @@ void SettingsViewModel::loadSettings()
     } catch (const std::exception &ex) {
         Logger::get("viewmodel")->warn("Failed to load downloadPath setting: {}", ex.what());
     }
+
+    if (m_neteaseClient && m_neteaseClient->isAuthenticated() && !m_isHydratingNeteaseProfile) {
+        m_pendingTask = QCoro::QmlTask(hydrateNeteaseProfile());
+    }
 }
 
 void SettingsViewModel::setTheme(const QString &theme)
@@ -108,7 +125,6 @@ void SettingsViewModel::setTheme(const QString &theme)
         return;
     }
 
-    // Validate supported themes
     if (theme != QStringLiteral("light") && theme != QStringLiteral("dark")) {
         return;
     }
@@ -168,17 +184,13 @@ void SettingsViewModel::setDownloadPath(const QString &path)
 
 // --- Auth ---
 
-QCoro::QmlTask SettingsViewModel::loginNetease(const QString &phone, const QString &password)
+QCoro::QmlTask SettingsViewModel::importNeteaseCookie(const QString &cookieString)
 {
-    return QCoro::QmlTask(loginNeteaseImpl(phone, password));
+    m_pendingTask = QCoro::QmlTask(importNeteaseCookieImpl(cookieString));
+    return m_pendingTask;
 }
 
-QCoro::QmlTask SettingsViewModel::logoutNetease()
-{
-    return QCoro::QmlTask(logoutNeteaseImpl());
-}
-
-QCoro::Task<void> SettingsViewModel::loginNeteaseImpl(const QString &phone, const QString &password)
+QCoro::Task<void> SettingsViewModel::importNeteaseCookieImpl(const QString &cookieString)
 {
     if (!m_neteaseClient) {
         m_error = ViewModelError(ViewModelError::ErrorType::Api, "NetEase client not available");
@@ -187,18 +199,51 @@ QCoro::Task<void> SettingsViewModel::loginNeteaseImpl(const QString &phone, cons
         co_return;
     }
 
-    auto result = co_await m_neteaseClient->login(phone, password);
-    if (result.isError()) {
-        m_error = ViewModelError::fromApiError(result.error());
-        m_hasError = true;
-        Q_EMIT errorChanged();
-        co_return;
-    }
+    clearError();
 
-    m_hasError = false;
-    m_neteaseUsername = result.data().nickname;
-    Q_EMIT neteaseAuthChanged();
-    Q_EMIT errorChanged();
+    m_isImportingNeteaseCookie = true;
+    Q_EMIT neteaseCookieImportStateChanged();
+
+    auto resetImportState = [this]() {
+        if (!m_isImportingNeteaseCookie) {
+            return;
+        }
+        m_isImportingNeteaseCookie = false;
+        Q_EMIT neteaseCookieImportStateChanged();
+    };
+
+    try {
+        auto result = co_await m_neteaseClient->importCookies(cookieString);
+        if (result.isError()) {
+            resetImportState();
+            m_neteaseClient->clearLocalSession();
+            m_neteaseUsername.clear();
+            m_error = ViewModelError::fromApiError(result.error());
+            m_hasError = true;
+            Q_EMIT neteaseAuthChanged();
+            Q_EMIT errorChanged();
+            co_return;
+        }
+
+        resetImportState();
+        m_hasError = false;
+        m_neteaseUsername = result.data().nickname;
+        Q_EMIT neteaseAuthChanged();
+        Q_EMIT errorChanged();
+    } catch (const std::exception &ex) {
+        resetImportState();
+        m_neteaseClient->clearLocalSession();
+        m_neteaseUsername.clear();
+        m_error = ViewModelError(ViewModelError::ErrorType::Unknown, QString::fromUtf8(ex.what()));
+        m_hasError = true;
+        Q_EMIT neteaseAuthChanged();
+        Q_EMIT errorChanged();
+    }
+}
+
+QCoro::QmlTask SettingsViewModel::logoutNetease()
+{
+    return QCoro::QmlTask(logoutNeteaseImpl());
 }
 
 QCoro::Task<void> SettingsViewModel::logoutNeteaseImpl()
@@ -210,18 +255,51 @@ QCoro::Task<void> SettingsViewModel::logoutNeteaseImpl()
         co_return;
     }
 
-    auto result = co_await m_neteaseClient->logout();
-    if (result.isError()) {
-        m_error = ViewModelError::fromApiError(result.error());
-        m_hasError = true;
-        Q_EMIT errorChanged();
-        co_return;
-    }
-
+    m_neteaseClient->clearLocalSession();
     m_hasError = false;
     m_neteaseUsername.clear();
     Q_EMIT neteaseAuthChanged();
     Q_EMIT errorChanged();
+    co_return;
+}
+
+QCoro::Task<void> SettingsViewModel::hydrateNeteaseProfile()
+{
+    if (!m_neteaseClient || !m_neteaseClient->isAuthenticated() || m_isHydratingNeteaseProfile) {
+        co_return;
+    }
+
+    struct HydrationGuard {
+        bool &flag;
+        ~HydrationGuard()
+        {
+            flag = false;
+        }
+    };
+
+    m_isHydratingNeteaseProfile = true;
+    HydrationGuard guard {m_isHydratingNeteaseProfile};
+
+    // Refresh the WeAPI session on startup so restored cookies pick up a fresh
+    // __csrf token before we validate and hydrate the profile.
+    co_await m_neteaseClient->ensureWeapiSession();
+
+    auto result = co_await m_neteaseClient->getCurrentUserAccount();
+    if (result.isError()) {
+        if (result.error().isAuthError()) {
+            m_neteaseClient->clearLocalSession();
+            m_neteaseUsername.clear();
+            Q_EMIT neteaseAuthChanged();
+        }
+        co_return;
+    }
+
+    QJsonObject profile = result.data()[QLatin1String("profile")].toObject();
+    QString nickname = profile[QLatin1String("nickname")].toString();
+    if (nickname != m_neteaseUsername) {
+        m_neteaseUsername = nickname;
+        Q_EMIT neteaseAuthChanged();
+    }
 }
 
 // --- History ---

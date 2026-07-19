@@ -15,12 +15,16 @@
 #include <QCoroTask>
 #include <QHash>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QTimer>
 
 #include <memory>
+#include <vector>
 
 namespace QeriPlayerQt {
+
+class NamedLogger;
 
 /**
  * @brief High-level playback orchestrator
@@ -52,7 +56,7 @@ public:
      * @brief Play a song (resolves URL if needed, loads into backend, starts playback)
      * @param song The song to play
      */
-    QCoro::Task<void> play(const Song &song);
+    QCoro::Task<void> play(Song song);
 
     /// @brief Pause playback
     void pause();
@@ -112,10 +116,20 @@ Q_SIGNALS:
 private:
     void connectBackendSignals();
     void connectQueueSignals();
+    struct CachedUrl {
+        QString url;
+        qint64 expiresAtMs = 0;
+    };
+
+    void cacheResolvedUrl(const Song &song, const SongUrlResult &result);
+    void evictCachedUrl(const Song &song);
+    [[nodiscard]] QString songCacheKey(const Song &song) const;
     void persistState();
-    QCoro::Task<QString> resolveUrl(const Song &song);
+    void pruneCompletedPreResolveTasks();
+    QCoro::Task<QString> resolveUrl(Song song, bool forceRefresh = false);
 
     std::unique_ptr<IPlayerBackend> m_backend;
+    std::shared_ptr<NamedLogger> m_log;
     IMusicPlatformPlugin *m_plugin;
     IPlayerStateRepository *m_playerStateRepo;
     ISettingsRepository *m_settingsRepo;
@@ -124,11 +138,11 @@ private:
     Song m_currentSong;
     PlaybackState m_state = PlaybackState::Stopped;
 
-    // URL cache: songId -> url
-    QHash<QString, QString> m_urlCache;
-    // TTL timestamps: songId -> expiry time (epoch ms)
-    QHash<QString, qint64> m_urlCacheExpiry;
-    static constexpr qint64 URL_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
+    // Platform-qualified song key -> URL and expiry.
+    QHash<QString, CachedUrl> m_urlCache;
+    QSet<QString> m_preResolveInFlight;
+    static constexpr qint64 DEFAULT_URL_CACHE_TTL_MS = 10 * 60 * 1000;
+    static constexpr qint64 URL_EXPIRY_SAFETY_MARGIN_MS = 30 * 1000;
 
     // Debounced save for seek operations
     QTimer *m_seekSaveTimer;
@@ -136,6 +150,7 @@ private:
     // Running async tasks (prevent premature destruction)
     QCoro::Task<void> m_restoreState;
     QCoro::Task<void> m_autoAdvanceTask;
+    std::vector<QCoro::Task<void>> m_preResolveTasks;
 };
 
 } // namespace QeriPlayerQt

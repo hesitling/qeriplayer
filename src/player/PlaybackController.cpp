@@ -12,7 +12,46 @@
 #include <QPointer>
 #include <QTimer>
 
+#include <algorithm>
 #include <stdexcept>
+
+namespace {
+
+bool isPlayableRemoteUrl(const QString &value)
+{
+    if (value.trimmed().isEmpty()) {
+        return false;
+    }
+
+    const QUrl url(value, QUrl::StrictMode);
+    const QString scheme = url.scheme().toLower();
+    return url.isValid() && !url.isRelative() && !url.host().isEmpty()
+           && (scheme == QStringLiteral("http") || scheme == QStringLiteral("https"));
+}
+
+QString songUrlStatusMessage(const QeriPlayerQt::Song &song, const QeriPlayerQt::SongUrlResult &result)
+{
+    using Status = QeriPlayerQt::SongUrlResult::Status;
+
+    if (!result.noticeMessage.trimmed().isEmpty()) {
+        return result.noticeMessage.trimmed();
+    }
+
+    switch (result.status) {
+        case Status::RequiresLogin:
+            return QStringLiteral("Login required or track unavailable for: %1").arg(song.name);
+        case Status::WaitingForAuthoritativeStream:
+            return QStringLiteral("Playback stream is not ready yet for: %1").arg(song.name);
+        case Status::Failure:
+            return QStringLiteral("Failed to resolve playback URL for: %1").arg(song.name);
+        case Status::Success:
+            break;
+    }
+
+    return QStringLiteral("Failed to resolve playback URL for: %1").arg(song.name);
+}
+
+} // namespace
 
 namespace QeriPlayerQt {
 
@@ -21,6 +60,7 @@ PlaybackController::PlaybackController(std::unique_ptr<IPlayerBackend> backend, 
                                        QObject *parent)
     : QObject(parent)
     , m_backend(std::move(backend))
+    , m_log(Logger::get(QStringLiteral("player")))
     , m_plugin(plugin)
     , m_playerStateRepo(playerStateRepo)
     , m_settingsRepo(settingsRepo)
@@ -56,7 +96,7 @@ PlaybackController::~PlaybackController() = default;
 
 // --- Playback control ---
 
-QCoro::Task<void> PlaybackController::play(const Song &song)
+QCoro::Task<void> PlaybackController::play(Song song)
 {
     m_currentSong = song;
     Q_EMIT currentSongChanged(song);
@@ -86,12 +126,27 @@ QCoro::Task<void> PlaybackController::play(const Song &song)
         co_return;
     }
 
-    // Load and play
+    // Load and play. A CDN URL can be revoked before its advertised expiry,
+    // so evict and resolve once more if loading the cached/fresh URL fails.
+    QString firstLoadError;
     try {
         co_await m_backend->load(QUrl(url));
         m_backend->play();
+        co_return;
     } catch (const std::exception &ex) {
-        Q_EMIT errorOccurred(QString::fromUtf8(ex.what()));
+        firstLoadError = QString::fromUtf8(ex.what());
+    }
+
+    m_log->warn("Playback URL failed for {}, refreshing once: {}", song.name.toStdString(),
+                firstLoadError.toStdString());
+    evictCachedUrl(song);
+    try {
+        url = co_await resolveUrl(song, true);
+        co_await m_backend->load(QUrl(url));
+        m_backend->play();
+    } catch (const std::exception &retryError) {
+        m_log->warn("Playback URL retry failed for {}: {}", song.name.toStdString(), retryError.what());
+        Q_EMIT errorOccurred(QString::fromUtf8(retryError.what()));
     }
 }
 
@@ -133,7 +188,7 @@ void PlaybackController::setVolume(double normalized)
         try {
             m_settingsRepo->set(QStringLiteral("player/volume"), QString::number(m_backend->volume(), 'f', 2));
         } catch (const std::exception &ex) {
-            Logger::get("player")->warn("Failed to persist volume setting: {}", ex.what());
+            m_log->warn("Failed to persist volume setting: {}", ex.what());
         }
     }
 }
@@ -151,7 +206,7 @@ void PlaybackController::setMuted(bool muted)
             m_settingsRepo->set(QStringLiteral("player/muted"),
                                 muted ? QStringLiteral("true") : QStringLiteral("false"));
         } catch (const std::exception &ex) {
-            Logger::get("player")->warn("Failed to persist muted setting: {}", ex.what());
+            m_log->warn("Failed to persist muted setting: {}", ex.what());
         }
     }
 }
@@ -182,18 +237,31 @@ QString PlaybackController::backendName() const
 
 void PlaybackController::preResolveUrl(const Song &song)
 {
-    // Check if already cached and valid
-    auto it = m_urlCacheExpiry.find(song.id);
-    if (it != m_urlCacheExpiry.end() && it.value() > QDateTime::currentMSecsSinceEpoch()) {
-        return; // Already cached and not expired
+    const QString key = songCacheKey(song);
+    const auto cacheIt = m_urlCache.constFind(key);
+    if (cacheIt != m_urlCache.cend() && cacheIt->expiresAtMs > QDateTime::currentMSecsSinceEpoch()
+        && isPlayableRemoteUrl(cacheIt->url)) {
+        return;
     }
 
-    if (!m_plugin) {
-        return; // No platform plugin available
+    if (!m_plugin || m_preResolveInFlight.contains(key)) {
+        return;
     }
 
-    // Background resolution with safe lifetime via QPointer
-    auto task = [](QPointer<PlaybackController> self, Song s) -> QCoro::Task<void> {
+    pruneCompletedPreResolveTasks();
+
+    constexpr qsizetype MAX_BACKGROUND_TASKS = 32;
+    if (m_preResolveTasks.size() >= MAX_BACKGROUND_TASKS) {
+        return;
+    }
+
+    m_preResolveInFlight.insert(key);
+
+    // Background resolution with safe lifetime via QPointer.
+    // Keep the task object alive; destroying a suspended QCoro::Task can corrupt
+    // the coroutine frame that resumes when the network request finishes.
+    auto task = [](QPointer<PlaybackController> self, Song s, QString cacheKey,
+                   std::shared_ptr<NamedLogger> log) -> QCoro::Task<void> {
         if (!self || !self->m_plugin) {
             co_return;
         }
@@ -203,20 +271,35 @@ void PlaybackController::preResolveUrl(const Song &song)
                 co_return;
             }
             if (result.isSuccess()) {
-                self->m_urlCache.insert(s.id, result.data().url);
-                self->m_urlCacheExpiry.insert(s.id, QDateTime::currentMSecsSinceEpoch() + URL_CACHE_TTL_MS);
+                const auto &songUrl = result.data();
+                if (songUrl.status == SongUrlResult::Status::Success && isPlayableRemoteUrl(songUrl.url)) {
+                    self->cacheResolvedUrl(s, songUrl);
+                } else {
+                    log->warn("Pre-resolve returned non-playable URL for {}: {}", s.name.toStdString(),
+                              songUrlStatusMessage(s, songUrl).toStdString());
+                }
             } else {
-                Logger::get("player")->warn("Pre-resolve failed for {}: {}", s.name.toStdString(),
-                                            result.error().message().toStdString());
+                log->warn("Pre-resolve failed for {}: {}", s.name.toStdString(),
+                          result.error().message().toStdString());
             }
         } catch (const std::exception &ex) {
-            Logger::get("player")->warn("Pre-resolve exception for {}: {}", s.name.toStdString(), ex.what());
+            log->warn("Pre-resolve exception for {}: {}", s.name.toStdString(), ex.what());
         }
-    }(QPointer<PlaybackController>(this), song);
-    Q_UNUSED(task);
+        if (self) {
+            self->m_preResolveInFlight.remove(cacheKey);
+        }
+    }(QPointer<PlaybackController>(this), song, key, m_log);
+    m_preResolveTasks.push_back(std::move(task));
 }
 
 // --- Private ---
+
+void PlaybackController::pruneCompletedPreResolveTasks()
+{
+    auto isCompleted = [](const QCoro::Task<void> &task) { return task.isReady(); };
+    m_preResolveTasks.erase(std::remove_if(m_preResolveTasks.begin(), m_preResolveTasks.end(), isCompleted),
+                            m_preResolveTasks.end());
+}
 
 void PlaybackController::connectBackendSignals()
 {
@@ -285,7 +368,7 @@ void PlaybackController::persistState()
         state.shouldResumePlayback = (m_state == PlaybackState::Playing || m_state == PlaybackState::Paused);
         m_playerStateRepo->save(state);
     } catch (const std::exception &ex) {
-        Logger::get("player")->warn("Failed to persist player state: {}", ex.what());
+        m_log->warn("Failed to persist player state: {}", ex.what());
     }
 }
 
@@ -339,27 +422,53 @@ void PlaybackController::restoreState()
             }
         } catch (const std::exception &ex) {
             if (self) {
-                Logger::get("player")->warn("Failed to restore playback state: {}", ex.what());
+                self->m_log->warn("Failed to restore playback state: {}", ex.what());
             }
         }
     }(QPointer<PlaybackController>(this));
 }
 
-QCoro::Task<QString> PlaybackController::resolveUrl(const Song &song)
+void PlaybackController::cacheResolvedUrl(const Song &song, const SongUrlResult &result)
 {
-    // Check cache first
-    auto cacheIt = m_urlCache.find(song.id);
-    if (cacheIt != m_urlCache.end()) {
-        auto expiryIt = m_urlCacheExpiry.find(song.id);
-        if (expiryIt != m_urlCacheExpiry.end() && expiryIt.value() > QDateTime::currentMSecsSinceEpoch()) {
-            co_return cacheIt.value();
+    const qint64 serverTtlMs = result.expiresInMs > 0 ? result.expiresInMs : DEFAULT_URL_CACHE_TTL_MS;
+    const qint64 usableTtlMs = std::max<qint64>(1000, serverTtlMs - URL_EXPIRY_SAFETY_MARGIN_MS);
+    m_urlCache.insert(songCacheKey(song),
+                      CachedUrl {result.url.trimmed(), QDateTime::currentMSecsSinceEpoch() + usableTtlMs});
+}
+
+void PlaybackController::evictCachedUrl(const Song &song)
+{
+    m_urlCache.remove(songCacheKey(song));
+}
+
+QString PlaybackController::songCacheKey(const Song &song) const
+{
+    return QStringLiteral("%1:%2").arg(static_cast<int>(song.platform)).arg(song.id);
+}
+
+QCoro::Task<QString> PlaybackController::resolveUrl(Song song, bool forceRefresh)
+{
+    const QString key = songCacheKey(song);
+    if (!forceRefresh) {
+        auto cacheIt = m_urlCache.find(key);
+        if (cacheIt != m_urlCache.end()) {
+            const qint64 now = QDateTime::currentMSecsSinceEpoch();
+            if (cacheIt->expiresAtMs > now && isPlayableRemoteUrl(cacheIt->url)) {
+                m_log->debug("Using cached playback URL for {} (remainingMs={})", song.name.toStdString(),
+                             cacheIt->expiresAtMs - now);
+                const QString cachedUrl = cacheIt->url;
+                co_return cachedUrl;
+            }
+
+            const char *reason = cacheIt->expiresAtMs <= now ? "expired" : "invalid";
+            m_log->warn("Discarding {} cached playback URL for {}: {}", reason, song.name.toStdString(),
+                        cacheIt->url.toStdString());
+            m_urlCache.erase(cacheIt);
         }
-        // Expired — remove from cache
-        m_urlCache.erase(cacheIt);
-        m_urlCacheExpiry.erase(expiryIt);
+    } else {
+        evictCachedUrl(song);
     }
 
-    // Resolve via platform plugin
     if (!m_plugin) {
         throw std::runtime_error("No platform plugin available for URL resolution");
     }
@@ -369,11 +478,17 @@ QCoro::Task<QString> PlaybackController::resolveUrl(const Song &song)
         throw std::runtime_error(result.error().message().toStdString());
     }
 
-    // Cache the result
-    m_urlCache.insert(song.id, result.data().url);
-    m_urlCacheExpiry.insert(song.id, QDateTime::currentMSecsSinceEpoch() + URL_CACHE_TTL_MS);
+    const auto &songUrl = result.data();
+    if (songUrl.status != SongUrlResult::Status::Success) {
+        throw std::runtime_error(songUrlStatusMessage(song, songUrl).toStdString());
+    }
+    if (!isPlayableRemoteUrl(songUrl.url)) {
+        throw std::runtime_error(
+            QStringLiteral("Platform returned an invalid playback URL for: %1").arg(song.name).toStdString());
+    }
 
-    co_return result.data().url;
+    cacheResolvedUrl(song, songUrl);
+    co_return songUrl.url.trimmed();
 }
 
 } // namespace QeriPlayerQt

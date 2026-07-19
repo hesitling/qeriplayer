@@ -9,15 +9,143 @@
 #include "core/logger/Logger.h"
 #include "core/network/HttpClient.h"
 
+#include <QHash>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QNetworkRequest>
+#include <QStringList>
 #include <QUrlQuery>
 
 namespace QeriPlayerQt {
 
 static const QUrl DEFAULT_BASE_URL(QStringLiteral("https://music.163.com"));
 static const QString COOKIE_STORAGE_KEY = QStringLiteral("netease_cookie");
+
+static bool isSensitiveJsonKey(const QString &key)
+{
+    const QString lower = key.toLower();
+    return lower.contains(QStringLiteral("password")) || lower.contains(QStringLiteral("cookie"))
+           || lower.contains(QStringLiteral("token")) || lower.contains(QStringLiteral("csrf"))
+           || lower.contains(QStringLiteral("captcha"));
+}
+
+static QJsonValue redactJsonValue(const QString &key, const QJsonValue &value)
+{
+    if (isSensitiveJsonKey(key)) {
+        return QStringLiteral("<redacted>");
+    }
+
+    if (value.isObject()) {
+        QJsonObject object;
+        const QJsonObject input = value.toObject();
+        for (auto it = input.constBegin(); it != input.constEnd(); ++it) {
+            object.insert(it.key(), redactJsonValue(it.key(), it.value()));
+        }
+        return object;
+    }
+
+    if (value.isArray()) {
+        QJsonArray array;
+        const QJsonArray input = value.toArray();
+        for (const QJsonValue &item : input) {
+            array.append(redactJsonValue(QString(), item));
+        }
+        return array;
+    }
+
+    return value;
+}
+
+static QString compactJsonForLog(const QJsonObject &object)
+{
+    QJsonObject redacted;
+    for (auto it = object.constBegin(); it != object.constEnd(); ++it) {
+        redacted.insert(it.key(), redactJsonValue(it.key(), it.value()));
+    }
+    return QString::fromUtf8(QJsonDocument(redacted).toJson(QJsonDocument::Compact));
+}
+
+static QHash<QString, QString> parseCookieString(const QString &cookieString)
+{
+    QHash<QString, QString> cookieMap;
+    const QStringList cookies = cookieString.split(QLatin1Char(';'), Qt::SkipEmptyParts);
+    for (const QString &cookie : cookies) {
+        const QString trimmed = cookie.trimmed();
+        const qsizetype equals = trimmed.indexOf(QLatin1Char('='));
+        if (equals <= 0) {
+            continue;
+        }
+
+        const QString name = trimmed.left(equals).trimmed();
+        const QString value = trimmed.mid(equals + 1).trimmed();
+        if (!name.isEmpty()) {
+            cookieMap.insert(name, value);
+        }
+    }
+    return cookieMap;
+}
+
+static QString formatCookieString(const QHash<QString, QString> &cookieMap)
+{
+    QStringList parts;
+    for (auto it = cookieMap.constBegin(); it != cookieMap.constEnd(); ++it) {
+        if (!it.key().isEmpty()) {
+            QString value = it.value();
+            value.replace(QLatin1Char('\\'), QStringLiteral("%5C"));
+            parts.append(it.key() + QLatin1Char('=') + value);
+        }
+    }
+    return parts.join(QStringLiteral("; "));
+}
+
+static QString redactCookieHeaderForLog(const QByteArray &cookieHeader)
+{
+    const QHash<QString, QString> cookieMap = parseCookieString(QString::fromUtf8(cookieHeader));
+    if (cookieMap.isEmpty()) {
+        return QStringLiteral("<none>");
+    }
+
+    QStringList parts;
+    for (auto it = cookieMap.constBegin(); it != cookieMap.constEnd(); ++it) {
+        parts.append(it.key() + QStringLiteral("=<redacted>"));
+    }
+    return parts.join(QStringLiteral("; "));
+}
+
+static QString responseBodyForLog(const QByteArray &body)
+{
+    constexpr qsizetype MAX_LOG_BODY_BYTES = 500;
+
+    QByteArray toLog = body;
+    QJsonParseError parseError;
+    const QJsonDocument doc = QJsonDocument::fromJson(body, &parseError);
+    if (parseError.error == QJsonParseError::NoError) {
+        if (doc.isObject()) {
+            toLog = compactJsonForLog(doc.object()).toUtf8();
+        } else if (doc.isArray()) {
+            QJsonArray redactedArray;
+            const QJsonArray input = doc.array();
+            for (const QJsonValue &item : input) {
+                redactedArray.append(redactJsonValue(QString(), item));
+            }
+            toLog = QJsonDocument(redactedArray).toJson(QJsonDocument::Compact);
+        }
+    }
+
+    QString text = QString::fromUtf8(toLog.left(MAX_LOG_BODY_BYTES));
+    if (toLog.size() > MAX_LOG_BODY_BYTES) {
+        text += QStringLiteral("...");
+    }
+    return text;
+}
+
+static void useManualCookieHandling(QNetworkRequest &request)
+{
+    request.setAttribute(QNetworkRequest::CookieLoadControlAttribute, QNetworkRequest::Manual);
+    request.setAttribute(QNetworkRequest::CookieSaveControlAttribute, QNetworkRequest::Manual);
+}
 
 NeteaseClient::NeteaseClient(HttpClient *httpClient, SecureStorage *storage, QObject *parent)
     : QObject(parent)
@@ -33,19 +161,13 @@ NeteaseClient::NeteaseClient(HttpClient *httpClient, SecureStorage *storage, QOb
         if (cookieOpt.has_value()) {
             m_cookie = cookieOpt.value();
             // Extract CSRF token from cookie
-            const QStringList parts = m_cookie.split(QLatin1String("; "));
-            for (const QString &part : parts) {
-                if (part.startsWith(QLatin1String("__csrf="))) {
-                    m_csrfToken = part.mid(7);
-                    break;
-                }
-            }
+            const QHash<QString, QString> cookieMap = parseCookieString(m_cookie);
+            m_csrfToken = cookieMap.value(QStringLiteral("__csrf"));
             m_authenticated = !m_csrfToken.isEmpty();
-            if (m_authenticated) {
-                Logger::get("api")->info("NeteaseClient: restored session from storage");
-            }
         }
     }
+    Logger::get("api")->info("NeteaseClient: restored login status authenticated={} cookie={}", m_authenticated,
+                             m_cookie.toStdString());
 }
 
 // ─── Configuration ──────────────────────────────────────────────────────────
@@ -87,6 +209,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
 
     // Build request with headers
     QNetworkRequest request(url);
+    useManualCookieHandling(request);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded"));
     request.setRawHeader("Referer", "https://music.163.com");
     request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like "
@@ -99,12 +222,24 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
     // Inject cookies
     injectCookies(request);
 
+    auto log = Logger::get("api");
+    log->debug("NeteaseClient: WEAPI request path={} url={} params={} cookie={} bodyBytes={}", path.toStdString(),
+               url.toString(QUrl::RemovePassword).toStdString(), compactJsonForLog(weapiParams).toStdString(),
+               redactCookieHeaderForLog(request.rawHeader("Cookie")).toStdString(), postData.size());
+
     // Send request with all headers preserved
     auto response = co_await m_httpClient->post(request, postData);
 
+    log->debug("NeteaseClient: WEAPI response path={} status={} success={} bytes={} body={}", path.toStdString(),
+               response.statusCode, response.isSuccess(), response.body.size(),
+               responseBodyForLog(response.body).toStdString());
+
+    // Extract cookies from response headers and merge
+    extractResponseCookies(response);
+
     if (!response.isSuccess()) {
-        Logger::get("api")->warn("NeteaseClient: HTTP error at path {}: {} ({})", path.toStdString(),
-                                 response.errorString.toStdString(), response.statusCode);
+        log->warn("NeteaseClient: HTTP error at path {}: {} ({})", path.toStdString(),
+                  response.errorString.toStdString(), response.statusCode);
         co_return ApiResult<QJsonObject>(ApiError(response.statusCode, response.errorString));
     }
 
@@ -112,8 +247,8 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
     QJsonParseError parseError;
     QJsonDocument doc = QJsonDocument::fromJson(response.body, &parseError);
     if (parseError.error != QJsonParseError::NoError) {
-        Logger::get("api")->warn("NeteaseClient: JSON parse error at path {}: {} (body: {})", path.toStdString(),
-                                 parseError.errorString().toStdString(), response.body.left(200).toStdString());
+        log->warn("NeteaseClient: JSON parse error at path {}: {} (body: {})", path.toStdString(),
+                  parseError.errorString().toStdString(), response.body.left(200).toStdString());
         co_return ApiResult<QJsonObject>(
             ApiError(-1, QStringLiteral("Invalid JSON response"), parseError.errorString()));
     }
@@ -125,7 +260,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
     if (code != 200) {
         // Auto-retry 301 (session expired) once, like Kotlin
         if (code == 301 && !retried && isAuthenticated()) {
-            Logger::get("api")->info("NeteaseClient: 301 at {}, refreshing session", path.toStdString());
+            log->info("NeteaseClient: 301 at {}, refreshing session", path.toStdString());
             co_await ensureWeapiSession();
             co_return co_await makeRequest(path, params, host, true);
         }
@@ -133,7 +268,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
         if (msg.isEmpty()) {
             msg = json[QLatin1String("message")].toString();
         }
-        Logger::get("api")->warn("NeteaseClient: API error {} at {}: {}", code, path.toStdString(), msg.toStdString());
+        log->warn("NeteaseClient: API error {} at {}: {}", code, path.toStdString(), msg.toStdString());
         co_return ApiResult<QJsonObject>(ApiError(code, msg));
     }
 
@@ -141,7 +276,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeRequest(const QString &pa
 }
 
 QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeUnencryptedRequest(const QString &path,
-                                                                          const QJsonObject &params)
+                                                                          const QJsonObject &params, bool useGet)
 {
     QUrl url = m_baseUrl.resolved(QUrl(path));
 
@@ -156,13 +291,36 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeUnencryptedRequest(const 
     for (auto it = params.constBegin(); it != params.constEnd(); ++it) {
         query.addQueryItem(it.key(), it.value().toVariant().toString());
     }
+    if (useGet && !query.isEmpty()) {
+        QUrlQuery urlQuery(url.query());
+        for (const auto &item : query.queryItems()) {
+            urlQuery.addQueryItem(item.first, item.second);
+        }
+        url.setQuery(urlQuery);
+    }
 
     QNetworkRequest request(url);
+    useManualCookieHandling(request);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded"));
     request.setRawHeader("Referer", "https://music.163.com");
+    request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like "
+                                       "Gecko) Chrome/120.0.0.0 Safari/537.36");
+    request.setRawHeader("Accept", "*/*");
+    request.setRawHeader("Accept-Language", "zh-CN,zh-Hans;q=0.9");
     injectCookies(request);
 
-    auto response = co_await m_httpClient->post(request, query.toString(QUrl::FullyEncoded).toUtf8());
+    QByteArray postData = useGet ? QByteArray() : query.toString(QUrl::FullyEncoded).toUtf8();
+    auto log = Logger::get("api");
+    log->debug("NeteaseClient: raw {} request path={} url={} params={} cookie={} bodyBytes={}", useGet ? "GET" : "POST",
+               path.toStdString(), url.toString(QUrl::RemovePassword).toStdString(),
+               compactJsonForLog(params).toStdString(),
+               redactCookieHeaderForLog(request.rawHeader("Cookie")).toStdString(), postData.size());
+
+    auto response = useGet ? co_await m_httpClient->get(request) : co_await m_httpClient->post(request, postData);
+
+    log->debug("NeteaseClient: raw response path={} status={} success={} bytes={} body={}", path.toStdString(),
+               response.statusCode, response.isSuccess(), response.body.size(),
+               responseBodyForLog(response.body).toStdString());
 
     if (!response.isSuccess()) {
         co_return ApiResult<QJsonObject>(ApiError(response.statusCode, response.errorString));
@@ -209,6 +367,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeEapiRequest(const QString
 
     // Build request
     QNetworkRequest request(url);
+    useManualCookieHandling(request);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded"));
     request.setRawHeader("Referer", "https://music.163.com");
     request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like "
@@ -219,12 +378,21 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeEapiRequest(const QString
     // Inject cookies
     injectCookies(request);
 
+    auto log = Logger::get("api");
+    log->debug("NeteaseClient: EAPI request path={} url={} params={} cookie={} bodyBytes={}", path.toStdString(),
+               url.toString(QUrl::RemovePassword).toStdString(), compactJsonForLog(params).toStdString(),
+               redactCookieHeaderForLog(request.rawHeader("Cookie")).toStdString(), postData.size());
+
     // Send request with all headers preserved
     auto response = co_await m_httpClient->post(request, postData);
 
+    log->debug("NeteaseClient: EAPI response path={} status={} success={} bytes={} body={}", path.toStdString(),
+               response.statusCode, response.isSuccess(), response.body.size(),
+               responseBodyForLog(response.body).toStdString());
+
     if (!response.isSuccess()) {
-        Logger::get("api")->warn("NeteaseClient: EAPI HTTP error at {}: {} ({})", path.toStdString(),
-                                 response.errorString.toStdString(), response.statusCode);
+        log->warn("NeteaseClient: EAPI HTTP error at {}: {} ({})", path.toStdString(),
+                  response.errorString.toStdString(), response.statusCode);
         co_return ApiResult<QJsonObject>(ApiError(response.statusCode, response.errorString));
     }
 
@@ -232,8 +400,8 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeEapiRequest(const QString
     QJsonParseError parseError;
     QJsonDocument doc = QJsonDocument::fromJson(response.body, &parseError);
     if (parseError.error != QJsonParseError::NoError) {
-        Logger::get("api")->warn("NeteaseClient: EAPI JSON parse error: {} (body: {})",
-                                 parseError.errorString().toStdString(), response.body.left(200).toStdString());
+        log->warn("NeteaseClient: EAPI JSON parse error: {} (body: {})", parseError.errorString().toStdString(),
+                  response.body.left(200).toStdString());
         co_return ApiResult<QJsonObject>(
             ApiError(-1, QStringLiteral("Invalid JSON response"), parseError.errorString()));
     }
@@ -248,7 +416,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeEapiRequest(const QString
         }
         // Auto-retry 301 (session expired) once, like Kotlin
         if (code == 301 && !retried && isAuthenticated()) {
-            Logger::get("api")->info("NeteaseClient: 301 at {}, refreshing session", path.toStdString());
+            log->info("NeteaseClient: 301 at {}, refreshing session", path.toStdString());
             co_await ensureWeapiSession();
             co_return co_await makeEapiRequest(path, params, host, returnRawOnNon200, true);
         }
@@ -256,7 +424,7 @@ QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::makeEapiRequest(const QString
         if (msg.isEmpty()) {
             msg = json[QLatin1String("message")].toString();
         }
-        Logger::get("api")->warn("NeteaseClient: EAPI error {} at {}: {}", code, path.toStdString(), msg.toStdString());
+        log->warn("NeteaseClient: EAPI error {} at {}: {}", code, path.toStdString(), msg.toStdString());
         co_return ApiResult<QJsonObject>(ApiError(code, msg));
     }
 
@@ -279,27 +447,56 @@ void NeteaseClient::injectCookies(QNetworkRequest &request)
     }
 }
 
-void NeteaseClient::persistCookies(const QString &cookieString)
+void NeteaseClient::persistCookies(const QString &cookieString, bool authenticated, bool persistToStorage)
 {
     m_cookie = cookieString;
-    m_authenticated = true;
+    m_authenticated = authenticated;
+    m_csrfToken.clear();
 
     // Extract CSRF token
-    const QStringList parts = cookieString.split(QLatin1String("; "));
-    for (const QString &part : parts) {
-        if (part.startsWith(QLatin1String("__csrf="))) {
-            m_csrfToken = part.mid(7);
-            break;
+    const QHash<QString, QString> cookieMap = parseCookieString(cookieString);
+    m_csrfToken = cookieMap.value(QStringLiteral("__csrf"));
+
+    Logger::get("api")->info("NeteaseClient: login status authenticated={} cookie={}", m_authenticated,
+                             m_cookie.toStdString());
+
+    if (m_storage && persistToStorage) {
+        m_storage->set(COOKIE_STORAGE_KEY, cookieString);
+    }
+}
+
+void NeteaseClient::extractResponseCookies(const HttpResponse &response)
+{
+    QStringList newCookies;
+    for (const auto &header : response.headers) {
+        if (QString::fromUtf8(header.first).compare(QStringLiteral("Set-Cookie"), Qt::CaseInsensitive) == 0) {
+            const QString setCookie = QString::fromUtf8(header.second);
+            const QString nameValue = setCookie.split(QLatin1Char(';')).first().trimmed();
+            const QString value = nameValue.section(QLatin1Char('='), 1);
+            const QString lowerSetCookie = setCookie.toLower();
+            if (value.isEmpty() || value == QStringLiteral("deleted")
+                || lowerSetCookie.contains(QStringLiteral("max-age=0"))) {
+                continue;
+            }
+            newCookies.append(nameValue);
         }
     }
-
-    if (m_storage) {
-        m_storage->set(COOKIE_STORAGE_KEY, cookieString);
+    if (!newCookies.isEmpty()) {
+        QHash<QString, QString> cookieMap = parseCookieString(m_cookie);
+        for (const QString &cookie : newCookies) {
+            const QHash<QString, QString> responseCookie = parseCookieString(cookie);
+            for (auto it = responseCookie.constBegin(); it != responseCookie.constEnd(); ++it) {
+                cookieMap.insert(it.key(), it.value());
+            }
+        }
+        persistCookies(formatCookieString(cookieMap), m_authenticated, m_authenticated);
     }
 }
 
 void NeteaseClient::clearCookies()
 {
+    Logger::get("api")->info("NeteaseClient: login status authenticated=false cookie={}", m_cookie.toStdString());
+
     m_cookie.clear();
     m_csrfToken.clear();
     m_authenticated = false;

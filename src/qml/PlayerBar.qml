@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Material
 import QtQuick.Layouts
+import QeriPlayer 1.0
 
 Rectangle {
     id: root
@@ -10,7 +11,7 @@ Rectangle {
     property bool isPlaying: playerVm ? playerVm.isPlaying : false
     property bool isLoading: playerVm ? playerVm.isLoading : false
     property bool isShuffleEnabled: playerVm ? playerVm.isShuffleEnabled : false
-    property int repeatMode: playerVm ? playerVm.repeatMode : 0
+    property int repeatMode: playerVm ? playerVm.repeatMode : RepeatMode.Off
     property int positionMs: playerVm ? playerVm.positionMs : 0
     property int durationMs: playerVm ? playerVm.durationMs : 0
     property double volume: playerVm ? playerVm.volume : 1.0

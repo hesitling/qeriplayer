@@ -5,13 +5,32 @@
 #include "core/filesystem/FileUtils.h"
 #include "core/filesystem/FileWatcher.h"
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QFile>
 #include <QSignalSpy>
+#include <QStandardPaths>
 #include <QTemporaryDir>
 #include <QTest>
 
 using namespace QeriPlayerQt;
+
+namespace {
+
+bool isInsideTestRoot(const QString &path)
+{
+    const QString rootPath = QDir(QString::fromUtf8(qgetenv("QERIPLAYER_TEST_ROOT"))).canonicalPath();
+    const QString candidatePath = QDir(path).canonicalPath();
+#ifdef Q_OS_WIN
+    constexpr Qt::CaseSensitivity pathCaseSensitivity = Qt::CaseInsensitive;
+#else
+    constexpr Qt::CaseSensitivity pathCaseSensitivity = Qt::CaseSensitive;
+#endif
+    return !rootPath.isEmpty() && !candidatePath.isEmpty()
+           && candidatePath.startsWith(rootPath + QLatin1Char('/'), pathCaseSensitivity);
+}
+
+} // namespace
 
 class TestFileSystem : public QObject {
     Q_OBJECT
@@ -19,12 +38,15 @@ class TestFileSystem : public QObject {
 private Q_SLOTS:
     // AppPaths
     void dataDir_returnsValidPath();
+    void appPaths_useStandardLocations();
+    void appPaths_useIsolatedLocations();
     void dataDir_autoCreates();
     void configDir_returnsValidPath();
     void configDir_autoCreates();
     void cacheDir_returnsValidPath();
     void cacheDir_autoCreates();
     void tempDir_returnsValidPath();
+    void tempDir_usesIsolatedTemp();
     void tempDir_autoCreates();
 
     // FileUtils
@@ -47,9 +69,39 @@ void TestFileSystem::dataDir_returnsValidPath()
     QVERIFY(QDir(path).exists());
 }
 
+void TestFileSystem::appPaths_useStandardLocations()
+{
+    QCOMPARE(AppPaths::dataDir(),
+             QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QStringLiteral("/QeriPlayer"));
+    QCOMPARE(AppPaths::configDir(),
+             QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QStringLiteral("/QeriPlayer"));
+    QCOMPARE(AppPaths::cacheDir(),
+             QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QStringLiteral("/QeriPlayer"));
+}
+
+void TestFileSystem::appPaths_useIsolatedLocations()
+{
+#if defined(Q_OS_UNIX) && !defined(Q_OS_DARWIN)
+    const QString testDataHome = QString::fromUtf8(qgetenv("XDG_DATA_HOME"));
+    const QString testConfigHome = QString::fromUtf8(qgetenv("XDG_CONFIG_HOME"));
+    const QString testCacheHome = QString::fromUtf8(qgetenv("XDG_CACHE_HOME"));
+
+    QVERIFY(!testDataHome.isEmpty());
+    QVERIFY(!testConfigHome.isEmpty());
+    QVERIFY(!testCacheHome.isEmpty());
+    QVERIFY(AppPaths::dataDir().startsWith(testDataHome));
+    QVERIFY(AppPaths::configDir().startsWith(testConfigHome));
+    QVERIFY(AppPaths::cacheDir().startsWith(testCacheHome));
+#else
+    QSKIP("Qt does not use XDG base directories on this platform");
+#endif
+}
+
 void TestFileSystem::dataDir_autoCreates()
 {
     QString path = AppPaths::dataDir();
+    QVERIFY2(isInsideTestRoot(path),
+             qPrintable(QStringLiteral("Refusing to remove path outside test root: %1").arg(path)));
     QVERIFY(QDir(path).removeRecursively());
     QVERIFY(!QDir(path).exists());
     path = AppPaths::dataDir();
@@ -67,6 +119,8 @@ void TestFileSystem::configDir_returnsValidPath()
 void TestFileSystem::configDir_autoCreates()
 {
     QString path = AppPaths::configDir();
+    QVERIFY2(isInsideTestRoot(path),
+             qPrintable(QStringLiteral("Refusing to remove path outside test root: %1").arg(path)));
     QVERIFY(QDir(path).removeRecursively());
     QVERIFY(!QDir(path).exists());
     path = AppPaths::configDir();
@@ -84,6 +138,8 @@ void TestFileSystem::cacheDir_returnsValidPath()
 void TestFileSystem::cacheDir_autoCreates()
 {
     QString path = AppPaths::cacheDir();
+    QVERIFY2(isInsideTestRoot(path),
+             qPrintable(QStringLiteral("Refusing to remove path outside test root: %1").arg(path)));
     QVERIFY(QDir(path).removeRecursively());
     QVERIFY(!QDir(path).exists());
     path = AppPaths::cacheDir();
@@ -98,9 +154,23 @@ void TestFileSystem::tempDir_returnsValidPath()
     QVERIFY(QDir(path).exists());
 }
 
+void TestFileSystem::tempDir_usesIsolatedTemp()
+{
+#ifdef Q_OS_WIN
+    const QString testTempDir = QString::fromUtf8(qgetenv("TEMP"));
+    QCOMPARE(testTempDir, QString::fromUtf8(qgetenv("TMP")));
+#else
+    const QString testTempDir = QString::fromUtf8(qgetenv("TMPDIR"));
+#endif
+    QVERIFY(!testTempDir.isEmpty());
+    QVERIFY(AppPaths::tempDir().startsWith(testTempDir));
+}
+
 void TestFileSystem::tempDir_autoCreates()
 {
     QString path = AppPaths::tempDir();
+    QVERIFY2(isInsideTestRoot(path),
+             qPrintable(QStringLiteral("Refusing to remove path outside test root: %1").arg(path)));
     QVERIFY(QDir(path).removeRecursively());
     QVERIFY(!QDir(path).exists());
     path = AppPaths::tempDir();
@@ -227,5 +297,35 @@ void TestFileSystem::fileWatcher_stop()
     QVERIFY(!watcher.isWatching());
 }
 
-QTEST_MAIN(TestFileSystem)
+int main(int argc, char **argv)
+{
+    QTemporaryDir testRoot;
+    if (!testRoot.isValid()) {
+        return 1;
+    }
+
+    QDir rootDir(testRoot.path());
+    if (!rootDir.mkpath(QStringLiteral("data")) || !rootDir.mkpath(QStringLiteral("config"))
+        || !rootDir.mkpath(QStringLiteral("cache")) || !rootDir.mkpath(QStringLiteral("temp"))) {
+        return 1;
+    }
+
+    const QByteArray rootPath = testRoot.path().toUtf8();
+    qputenv("QERIPLAYER_TEST_ROOT", rootPath);
+    qputenv("HOME", rootPath);
+    qputenv("XDG_DATA_HOME", rootPath + "/data");
+    qputenv("XDG_CONFIG_HOME", rootPath + "/config");
+    qputenv("XDG_CACHE_HOME", rootPath + "/cache");
+#ifdef Q_OS_WIN
+    qputenv("TEMP", rootPath + "/temp");
+    qputenv("TMP", rootPath + "/temp");
+#else
+    qputenv("TMPDIR", rootPath + "/temp");
+#endif
+
+    QCoreApplication app(argc, argv);
+    TestFileSystem test;
+    return QTest::qExec(&test, argc, argv);
+}
+
 #include "TestFileSystem.moc"

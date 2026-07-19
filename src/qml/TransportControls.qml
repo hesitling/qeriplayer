@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Material
 import QtQuick.Layouts
+import QeriPlayer 1.0
 
 ColumnLayout {
     id: root
@@ -9,7 +10,7 @@ ColumnLayout {
     property bool isPlaying: false
     property bool isLoading: false
     property bool isShuffleEnabled: false
-    property int repeatMode: 0 // 0=Off, 1=One, 2=All
+    property int repeatMode: RepeatMode.Off
 
     // --- Seek properties ---
     property int positionMs: 0
@@ -88,12 +89,14 @@ ColumnLayout {
 
         // Repeat
         ToolButton {
-            icon.name: root.repeatMode === 1 ? "media-playlist-repeat-song" : "media-playlist-repeat"
+            icon.name: root.repeatMode === RepeatMode.One ? "media-playlist-repeat-song" : "media-playlist-repeat"
             icon.width: 18
             icon.height: 18
-            opacity: root.repeatMode === 0 ? 0.4 : 1.0
+            opacity: root.repeatMode === RepeatMode.Off ? 0.4 : 1.0
             onClicked: root.repeatCycled()
-            ToolTip.text: root.repeatMode === 0 ? "Repeat off" : (root.repeatMode === 1 ? "Repeat one" : "Repeat all")
+            ToolTip.text: root.repeatMode === RepeatMode.Off
+                          ? "Repeat off"
+                          : (root.repeatMode === RepeatMode.One ? "Repeat one" : "Repeat all")
             ToolTip.visible: hovered
         }
     }
@@ -115,23 +118,30 @@ ColumnLayout {
         // Seek slider with drag-latch
         Slider {
             id: seekSlider
+            objectName: "seekSlider"
             Layout.fillWidth: true
             from: 0
             to: root.durationMs > 0 ? root.durationMs : 1
             enabled: root.durationMs > 0
 
             property bool seeking: false
+            property real pendingPosition: root.positionMs
 
-            value: seeking ? value : root.positionMs
+            // Follow playback except while the user chooses a new position.
+            value: seeking ? pendingPosition : root.positionMs
 
             onPressedChanged: {
                 if (pressed) {
+                    pendingPosition = value
                     seeking = true
                 } else {
+                    // Capture before reenabling the playback-position binding.
+                    root.seekRequested(Math.round(pendingPosition))
                     seeking = false
-                    root.seekRequested(Math.round(value))
                 }
             }
+
+            onMoved: pendingPosition = value
         }
 
         // Duration label

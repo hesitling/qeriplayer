@@ -15,6 +15,7 @@
 #include <QCoroQmlTask>
 #include <QCoroTask>
 #include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QVector>
 
@@ -63,6 +64,9 @@ Q_SIGNALS:
 
 private:
     void beginLoad();
+    static QCoro::Task<void> loadPlaylistTask(QPointer<NeteasePlaylistDetailViewModel> self, QString playlistId);
+    static QCoro::Task<void> loadAlbumTask(QPointer<NeteasePlaylistDetailViewModel> self, QString albumId);
+    static QCoro::Task<void> saveToLocalTask(QPointer<NeteasePlaylistDetailViewModel> self);
 
     template <typename T> bool finalizeLoad(const ApiResult<T> &result)
     {

@@ -120,7 +120,6 @@ Page {
                 model: detailVm ? detailVm.songs : null
                 visible: detailVm && !detailVm.isLoading && !detailVm.hasError && detailVm.songs.count > 0
                 delegate: SongDelegate {
-                    required property int index
                     onDoubleClicked: detailVm.playSong(index)
                 }
                 ScrollBar.vertical: ScrollBar {}

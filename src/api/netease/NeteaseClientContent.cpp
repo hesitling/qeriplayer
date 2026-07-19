@@ -71,28 +71,29 @@ QCoro::Task<ApiResult<Song>> NeteaseClient::getSongDetail(const QString &songId)
 
 QCoro::Task<ApiResult<SongUrlResult>> NeteaseClient::getSongUrl(const QString &songId, AudioQuality quality)
 {
-    // Map AudioQuality to NetEase bitrate
-    int br;
+    // Match Kotlin/current NetEase clients: EAPI player URL v1 uses quality levels.
+    QString level;
     switch (quality) {
         case AudioQuality::Low:
-            br = 128000;
+            level = QStringLiteral("standard");
             break;
         case AudioQuality::Standard:
-            br = 192000;
+            level = QStringLiteral("higher");
             break;
         case AudioQuality::High:
-            br = 320000;
+            level = QStringLiteral("exhigh");
             break;
         case AudioQuality::Lossless:
-            br = 999000;
+            level = QStringLiteral("lossless");
             break;
     }
 
     QJsonObject params;
     params[QLatin1String("ids")] = QStringLiteral("[%1]").arg(songId);
-    params[QLatin1String("br")] = br;
+    params[QLatin1String("level")] = level;
+    params[QLatin1String("encodeType")] = QStringLiteral("flac");
 
-    auto result = co_await makeRequest(QStringLiteral("/weapi/song/enhance/player/url"), params);
+    auto result = co_await makeEapiRequest(QStringLiteral("/song/enhance/player/url/v1"), params);
     if (result.isError()) {
         co_return ApiResult<SongUrlResult>(result.error());
     }
@@ -156,8 +157,13 @@ QCoro::Task<ApiResult<Playlist>> NeteaseClient::getPlaylistDetail(const QString 
 
 QCoro::Task<ApiResult<QVector<Playlist>>> NeteaseClient::getUserPlaylists(const QString &userId)
 {
+    auto resolvedUserId = co_await resolveUserId(userId);
+    if (resolvedUserId.isError()) {
+        co_return ApiResult<QVector<Playlist>>(resolvedUserId.error());
+    }
+
     QJsonObject params;
-    params[QLatin1String("uid")] = userId;
+    params[QLatin1String("uid")] = resolvedUserId.data();
     params[QLatin1String("limit")] = 1000;
     params[QLatin1String("offset")] = 0;
 

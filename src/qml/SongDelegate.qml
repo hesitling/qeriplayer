@@ -1,12 +1,16 @@
 import QtQuick
 import QtQuick.Controls.Material
 import QtQuick.Layouts
+import QeriPlayer 1.0
 
 ItemDelegate {
     id: root
 
     width: ListView.view ? ListView.view.width : 0
     height: 64
+
+    required property int index
+    required property var model
 
     // Playing highlight
     property bool isCurrentSong: playerVm && playerVm.currentSong
@@ -15,13 +19,13 @@ ItemDelegate {
     // Platform display name helper
     function platformDisplayName(platform) {
         switch (platform) {
-        case 1:
+        case MusicPlatform.NetEase:
             return "NetEase"
-        case 2:
+        case MusicPlatform.Bilibili:
             return "Bilibili"
-        case 3:
+        case MusicPlatform.YouTube:
             return "YouTube"
-        case 4:
+        case MusicPlatform.QQMusic:
             return "QQ Music"
         default:
             return ""

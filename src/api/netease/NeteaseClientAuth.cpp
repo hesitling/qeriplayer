@@ -60,8 +60,56 @@ QCoro::Task<ApiResult<VoidResult>> NeteaseClient::logout()
         co_return ApiResult<VoidResult>(result.error());
     }
 
-    clearCookies();
+    clearLocalSession();
     co_return ApiResult<VoidResult>(VoidResult {});
+}
+
+QCoro::Task<ApiResult<LoginResult>> NeteaseClient::importCookies(const QString &cookieString)
+{
+    if (m_importCookiesInFlight) {
+        co_return ApiResult<LoginResult>(ApiError(409, QStringLiteral("Cookie import already in progress")));
+    }
+
+    struct ImportGuard {
+        bool &flag;
+        ~ImportGuard()
+        {
+            flag = false;
+        }
+    };
+
+    m_importCookiesInFlight = true;
+    ImportGuard guard {m_importCookiesInFlight};
+
+    clearLocalSession();
+    persistCookies(cookieString, false, false);
+    co_await ensureWeapiSession();
+
+    auto accountResult = co_await getCurrentUserAccount();
+    if (accountResult.isError()) {
+        clearLocalSession();
+        co_return ApiResult<LoginResult>(accountResult.error());
+    }
+
+    QJsonObject profile = accountResult.data()[QLatin1String("profile")].toObject();
+    if (profile.isEmpty()) {
+        clearLocalSession();
+        co_return ApiResult<LoginResult>(ApiError(-1, QStringLiteral("Cookie is invalid or expired")));
+    }
+
+    persistCookies(m_cookie);
+
+    LoginResult loginResult;
+    loginResult.userId = QString::number(profile[QLatin1String("userId")].toVariant().toLongLong());
+    loginResult.nickname = profile[QLatin1String("nickname")].toString();
+    loginResult.avatarUrl = QUrl(profile[QLatin1String("avatarUrl")].toString());
+    loginResult.cookie = m_cookie;
+    co_return ApiResult<LoginResult>(loginResult);
+}
+
+void NeteaseClient::clearLocalSession()
+{
+    clearCookies();
 }
 
 // ─── Cookie Management ─────────────────────────────────────────────────────
@@ -83,46 +131,15 @@ QCoro::Task<void> NeteaseClient::ensureWeapiSession()
 
     auto response = co_await m_httpClient->get(request);
 
-    // Extract Set-Cookie headers and merge into current cookie string
-    QStringList newCookies;
-    for (const auto &header : response.headers) {
-        if (QString::fromUtf8(header.first).compare(QStringLiteral("Set-Cookie"), Qt::CaseInsensitive) == 0) {
-            // Extract name=value from "name=value; Path=/; ..."
-            QString nameValue = QString::fromUtf8(header.second).split(QLatin1Char(';')).first().trimmed();
-            newCookies.append(nameValue);
-        }
-    }
-    if (!newCookies.isEmpty()) {
-        // Merge with existing cookies by rebuilding the cookie map
-        QHash<QString, QString> cookieMap;
-        // Parse existing cookies
-        for (const QString &part : m_cookie.split(QStringLiteral("; "))) {
-            QString name = part.section(QLatin1Char('='), 0, 0);
-            QString value = part.section(QLatin1Char('='), 1);
-            if (!name.isEmpty()) {
-                cookieMap.insert(name, value);
-            }
-        }
-        // Override with new cookies
-        for (const QString &cookie : newCookies) {
-            QString name = cookie.section(QLatin1Char('='), 0, 0);
-            QString value = cookie.section(QLatin1Char('='), 1);
-            cookieMap.insert(name, value);
-        }
-        // Rebuild cookie string
-        QStringList parts;
-        for (auto it = cookieMap.constBegin(); it != cookieMap.constEnd(); ++it) {
-            parts.append(it.key() + QLatin1Char('=') + it.value());
-        }
-        persistCookies(parts.join(QStringLiteral("; ")));
-    }
+    // Extract Set-Cookie headers and merge into current cookie string.
+    extractResponseCookies(response);
 }
 
 // ─── Account ────────────────────────────────────────────────────────────────
 
 QCoro::Task<ApiResult<QJsonObject>> NeteaseClient::getCurrentUserAccount()
 {
-    auto result = co_await makeRequest(QStringLiteral("/weapi/w/nuser/account/get"));
+    auto result = co_await makeRequest(QStringLiteral("/weapi/nuser/account/get"));
     if (result.isError()) {
         co_return ApiResult<QJsonObject>(result.error());
     }

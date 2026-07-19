@@ -11,7 +11,7 @@ include(GNUInstallDirs)
 # ─── Dependencies ─────────────────────────────────────────────────
 
 # Qt 6
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets Multimedia Quick Qml QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets Multimedia Quick Qml QuickControls2 LabsPlatform)
 
 # QCoro
 set(QERIPLAYER_QCORO_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/qcoro" CACHE PATH
@@ -73,6 +73,7 @@ set(CMAKE_AUTORCC ON)
 set(SOURCES
     src/main.cpp
     src/app/QeriPlayerApplication.cpp
+    src/app/QmlEnums.cpp
     src/core/crypto/CryptoUtils.cpp
     src/core/crypto/Encryptor.cpp
     src/core/crypto/Decryptor.cpp
@@ -109,6 +110,7 @@ set(SOURCES
 
 set(HEADERS
     src/app/QeriPlayerApplication.h
+    src/app/QmlEnums.h
     src/app/ServiceLocator.h
     src/core/crypto/CryptoUtils.h
     src/core/crypto/Encryptor.h
@@ -179,6 +181,7 @@ target_link_libraries(QeriPlayerQt PRIVATE
     Qt6::Quick
     Qt6::Qml
     Qt6::QuickControls2
+    Qt6::LabsPlatform
     qeriplayer_viewmodel
     ${QERIPLAYER_QCORO_LIBRARIES}
     ${SQLITE3_LIBRARIES}

@@ -126,7 +126,7 @@ private:
     static std::mutex s_mutex;
     static bool s_initialized;
     static LoggerConfig s_config;
-    static std::shared_ptr<spdlog::sinks::daily_file_sink_mt> s_fileSink;
+    static std::shared_ptr<spdlog::sinks::daily_file_format_sink_mt> s_fileSink;
     static std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> s_consoleSink;
     static std::unordered_map<std::string, std::shared_ptr<NamedLogger>> s_loggers;
 };

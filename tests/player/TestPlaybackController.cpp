@@ -8,6 +8,9 @@
 #include <QSignalSpy>
 #include <QTest>
 
+#include <memory>
+#include <stdexcept>
+
 using namespace QeriPlayerQt;
 
 namespace {
@@ -28,6 +31,10 @@ public:
     {
         m_lastLoadedUrl = url;
         m_loadCount++;
+        if (m_failNextLoad) {
+            m_failNextLoad = false;
+            throw std::runtime_error("mock load failure");
+        }
         co_return;
     }
 
@@ -106,6 +113,7 @@ public:
     qint64 m_duration = 300000;
     double m_volume = 1.0;
     bool m_muted = false;
+    bool m_failNextLoad = false;
 };
 
 /**
@@ -184,6 +192,43 @@ public:
 };
 
 } // namespace
+
+class MockPlugin : public IMusicPlatformPlugin {
+public:
+    QCoro::Task<ApiResult<SearchResult>> search(const QString &, SearchType, int, int) override
+    {
+        co_return ApiResult<SearchResult>(ApiError(-1, QStringLiteral("unused")));
+    }
+
+    QCoro::Task<ApiResult<Song>> getSongDetail(const QString &) override
+    {
+        co_return ApiResult<Song>(ApiError(-1, QStringLiteral("unused")));
+    }
+
+    QCoro::Task<ApiResult<SongUrlResult>> getSongUrl(const QString &, AudioQuality) override
+    {
+        ++m_getSongUrlCount;
+        co_return ApiResult<SongUrlResult>(m_songUrlResult);
+    }
+
+    QCoro::Task<ApiResult<Lyrics>> getLyrics(const QString &) override
+    {
+        co_return ApiResult<Lyrics>(ApiError(-1, QStringLiteral("unused")));
+    }
+
+    bool isAuthenticated() const override
+    {
+        return false;
+    }
+
+    QString platformName() const override
+    {
+        return QStringLiteral("Mock");
+    }
+
+    SongUrlResult m_songUrlResult;
+    int m_getSongUrlCount = 0;
+};
 
 class TestPlaybackController : public QObject {
     Q_OBJECT
@@ -277,6 +322,101 @@ private Q_SLOTS:
         }(m_controller.get()));
 
         QCOMPARE(spy.count(), 1);
+    }
+
+    void play_withPluginRequiresLogin_emitsSpecificError()
+    {
+        MockPlugin plugin;
+        plugin.m_songUrlResult.status = SongUrlResult::Status::RequiresLogin;
+
+        auto backend = std::make_unique<MockBackend>();
+        auto *backendPtr = backend.get();
+        auto controller = std::make_unique<PlaybackController>(std::move(backend), &plugin, m_playerStateRepo.get(),
+                                                               m_settingsRepo.get());
+        QSignalSpy spy(controller.get(), &PlaybackController::errorOccurred);
+
+        QCoro::waitFor([&controller](PlaybackController *ctrl) -> QCoro::Task<void> {
+            co_await ctrl->play(makeSong(QStringLiteral("locked")));
+        }(controller.get()));
+
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(spy.at(0).at(0).toString(), QStringLiteral("Login required or track unavailable for: Song locked"));
+        QCOMPARE(backendPtr->m_loadCount, 0);
+        QCOMPARE(backendPtr->m_playCount, 0);
+    }
+
+    void play_afterPreResolveReturnedMalformedUrl_requestsUrlAgain()
+    {
+        MockPlugin plugin;
+        plugin.m_songUrlResult.status = SongUrlResult::Status::Success;
+        plugin.m_songUrlResult.url = QStringLiteral("\"https://media.example.com/song.mp3\"");
+
+        auto backend = std::make_unique<MockBackend>();
+        auto *backendPtr = backend.get();
+        auto controller = std::make_unique<PlaybackController>(std::move(backend), &plugin, m_playerStateRepo.get(),
+                                                               m_settingsRepo.get());
+        QSignalSpy spy(controller.get(), &PlaybackController::errorOccurred);
+        const Song song = makeSong(QStringLiteral("malformed"));
+
+        controller->preResolveUrl(song);
+        QTRY_COMPARE(plugin.m_getSongUrlCount, 1);
+
+        plugin.m_songUrlResult.url = QStringLiteral("https://media.example.com/song.mp3");
+        QCoro::waitFor(
+            [&song](PlaybackController *ctrl) -> QCoro::Task<void> { co_await ctrl->play(song); }(controller.get()));
+
+        QCOMPARE(plugin.m_getSongUrlCount, 2);
+        QCOMPARE(spy.count(), 0);
+        QCOMPARE(backendPtr->m_loadCount, 1);
+        QCOMPARE(backendPtr->m_lastLoadedUrl, QUrl(QStringLiteral("https://media.example.com/song.mp3")));
+        QCOMPARE(backendPtr->m_playCount, 1);
+    }
+
+    void play_cachedUrlCanBeReusedMultipleTimes()
+    {
+        MockPlugin plugin;
+        plugin.m_songUrlResult.status = SongUrlResult::Status::Success;
+        plugin.m_songUrlResult.url = QStringLiteral("https://media.example.com/reusable.mp3");
+
+        auto backend = std::make_unique<MockBackend>();
+        auto *backendPtr = backend.get();
+        auto controller = std::make_unique<PlaybackController>(std::move(backend), &plugin, m_playerStateRepo.get(),
+                                                               m_settingsRepo.get());
+        const Song song = makeSong(QStringLiteral("reusable"));
+
+        for (int playCount = 1; playCount <= 3; ++playCount) {
+            QCoro::waitFor([&song](PlaybackController *ctrl) -> QCoro::Task<void> {
+                co_await ctrl->play(song);
+            }(controller.get()));
+            QCOMPARE(plugin.m_getSongUrlCount, 1);
+            QCOMPARE(backendPtr->m_playCount, playCount);
+        }
+    }
+
+    void play_cachedUrlRejectedByBackend_refreshesUrlOnce()
+    {
+        MockPlugin plugin;
+        plugin.m_songUrlResult.status = SongUrlResult::Status::Success;
+        plugin.m_songUrlResult.url = QStringLiteral("https://media.example.com/first.mp3");
+
+        auto backend = std::make_unique<MockBackend>();
+        auto *backendPtr = backend.get();
+        auto controller = std::make_unique<PlaybackController>(std::move(backend), &plugin, m_playerStateRepo.get(),
+                                                               m_settingsRepo.get());
+        const Song song = makeSong(QStringLiteral("refresh"));
+
+        QCoro::waitFor(
+            [&song](PlaybackController *ctrl) -> QCoro::Task<void> { co_await ctrl->play(song); }(controller.get()));
+        QCOMPARE(plugin.m_getSongUrlCount, 1);
+
+        plugin.m_songUrlResult.url = QStringLiteral("https://media.example.com/refreshed.mp3");
+        backendPtr->m_failNextLoad = true;
+        QCoro::waitFor(
+            [&song](PlaybackController *ctrl) -> QCoro::Task<void> { co_await ctrl->play(song); }(controller.get()));
+
+        QCOMPARE(plugin.m_getSongUrlCount, 2);
+        QCOMPARE(backendPtr->m_lastLoadedUrl, QUrl(QStringLiteral("https://media.example.com/refreshed.mp3")));
+        QCOMPARE(backendPtr->m_playCount, 2);
     }
 
     // --- Pause / Resume / Stop / Seek ---
